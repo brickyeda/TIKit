@@ -8795,8 +8795,77 @@ this.showPage('homepage');
       },
 
       startFreeTrial() {
-        // כאן יהיה הפעלת ניסיון חינמי
-        alert('🎁 ניסיון חינמי בבנייה!\n\nבקרוב תוכל לנסות פרימיום ל-7 ימים חינם.');
+        if (!currentUser) {
+          alert('יש להתחבר כדי להתחיל תקופת ניסיון');
+          window.location.href = 'login.html';
+          return;
+        }
+
+        // בדיקה אם כבר היה ניסיון בעבר
+        this.checkAndStartTrial();
+      },
+
+      async checkAndStartTrial() {
+        try {
+          // בדיקה אם כבר היה ניסיון או מנוי
+          const { data: existingSub } = await supabaseClient
+            .from('subscriptions')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (existingSub) {
+            if (existingSub.status === 'active') {
+              alert('כבר יש לך מנוי פעיל! 🎉');
+              return;
+            }
+            if (existingSub.plan_type === 'trial') {
+              alert('כבר ניצלת את תקופת הניסיון בעבר.\n\nאתה מוזמן לשדרג לפרימיום!');
+              return;
+            }
+          }
+
+          // הפעלת תקופת ניסיון
+          if (confirm('🎁 תקופת ניסיון חינמית!\n\nתקבל גישה מלאה לכל הפיצ\'רים ל-7 ימים.\nבסיום התקופה תחזור אוטומטית לגרסה החינמית.\n\nלהתחיל?')) {
+            const trialEnd = new Date();
+            trialEnd.setDate(trialEnd.getDate() + 7);
+
+            const { error } = await supabaseClient
+              .from('subscriptions')
+              .insert({
+                user_id: currentUser.id,
+                plan_type: 'trial',
+                status: 'active',
+                price: 0,
+                started_at: new Date().toISOString(),
+                expires_at: trialEnd.toISOString()
+              });
+
+            if (error) {
+              console.error('שגיאה בהפעלת ניסיון:', error);
+              alert('שגיאה בהפעלת תקופת הניסיון. נסה שוב.');
+              return;
+            }
+
+            alert('🎉 תקופת הניסיון הופעלה!\n\nיש לך 7 ימים ליהנות מכל הפיצ\'רים של פרימיום.');
+            
+            // עדכון הסטטוס המקומי
+            this.isPro = true;
+            this.subscriptionType = 'trial';
+            this.planUntil = trialEnd.toLocaleDateString('he-IL');
+            
+            // סגירת המודאל ורענון התצוגה
+            this.closeUpgradeModal();
+            this.updateSubscriptionPage();
+            this.updatePremiumInfoDisplay();
+          }
+
+        } catch (e) {
+          console.error('שגיאה:', e);
+          alert('שגיאה בהפעלת תקופת הניסיון');
+        }
       },
 
       // עדכון תצוגת דף ניהול מנוי
@@ -19199,7 +19268,7 @@ document.addEventListener('DOMContentLoaded', function() {
         🎁 נסו עכשיו את גרסת הפרימיום ל-7 ימים בחינם
       </button>
       <button class="upgrade-btn secondary" onclick="app.goToCheckout()">
-        💳 שדרוג מיידי לפרימיום
+        💳 בחרו את המסלול שלכם ושדרגו לפרימיום
       </button>
     </div>
 
