@@ -516,12 +516,13 @@
               <th>מייל</th>
               <th>סטטוס</th>
               <th>תאריך הרשמה</th>
-              <th>פעולות</th>
+              <th>תן מנוי</th>
+              <th>בטל מנוי</th>
             </tr>
           </thead>
           <tbody id="usersTableBody">
             <tr>
-              <td colspan="5" class="loading">
+              <td colspan="6" class="loading">
                 <div class="spinner"></div>
                 <p>טוען משתמשים...</p>
               </td>
@@ -598,6 +599,25 @@
     </div>
   </div>
 
+  <!-- Cancel Subscription Modal with Code -->
+  <div class="modal-overlay" id="cancelCodeModal">
+    <div class="modal">
+      <h3>🚫 ביטול מנוי</h3>
+      <p id="cancelUserName" style="margin-bottom: 15px; font-weight: 600;"></p>
+      <p style="margin-bottom: 10px;">להמשך, הקלד את קוד האישור:</p>
+      <div style="background: #fee2e2; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
+        <span id="cancelCode" style="font-size: 1.5rem; font-weight: 700; letter-spacing: 5px; color: #991b1b;"></span>
+      </div>
+      <div class="form-group">
+        <input type="text" id="cancelCodeInput" placeholder="הקלד את הקוד" style="text-align: center; font-size: 1.2rem; letter-spacing: 3px;">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('cancelCodeModal')">ביטול</button>
+        <button class="btn btn-danger" onclick="confirmCancelWithCode()">🚫 בטל מנוי</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // הגדרות
     const SUPABASE_URL = 'https://ditiequwboxbiqrzvfhr.supabase.co';
@@ -609,6 +629,8 @@
     let allUsers = [];
     let allSubscriptions = [];
     let pendingAction = null;
+    let pendingCancelUserId = null;
+    let currentCancelCode = null;
 
     // אתחול
     window.addEventListener('load', async () => {
@@ -724,7 +746,7 @@
 
       if (!users || users.length === 0) {
         tbody.innerHTML = `
-          <tr><td colspan="5" class="empty-state">
+          <tr><td colspan="6" class="empty-state">
             <div class="empty-state-icon">👥</div>
             <p>אין משתמשים להצגה</p>
           </td></tr>
@@ -735,6 +757,7 @@
       tbody.innerHTML = users.map(user => {
         const sub = user.subscription;
         let statusBadge = '<span class="badge badge-free">חינם</span>';
+        let cancelBtn = '<span style="color: #ccc;">—</span>';
 
         if (sub) {
           if (sub.plan_type === 'trial') {
@@ -742,6 +765,7 @@
           } else {
             statusBadge = '<span class="badge badge-pro">Pro</span>';
           }
+          cancelBtn = `<button class="btn btn-sm btn-danger" onclick="cancelUserSubscription('${user.id}', '${user.display_name || user.email?.split('@')[0] || 'משתמש'}')">🚫 בטל</button>`;
         }
 
         const displayName = user.display_name || user.email?.split('@')[0] || 'ללא שם';
@@ -755,9 +779,10 @@
             <td>${statusBadge}</td>
             <td>${createdAt}</td>
             <td>
-              <div class="actions">
-                <button class="btn btn-sm btn-success" onclick="giveSubscription('${user.id}', '${email}')">🎁 תן מנוי</button>
-              </div>
+              <button class="btn btn-sm btn-success" onclick="giveSubscription('${user.id}', '${email}')">🎁 תן מנוי</button>
+            </td>
+            <td>
+              ${cancelBtn}
             </td>
           </tr>
         `;
@@ -1032,6 +1057,72 @@
       document.getElementById('confirmBtn').className = 'btn btn-danger';
       document.getElementById('confirmBtn').textContent = 'בטל מנוי';
       openModal('confirmModal');
+    }
+
+    // ביטול מנוי למשתמש ספציפי עם קוד אישור
+    function cancelUserSubscription(userId, userName) {
+      // יצירת קוד אקראי
+      currentCancelCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      pendingCancelUserId = userId;
+      
+      document.getElementById('cancelUserName').textContent = `משתמש: ${userName}`;
+      document.getElementById('cancelCode').textContent = currentCancelCode;
+      document.getElementById('cancelCodeInput').value = '';
+      
+      openModal('cancelCodeModal');
+    }
+
+    // אישור ביטול עם קוד
+    async function confirmCancelWithCode() {
+      const inputCode = document.getElementById('cancelCodeInput').value.trim().toUpperCase();
+      
+      if (inputCode !== currentCancelCode) {
+        alert('❌ קוד שגוי! נסה שוב.');
+        document.getElementById('cancelCodeInput').value = '';
+        return;
+      }
+      
+      try {
+        const user = allUsers.find(u => u.id === pendingCancelUserId);
+        if (!user || !user.subscription) {
+          alert('לא נמצא מנוי לביטול');
+          closeModal('cancelCodeModal');
+          return;
+        }
+
+        // מחיקת המנוי מטבלת subscriptions
+        if (user.subscription.id) {
+          const { error: subError } = await supabaseClient
+            .from('subscriptions')
+            .delete()
+            .eq('user_id', pendingCancelUserId);
+
+          if (subError) throw subError;
+        }
+
+        // איפוס ב-profiles אם יש שם נתונים
+        const { error: profileError } = await supabaseClient
+          .from('profiles')
+          .update({
+            plan: 'free',
+            plan_until: null,
+            subscription_type: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', pendingCancelUserId);
+
+        if (profileError) {
+          console.log('לא עודכן profiles:', profileError);
+        }
+
+        closeModal('cancelCodeModal');
+        alert('✅ המנוי בוטל והמשתמש חזר לגרסה החינמית!');
+        loadData();
+        
+      } catch (e) {
+        console.error('שגיאה בביטול:', e);
+        alert('שגיאה בביטול המנוי');
+      }
     }
 
     // אישור פעולה
