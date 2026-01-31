@@ -8514,11 +8514,12 @@ autoSaveInterval: null,
         localStorage.setItem('lastUserId', currentUser.id);
         localStorage.setItem('isLoggedIn', 'true');
         
-        // הצג את האימייל של המשתמש
+        // הצג את האימייל של המשתמש (זמני עד שטוענים את השם מה-DB)
         this.displayUserEmail();
         
         this.loadUserData();
         await this.loadUserPlan(currentUser.id); // טעינת סטטוס פרימיום
+        this.displayUserEmail(); // עדכון הברכה עם השם מה-DB
         this.updatePremiumInfoDisplay(); // עדכון כפתור הכוכב
         this.updateTime();
         setInterval(() => this.updateTime(), 1000);
@@ -8566,10 +8567,16 @@ this.showPage('homepage');
         console.log('✅ אפליקציה הופעלה בהצלחה!');
       },
       
-      // הצגת אימייל המשתמש
+      // הצגת שם המשתמש בברכה
       displayUserEmail() {
         const greetingElement = document.getElementById('welcomeGreeting');
         if (greetingElement && currentUser) {
+          // קודם כל בודק אם יש displayName שנשמר ב-DB
+          if (this.displayName && this.displayName.trim() !== '') {
+            greetingElement.textContent = `שלום ${this.displayName}!`;
+            return;
+          }
+          
           // נסה להציג את שם המשתמש מה-metadata
           const username = currentUser.user_metadata?.username;
           
