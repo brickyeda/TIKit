@@ -8379,6 +8379,9 @@ autoSaveInterval: null,
       saveInterval: null,
       userData: {},
       isPro: false, // האם המשתמש פרימיום
+      subscriptionType: null, // 'monthly', 'yearly', 'trial'
+      planUntil: null, // תאריך מפורמט
+      planUntilDate: null, // תאריך מקורי לחישובים
       selectedPriority: 'medium',
       selectedEventType: 'lesson',
       selectedPageType: 'lined',
@@ -8654,10 +8657,11 @@ this.showPage('homepage');
             if (subData.expires_at) {
               const planDate = new Date(subData.expires_at);
               this.planUntil = planDate.toLocaleDateString('he-IL');
-              this.nextBilling = planDate.toLocaleDateString('he-IL');
+              this.planUntilDate = subData.expires_at; // שומר את התאריך המקורי לחישוב ימים
+              this.nextBilling = this.subscriptionType === 'trial' ? null : planDate.toLocaleDateString('he-IL');
             }
             
-            console.log('📊 סטטוס פרימיום (מ-subscriptions):', this.isPro ? 'Pro ✨' : 'Free');
+            console.log('📊 סטטוס פרימיום (מ-subscriptions):', this.isPro ? 'Pro ✨' : 'Free', '| סוג:', this.subscriptionType);
           } else {
             // fallback לטבלת profiles הישנה
             const { data, error } = await supabaseClient
@@ -8669,6 +8673,7 @@ this.showPage('homepage');
             if (error || !data) {
               this.isPro = false;
               this.planUntil = null;
+              this.planUntilDate = null;
               this.nextBilling = null;
               this.subscriptionType = null;
               this.displayName = '';
@@ -8684,9 +8689,11 @@ this.showPage('homepage');
             if (data.plan_until) {
               const planDate = new Date(data.plan_until);
               this.planUntil = planDate.toLocaleDateString('he-IL');
+              this.planUntilDate = data.plan_until;
               this.nextBilling = planDate.toLocaleDateString('he-IL');
             } else {
               this.planUntil = null;
+              this.planUntilDate = null;
               this.nextBilling = null;
             }
             
@@ -8735,10 +8742,16 @@ this.showPage('homepage');
         }
         
         try {
+          // משתמש ב-upsert כדי ליצור שורה אם לא קיימת
           const { error } = await supabaseClient
             .from('profiles')
-            .update({ display_name: newName })
-            .eq('id', currentUser.id);
+            .upsert({ 
+              id: currentUser.id,
+              display_name: newName,
+              updated_at: new Date().toISOString()
+            }, { 
+              onConflict: 'id' 
+            });
           
           if (error) throw error;
           
@@ -8878,9 +8891,58 @@ this.showPage('homepage');
         // קבלת המייל של המשתמש
         const userEmail = currentUser ? currentUser.email : '---';
         const displayName = this.displayName || '';
+
+        // חישוב ימים שנותרו לניסיון
+        let daysLeft = 0;
+        if (this.subscriptionType === 'trial' && this.planUntilDate) {
+          const now = new Date();
+          const endDate = new Date(this.planUntilDate);
+          daysLeft = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
+          if (daysLeft < 0) daysLeft = 0;
+        }
         
-        if (this.isPro) {
-          // משתמש פרימיום
+        if (this.isPro && this.subscriptionType === 'trial') {
+          // משתמש בתקופת ניסיון
+          statusCard.className = 'subscription-card status-card pro';
+          statusCard.innerHTML = `
+            <div class="status-header">
+              <span class="status-icon">🎁</span>
+              <span class="status-title pro">גרסת פרימיום – נותרו עוד ${daysLeft} ימים</span>
+            </div>
+            <div class="status-user-info">
+              <div class="status-user-name">
+                <span>👤</span>
+                <input type="text" id="userDisplayName" value="${displayName}" placeholder="הכנס את שמך" class="user-name-input">
+                <button onclick="app.saveDisplayName()" class="save-name-btn" title="שמור שם">✓</button>
+              </div>
+              <div class="status-user-email">
+                <span>📧</span>
+                <span>${userEmail}</span>
+              </div>
+            </div>
+            <div class="status-details">
+              <div class="status-detail">
+                <span class="status-detail-label">סוג מנוי:</span>
+                <span class="status-detail-value">תקופת ניסיון</span>
+              </div>
+              <div class="status-detail">
+                <span class="status-detail-label">תוקף עד:</span>
+                <span class="status-detail-value">${this.planUntil || '---'}</span>
+              </div>
+              <div class="status-detail">
+                <span class="status-detail-label">המחיר:</span>
+                <span class="status-detail-value">₪0.00 (חינם)</span>
+              </div>
+            </div>
+            <p class="status-note">בסיום תקופת הניסיון תחזור אוטומטית לגרסה החינמית, אלא אם תשדרג לפרימיום.</p>
+          `;
+          
+          // הצג כפתור שדרוג
+          actionsCard.style.display = 'none';
+          upgradeCard.style.display = 'block';
+          
+        } else if (this.isPro) {
+          // משתמש פרימיום (לא ניסיון)
           statusCard.className = 'subscription-card status-card pro';
           statusCard.innerHTML = `
             <div class="status-header">
