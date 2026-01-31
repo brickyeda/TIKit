@@ -8213,10 +8213,10 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
             localStorage.setItem(item.key, item.value);
           });
           
-          window.location.replace('login_FIXED_NOW.html?t=' + Date.now() + '&reason=timeout');
+          window.location.replace('login.html?t=' + Date.now() + '&reason=timeout');
         } catch (error) {
           console.error('שגיאה בהתנתקות אוטומטית:', error);
-          window.location.replace('login_FIXED_NOW.html?t=' + Date.now());
+          window.location.replace('login.html?t=' + Date.now());
         }
       },
 
@@ -8291,7 +8291,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           console.log('✅ התנתקות הצליחה - נתונים מקומיים נוקו (מצב טוטוריאל נשמר)');
           
           // הוסף cache busting - מונע בעיות cache
-          window.location.replace('login_FIXED_NOW.html?t=' + Date.now());
+          window.location.replace('login.html?t=' + Date.now());
         } catch (error) {
           console.error('שגיאה בהתנתקות:', error);
           alert('שגיאה בהתנתקות');
@@ -8488,7 +8488,7 @@ autoSaveInterval: null,
         const isAuthenticated = await checkAuth();
         if (!isAuthenticated) {
           console.log('❌ משתמש לא מחובר - מעביר למסך התחברות');
-          window.location.href = 'login_FIXED_NOW.html';
+          window.location.href = 'login.html';
           return;
         }
         
