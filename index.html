@@ -7746,7 +7746,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
         <!-- Trust Note -->
         <div class="subscription-trust-note">
           <span>🔒</span>
-          <span>התשלומים מנוהלים בצורה מאובטחת דרך Stripe. פרטי האשראי אינם נשמרים באפליקציה.</span>
+          <span>התשלומים מנוהלים בצורה מאובטחת דרך סאמיט. פרטי האשראי אינם נשמרים באפליקציה.</span>
         </div>
       </div>
     </div>
@@ -8635,37 +8635,75 @@ this.showPage('homepage');
       // טעינת סטטוס פרימיום של המשתמש
       async loadUserPlan(userId) {
         try {
-          const { data, error } = await supabaseClient
-            .from('profiles')
-            .select('plan, plan_until, subscription_type, display_name')
-            .eq('id', userId)
+          // קודם בודק בטבלת subscriptions החדשה
+          const { data: subData, error: subError } = await supabaseClient
+            .from('subscriptions')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('status', 'active')
+            .order('created_at', { ascending: false })
+            .limit(1)
             .single();
 
-          if (error || !data) {
-            this.isPro = false;
-            this.planUntil = null;
-            this.nextBilling = null;
-            this.subscriptionType = null;
-            this.displayName = '';
-            console.log('📊 סטטוס פרימיום: Free');
-            return;
+          if (subData && !subError) {
+            // יש מנוי פעיל בטבלת subscriptions
+            const isActive = new Date(subData.expires_at) > new Date();
+            this.isPro = isActive;
+            this.subscriptionType = subData.plan_type || 'monthly';
+            
+            if (subData.expires_at) {
+              const planDate = new Date(subData.expires_at);
+              this.planUntil = planDate.toLocaleDateString('he-IL');
+              this.nextBilling = planDate.toLocaleDateString('he-IL');
+            }
+            
+            console.log('📊 סטטוס פרימיום (מ-subscriptions):', this.isPro ? 'Pro ✨' : 'Free');
+          } else {
+            // fallback לטבלת profiles הישנה
+            const { data, error } = await supabaseClient
+              .from('profiles')
+              .select('plan, plan_until, subscription_type, display_name')
+              .eq('id', userId)
+              .single();
+
+            if (error || !data) {
+              this.isPro = false;
+              this.planUntil = null;
+              this.nextBilling = null;
+              this.subscriptionType = null;
+              this.displayName = '';
+              console.log('📊 סטטוס פרימיום: Free');
+              return;
+            }
+
+            this.isPro = data.plan === 'pro' && new Date(data.plan_until) > new Date();
+            this.subscriptionType = data.subscription_type || 'monthly';
+            this.displayName = data.display_name || '';
+            
+            // עיצוב התאריכים
+            if (data.plan_until) {
+              const planDate = new Date(data.plan_until);
+              this.planUntil = planDate.toLocaleDateString('he-IL');
+              this.nextBilling = planDate.toLocaleDateString('he-IL');
+            } else {
+              this.planUntil = null;
+              this.nextBilling = null;
+            }
+            
+            console.log('📊 סטטוס פרימיום (מ-profiles):', this.isPro ? 'Pro ✨' : 'Free');
           }
 
-          this.isPro = data.plan === 'pro' && new Date(data.plan_until) > new Date();
-          this.subscriptionType = data.subscription_type || 'monthly';
-          this.displayName = data.display_name || '';
+          // טעינת display_name מ-profiles בכל מקרה
+          const { data: profileData } = await supabaseClient
+            .from('profiles')
+            .select('display_name')
+            .eq('id', userId)
+            .single();
           
-          // עיצוב התאריכים
-          if (data.plan_until) {
-            const planDate = new Date(data.plan_until);
-            this.planUntil = planDate.toLocaleDateString('he-IL');
-            this.nextBilling = planDate.toLocaleDateString('he-IL');
-          } else {
-            this.planUntil = null;
-            this.nextBilling = null;
+          if (profileData) {
+            this.displayName = profileData.display_name || '';
           }
-          
-          console.log('📊 סטטוס פרימיום:', this.isPro ? 'Pro ✨' : 'Free');
+
         } catch (e) {
           console.log('שגיאה בטעינת סטטוס פרימיום:', e);
           this.isPro = false;
@@ -8731,10 +8769,29 @@ this.showPage('homepage');
         }
       },
 
-      // מעבר לתשלום (בינתיים placeholder)
+      // מעבר לתשלום בסאמיט
       goToCheckout() {
-        // כאן יהיה קישור ל-Stripe Checkout
-        alert('🚧 מערכת התשלומים בבנייה!\n\nבקרוב תוכל לשדרג לפרימיום.');
+        if (!currentUser) {
+          alert('יש להתחבר כדי לשדרג לפרימיום');
+          window.location.href = 'login.html';
+          return;
+        }
+
+        // בדיקה איזו תוכנית נבחרה
+        const yearlySelected = document.getElementById('yearlyPlan')?.checked;
+        const planType = yearlySelected ? 'yearly' : 'monthly';
+
+        // כתובות דפי התשלום בסאמיט
+        const sumitUrls = {
+          monthly: 'https://pay.sumit.co.il/nwzr5p/o8lv3a/o8lv42/payment/',
+          yearly: 'https://pay.sumit.co.il/nwzr5p/o8lv3a/o8lvam/payment/'
+        };
+
+        // הוספת מזהה המשתמש כפרמטר
+        const paymentUrl = `${sumitUrls[planType]}?externalidentifier=${currentUser.id}`;
+        
+        console.log('🔗 מעבר לתשלום:', paymentUrl);
+        window.location.href = paymentUrl;
       },
 
       startFreeTrial() {
@@ -8864,14 +8921,19 @@ this.showPage('homepage');
 
       // פתיחת ניהול תשלום
       openPaymentManagement() {
-        // כאן יהיה קישור ל-Stripe Customer Portal
+        // כאן יהיה קישור ל-סאמיט Customer Portal
         alert('🚧 ניהול תשלומים בבנייה!\n\nבקרוב תוכל לנהל את התשלום שלך.');
       },
 
       // שדרוג למנוי שנתי
       upgradeToYearly() {
         if (confirm('האם לשדרג למנוי שנתי?\n\nתשלם ₪119.90 לשנה במקום ₪10.90 לחודש.\nחיסכון של חודש שלם!')) {
-          alert('🚧 שדרוג למנוי שנתי בבנייה!');
+          if (!currentUser) {
+            alert('יש להתחבר כדי לשדרג');
+            return;
+          }
+          const paymentUrl = `https://pay.sumit.co.il/nwzr5p/o8lv3a/o8lvam/payment/?externalidentifier=${currentUser.id}`;
+          window.location.href = paymentUrl;
         }
       },
 
@@ -8887,7 +8949,7 @@ this.showPage('homepage');
 
       // אישור ביטול מנוי
       confirmCancelSubscription() {
-        // כאן יהיה קריאה לביטול ב-Stripe
+        // כאן יהיה קריאה לביטול ב-סאמיט
         alert('🚧 ביטול מנוי בבנייה!\n\nהמנוי יישאר פעיל עד סוף התקופה ששולמה.');
         this.closeCancelSubscriptionModal();
       },
@@ -19144,7 +19206,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- אבטחה -->
     <div class="security-note">
       <span class="security-icon">🔒</span>
-      <span>תשלום בטוח דרך Stripe. פרטי האשראי אינם נשמרים אצלנו.</span>
+      <span>תשלום בטוח דרך סאמיט. פרטי האשראי אינם נשמרים אצלנו.</span>
     </div>
 
     <!-- שורת הרגעה -->
