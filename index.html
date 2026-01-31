@@ -8567,13 +8567,30 @@ this.showPage('homepage');
         console.log('✅ אפליקציה הופעלה בהצלחה!');
       },
       
+      // קבלת ברכה לפי שעה
+      getGreetingByTime() {
+        const hour = new Date().getHours();
+        
+        if (hour >= 5 && hour < 12) {
+          return 'בוקר טוב';
+        } else if (hour >= 12 && hour < 18) {
+          return 'צהריים טובים';
+        } else if (hour >= 18 && hour < 22) {
+          return 'ערב טוב';
+        } else {
+          return 'לילה טוב';
+        }
+      },
+
       // הצגת שם המשתמש בברכה
       displayUserEmail() {
         const greetingElement = document.getElementById('welcomeGreeting');
         if (greetingElement && currentUser) {
+          const greeting = this.getGreetingByTime();
+          
           // קודם כל בודק אם יש displayName שנשמר ב-DB
           if (this.displayName && this.displayName.trim() !== '') {
-            greetingElement.textContent = `שלום ${this.displayName}!`;
+            greetingElement.textContent = `${greeting} ${this.displayName}!`;
             return;
           }
           
@@ -8582,15 +8599,15 @@ this.showPage('homepage');
           
           if (username) {
             // יש שם משתמש - הצג אותו
-            greetingElement.textContent = `שלום ${username}!`;
+            greetingElement.textContent = `${greeting} ${username}!`;
           } else if (currentUser.email.endsWith('@temp.local')) {
             // אימייל זמני - חלץ את שם המשתמש
             const usernameFromEmail = currentUser.email.replace('@temp.local', '');
-            greetingElement.textContent = `שלום ${usernameFromEmail}!`;
+            greetingElement.textContent = `${greeting} ${usernameFromEmail}!`;
           } else {
             // אין שם משתמש - הצג את החלק לפני ה-@ באימייל
             const usernameFromEmail = currentUser.email.split('@')[0];
-            greetingElement.textContent = `שלום ${usernameFromEmail}!`;
+            greetingElement.textContent = `${greeting} ${usernameFromEmail}!`;
           }
         }
       },
