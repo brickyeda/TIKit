@@ -661,19 +661,28 @@
 
         if (error) throw error;
 
-        // גם טעינת מנויים מטבלת subscriptions
+        // גם טעינת מנויים מטבלת subscriptions (כל הסטטוסים)
         const { data: subs } = await supabaseClient
           .from('subscriptions')
-          .select('*')
-          .eq('status', 'active');
+          .select('*');
 
-        // מיפוי מנויים לפי user_id
+        console.log('📊 Profiles:', profiles);
+        console.log('📊 Subscriptions:', subs);
+
+        // מיפוי מנויים לפי user_id - רק פעילים
         const subsMap = {};
         if (subs) {
           subs.forEach(sub => {
-            subsMap[sub.user_id] = sub;
+            // בודק אם המנוי פעיל ולא פג תוקף
+            const isActive = sub.status === 'active' && 
+                            (!sub.expires_at || new Date(sub.expires_at) > new Date());
+            if (isActive) {
+              subsMap[sub.user_id] = sub;
+            }
           });
         }
+
+        console.log('📊 Active Subs Map:', subsMap);
 
         allUsers = (profiles || []).map(p => {
           // בדיקת סטטוס - קודם מ-subscriptions, אחכ מ-profiles
@@ -694,6 +703,8 @@
             subscription: subscription
           };
         });
+
+        console.log('📊 All Users with subs:', allUsers);
 
         renderUsers(allUsers);
       } catch (e) {
@@ -723,15 +734,12 @@
 
       tbody.innerHTML = users.map(user => {
         const sub = user.subscription;
-        let status = 'free';
         let statusBadge = '<span class="badge badge-free">חינם</span>';
 
         if (sub) {
           if (sub.plan_type === 'trial') {
-            status = 'trial';
             statusBadge = '<span class="badge badge-trial">ניסיון</span>';
           } else {
-            status = 'pro';
             statusBadge = '<span class="badge badge-pro">Pro</span>';
           }
         }
@@ -840,8 +848,11 @@
 
       allUsers.forEach(u => {
         if (u.subscription) {
-          if (u.subscription.plan_type === 'trial') trial++;
-          else pro++;
+          if (u.subscription.plan_type === 'trial') {
+            trial++;
+          } else {
+            pro++;
+          }
         } else {
           free++;
         }
