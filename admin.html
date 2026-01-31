@@ -653,7 +653,7 @@
     // טעינת משתמשים
     async function loadUsers() {
       try {
-        // טעינת משתמשים מ-auth.users דרך profiles
+        // טעינת משתמשים מ-profiles
         const { data: profiles, error } = await supabaseClient
           .from('profiles')
           .select('*')
@@ -661,7 +661,7 @@
 
         if (error) throw error;
 
-        // גם טעינת מנויים לכל משתמש
+        // גם טעינת מנויים מטבלת subscriptions
         const { data: subs } = await supabaseClient
           .from('subscriptions')
           .select('*')
@@ -675,10 +675,25 @@
           });
         }
 
-        allUsers = (profiles || []).map(p => ({
-          ...p,
-          subscription: subsMap[p.id] || null
-        }));
+        allUsers = (profiles || []).map(p => {
+          // בדיקת סטטוס - קודם מ-subscriptions, אחכ מ-profiles
+          let subscription = subsMap[p.id] || null;
+          
+          // אם אין ב-subscriptions אבל יש plan=pro ב-profiles
+          if (!subscription && p.plan === 'pro' && p.plan_until && new Date(p.plan_until) > new Date()) {
+            subscription = {
+              plan_type: p.subscription_type || 'monthly',
+              status: 'active',
+              expires_at: p.plan_until,
+              source: 'profiles' // לסימון שזה מ-profiles
+            };
+          }
+          
+          return {
+            ...p,
+            subscription: subscription
+          };
+        });
 
         renderUsers(allUsers);
       } catch (e) {
