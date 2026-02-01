@@ -8824,8 +8824,9 @@ this.showPage('homepage');
           yearly: 'https://pay.sumit.co.il/nwzr5p/o8lv3a/o8lvam/payment/'
         };
 
-        // הוספת מזהה המשתמש כפרמטר
-        const paymentUrl = `${sumitUrls[planType]}?externalidentifier=${currentUser.id}`;
+        // הוספת מזהה המשתמש וסוג המנוי כפרמטר
+        // הפורמט: userId_planType
+        const paymentUrl = `${sumitUrls[planType]}?externalidentifier=${currentUser.id}_${planType}`;
         
         console.log('🔗 מעבר לתשלום:', paymentUrl);
         window.location.href = paymentUrl;
@@ -9087,7 +9088,7 @@ this.showPage('homepage');
             alert('יש להתחבר כדי לשדרג');
             return;
           }
-          const paymentUrl = `https://pay.sumit.co.il/nwzr5p/o8lv3a/o8lvam/payment/?externalidentifier=${currentUser.id}`;
+          const paymentUrl = `https://pay.sumit.co.il/nwzr5p/o8lv3a/o8lvam/payment/?externalidentifier=${currentUser.id}_yearly`;
           window.location.href = paymentUrl;
         }
       },

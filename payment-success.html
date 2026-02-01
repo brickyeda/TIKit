@@ -265,24 +265,40 @@
         return;
       }
 
-      // זיהוי סוג המנוי לפי המחיר או פרמטרים אחרים
-      // נניח שמנוי שנתי זה מעל 100 ש"ח
-      // אפשר גם להעביר את זה כפרמטר מסאמיט
-      let planType = 'monthly';
+      // פענוח סוג המנוי מה-externalId
+      // הפורמט: userId_planType או רק userId
+      let actualUserId = userId;
+      let planType = 'monthly'; // ברירת מחדל
       let price = 10.90;
       let expiresAt = new Date();
-      expiresAt.setMonth(expiresAt.getMonth() + 1);
+      
+      if (userId.includes('_')) {
+        const parts = userId.split('_');
+        actualUserId = parts[0];
+        const planFromUrl = parts[1];
+        
+        if (planFromUrl === 'yearly') {
+          planType = 'yearly';
+          price = 119.90;
+          expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+        } else {
+          planType = 'monthly';
+          price = 10.90;
+          expiresAt.setMonth(expiresAt.getMonth() + 1);
+        }
+      } else {
+        // אין מידע על סוג המנוי - ברירת מחדל חודשי
+        expiresAt.setMonth(expiresAt.getMonth() + 1);
+      }
 
-      // אם יש מידע על המחיר, נזהה את סוג המנוי
-      // לעכשיו נשתמש בברירת מחדל של חודשי
-      // TODO: להוסיף פרמטר לזיהוי סוג המנוי
+      console.log('📊 סוג מנוי:', planType, '| מחיר:', price, '| משתמש:', actualUserId);
 
       try {
         // בדיקה אם כבר יש מנוי פעיל (כולל ניסיון)
         const { data: existingSub } = await supabaseClient
           .from('subscriptions')
           .select('*')
-          .eq('user_id', userId)
+          .eq('user_id', actualUserId)
           .eq('status', 'active')
           .single();
 
@@ -311,12 +327,13 @@
           const { data: newSub, error: insertError } = await supabaseClient
             .from('subscriptions')
             .insert({
-              user_id: userId,
+              user_id: actualUserId,
               plan_type: planType,
               status: 'active',
               sumit_customer_id: params.customerId,
               sumit_payment_id: params.paymentId,
               price: price,
+              started_at: new Date().toISOString(),
               expires_at: expiresAt.toISOString()
             })
             .select()
