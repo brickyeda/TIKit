@@ -168,15 +168,40 @@
     
     let supabaseClient = null;
 
-    // קבלת פרמטרים מה-URL
+    // קבלת פרמטרים מה-URL (case-insensitive)
     function getUrlParams() {
       const params = new URLSearchParams(window.location.search);
+      
+      // פונקציה לקבלת פרמטר ללא תלות באותיות גדולות/קטנות
+      function getParam(name) {
+        // נסה את השם המקורי
+        let value = params.get(name);
+        if (value) return value;
+        
+        // נסה עם אותיות גדולות
+        value = params.get(name.toUpperCase());
+        if (value) return value;
+        
+        // נסה עם אותיות קטנות
+        value = params.get(name.toLowerCase());
+        if (value) return value;
+        
+        // חפש בכל הפרמטרים (case-insensitive)
+        for (const [key, val] of params.entries()) {
+          if (key.toLowerCase() === name.toLowerCase()) {
+            return val;
+          }
+        }
+        
+        return null;
+      }
+      
       return {
-        customerId: params.get('og-customerid'),
-        paymentId: params.get('og-paymentid'),
-        paymentType: params.get('og-paymenttype'),
-        documentNumber: params.get('og-documentnumber'),
-        externalId: params.get('og-externalidentifier') // זה ה-user_id שלנו
+        customerId: getParam('OG-CustomerID'),
+        paymentId: getParam('OG-PaymentID'),
+        paymentType: getParam('OG-PaymentType'),
+        documentNumber: getParam('OG-DocumentNumber'),
+        externalId: getParam('OG-ExternalIdentifier') // זה ה-user_id שלנו
       };
     }
 
