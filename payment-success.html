@@ -259,6 +259,7 @@
       }
 
       const userId = user?.id || params.externalId;
+      const userEmail = user?.email || null; // שמירת המייל
 
       if (!userId) {
         showError('לא ניתן לזהות את המשתמש. אנא התחבר ונסה שוב.');
@@ -304,17 +305,24 @@
 
         if (existingSub) {
           // עדכון מנוי קיים - שדרוג מניסיון לפרימיום
+          const updateData = {
+            plan_type: planType,
+            price: price,
+            sumit_customer_id: params.customerId,
+            sumit_payment_id: params.paymentId,
+            started_at: new Date().toISOString(),
+            expires_at: expiresAt.toISOString(),
+            updated_at: new Date().toISOString()
+          };
+          
+          // הוסף מייל אם יש
+          if (userEmail) {
+            updateData.user_email = userEmail;
+          }
+
           const { error: updateError } = await supabaseClient
             .from('subscriptions')
-            .update({
-              plan_type: planType,
-              price: price,
-              sumit_customer_id: params.customerId,
-              sumit_payment_id: params.paymentId,
-              started_at: new Date().toISOString(),
-              expires_at: expiresAt.toISOString(),
-              updated_at: new Date().toISOString()
-            })
+            .update(updateData)
             .eq('id', existingSub.id);
 
           if (updateError) {
@@ -324,18 +332,25 @@
           showSuccess(planType);
         } else {
           // יצירת מנוי חדש
+          const insertData = {
+            user_id: actualUserId,
+            plan_type: planType,
+            status: 'active',
+            sumit_customer_id: params.customerId,
+            sumit_payment_id: params.paymentId,
+            price: price,
+            started_at: new Date().toISOString(),
+            expires_at: expiresAt.toISOString()
+          };
+          
+          // הוסף מייל אם יש
+          if (userEmail) {
+            insertData.user_email = userEmail;
+          }
+
           const { data: newSub, error: insertError } = await supabaseClient
             .from('subscriptions')
-            .insert({
-              user_id: actualUserId,
-              plan_type: planType,
-              status: 'active',
-              sumit_customer_id: params.customerId,
-              sumit_payment_id: params.paymentId,
-              price: price,
-              started_at: new Date().toISOString(),
-              expires_at: expiresAt.toISOString()
-            })
+            .insert(insertData)
             .select()
             .single();
 

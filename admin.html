@@ -716,11 +716,12 @@
         Object.keys(subsMap).forEach(userId => {
           if (!profilesMap[userId]) {
             // משתמש עם מנוי שלא ב-profiles
+            const sub = subsMap[userId];
             profilesMap[userId] = {
               id: userId,
-              email: subsMap[userId].user_email || `משתמש ${userId.substring(0, 8)}...`,
+              email: sub.user_email || `משתמש ${userId.substring(0, 8)}...`,
               display_name: null,
-              created_at: subsMap[userId].created_at,
+              created_at: sub.created_at,
               fromSubscription: true
             };
           }
