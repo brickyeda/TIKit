@@ -741,8 +741,15 @@
             };
           }
           
+          // אם אין מייל ב-profile אבל יש ב-subscription, השתמש בו
+          let email = p.email;
+          if (!email && subscription && subscription.user_email) {
+            email = subscription.user_email;
+          }
+          
           return {
             ...p,
+            email: email,
             subscription: subscription
           };
         });
