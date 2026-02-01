@@ -706,7 +706,27 @@
 
         console.log('📊 Active Subs Map:', subsMap);
 
-        allUsers = (profiles || []).map(p => {
+        // יצירת רשימת משתמשים מ-profiles
+        const profilesMap = {};
+        (profiles || []).forEach(p => {
+          profilesMap[p.id] = p;
+        });
+
+        // הוספת משתמשים שיש להם מנוי אבל לא ב-profiles (כמו משתמשי Google)
+        Object.keys(subsMap).forEach(userId => {
+          if (!profilesMap[userId]) {
+            // משתמש עם מנוי שלא ב-profiles
+            profilesMap[userId] = {
+              id: userId,
+              email: subsMap[userId].user_email || `משתמש ${userId.substring(0, 8)}...`,
+              display_name: null,
+              created_at: subsMap[userId].created_at,
+              fromSubscription: true
+            };
+          }
+        });
+
+        allUsers = Object.values(profilesMap).map(p => {
           // בדיקת סטטוס - קודם מ-subscriptions, אחכ מ-profiles
           let subscription = subsMap[p.id] || null;
           
@@ -725,6 +745,9 @@
             subscription: subscription
           };
         });
+
+        // מיון לפי תאריך יצירה (החדשים קודם)
+        allUsers.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
         console.log('📊 All Users with subs:', allUsers);
 
@@ -762,8 +785,10 @@
         if (sub) {
           if (sub.plan_type === 'trial') {
             statusBadge = '<span class="badge badge-trial">ניסיון</span>';
+          } else if (sub.plan_type === 'yearly') {
+            statusBadge = '<span class="badge badge-pro">Pro שנתי</span>';
           } else {
-            statusBadge = '<span class="badge badge-pro">Pro</span>';
+            statusBadge = '<span class="badge badge-pro">Pro חודשי</span>';
           }
           cancelBtn = `<button class="btn btn-sm btn-danger" onclick="cancelUserSubscription('${user.id}', '${user.display_name || user.email?.split('@')[0] || 'משתמש'}')">🚫 בטל</button>`;
         }
@@ -774,7 +799,7 @@
 
         return `
           <tr>
-            <td><strong>${displayName}</strong></td>
+            <td><strong>${displayName}</strong>${user.fromSubscription ? ' <span style="color:#f59e0b;font-size:0.8em;">(Google)</span>' : ''}</td>
             <td>${email}</td>
             <td>${statusBadge}</td>
             <td>${createdAt}</td>
