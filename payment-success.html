@@ -278,7 +278,7 @@
       // TODO: להוסיף פרמטר לזיהוי סוג המנוי
 
       try {
-        // בדיקה אם כבר יש מנוי פעיל
+        // בדיקה אם כבר יש מנוי פעיל (כולל ניסיון)
         const { data: existingSub } = await supabaseClient
           .from('subscriptions')
           .select('*')
@@ -287,12 +287,16 @@
           .single();
 
         if (existingSub) {
-          // עדכון מנוי קיים
+          // עדכון מנוי קיים - שדרוג מניסיון לפרימיום
           const { error: updateError } = await supabaseClient
             .from('subscriptions')
             .update({
+              plan_type: planType,
+              price: price,
               sumit_customer_id: params.customerId,
               sumit_payment_id: params.paymentId,
+              started_at: new Date().toISOString(),
+              expires_at: expiresAt.toISOString(),
               updated_at: new Date().toISOString()
             })
             .eq('id', existingSub.id);
@@ -301,7 +305,7 @@
             console.error('שגיאה בעדכון מנוי:', updateError);
           }
 
-          showSuccess(existingSub.plan_type);
+          showSuccess(planType);
         } else {
           // יצירת מנוי חדש
           const { data: newSub, error: insertError } = await supabaseClient
