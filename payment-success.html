@@ -329,6 +329,17 @@
             console.error('שגיאה בעדכון מנוי:', updateError);
           }
 
+          // עדכון גם בטבלת profiles
+          await supabaseClient
+            .from('profiles')
+            .update({
+              plan: 'pro',
+              subscription_type: planType,
+              plan_until: expiresAt.toISOString(),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', actualUserId);
+
           showSuccess(planType);
         } else {
           // יצירת מנוי חדש
@@ -359,6 +370,17 @@
             showError('שגיאה בהפעלת המנוי. התשלום התקבל, אנא פנה לתמיכה.');
             return;
           }
+
+          // עדכון גם בטבלת profiles
+          await supabaseClient
+            .from('profiles')
+            .update({
+              plan: 'pro',
+              subscription_type: planType,
+              plan_until: expiresAt.toISOString(),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', actualUserId);
 
           showSuccess(planType);
         }
