@@ -8663,29 +8663,36 @@ this.showPage('homepage');
       async loadUserPlan(userId) {
         try {
           // קודם בודק בטבלת subscriptions החדשה
+          // כולל מנויים מבוטלים שעדיין לא פגו
           const { data: subData, error: subError } = await supabaseClient
             .from('subscriptions')
             .select('*')
             .eq('user_id', userId)
-            .eq('status', 'active')
+            .in('status', ['active', 'cancelled'])
             .order('created_at', { ascending: false })
             .limit(1)
             .single();
 
           if (subData && !subError) {
-            // יש מנוי פעיל בטבלת subscriptions
-            const isActive = new Date(subData.expires_at) > new Date();
-            this.isPro = isActive;
+            // יש מנוי בטבלת subscriptions
+            const isExpired = new Date(subData.expires_at) <= new Date();
+            const isCancelled = subData.status === 'cancelled';
+            
+            // המנוי פעיל אם לא פג תוקף (גם אם בוטל)
+            this.isPro = !isExpired;
             this.subscriptionType = subData.plan_type || 'monthly';
+            this.subscriptionStatus = subData.status; // שומר את הסטטוס
+            this.isCancelled = isCancelled;
             
             if (subData.expires_at) {
               const planDate = new Date(subData.expires_at);
               this.planUntil = planDate.toLocaleDateString('he-IL');
-              this.planUntilDate = subData.expires_at; // שומר את התאריך המקורי לחישוב ימים
-              this.nextBilling = this.subscriptionType === 'trial' ? null : planDate.toLocaleDateString('he-IL');
+              this.planUntilDate = subData.expires_at;
+              // אם מבוטל, אין חיוב הבא
+              this.nextBilling = (this.subscriptionType === 'trial' || isCancelled) ? null : planDate.toLocaleDateString('he-IL');
             }
             
-            console.log('📊 סטטוס פרימיום (מ-subscriptions):', this.isPro ? 'Pro ✨' : 'Free', '| סוג:', this.subscriptionType);
+            console.log('📊 סטטוס פרימיום (מ-subscriptions):', this.isPro ? 'Pro ✨' : 'Free', '| סוג:', this.subscriptionType, '| סטטוס:', subData.status);
           } else {
             // fallback לטבלת profiles הישנה
             const { data, error } = await supabaseClient
@@ -8700,6 +8707,8 @@ this.showPage('homepage');
               this.planUntilDate = null;
               this.nextBilling = null;
               this.subscriptionType = null;
+              this.subscriptionStatus = null;
+              this.isCancelled = false;
               this.displayName = '';
               console.log('📊 סטטוס פרימיום: Free');
               return;
@@ -8707,6 +8716,8 @@ this.showPage('homepage');
 
             this.isPro = data.plan === 'pro' && new Date(data.plan_until) > new Date();
             this.subscriptionType = data.subscription_type || 'monthly';
+            this.subscriptionStatus = 'active';
+            this.isCancelled = false;
             this.displayName = data.display_name || '';
             
             // עיצוב התאריכים
@@ -8968,11 +8979,19 @@ this.showPage('homepage');
           
         } else if (this.isPro) {
           // משתמש פרימיום (לא ניסיון)
+          const isCancelled = this.isCancelled || this.subscriptionStatus === 'cancelled';
+          const statusText = isCancelled 
+            ? `גרסת פרימיום – מנוי ${this.subscriptionType === 'yearly' ? 'שנתי' : 'חודשי'} (מבוטל)`
+            : `גרסת פרימיום – מנוי ${this.subscriptionType === 'yearly' ? 'שנתי' : 'חודשי'}`;
+          const noteText = isCancelled
+            ? `המנוי בוטל ויהיה פעיל עד ${this.planUntil}. לא יתבצע חיוב נוסף.`
+            : 'המנוי מתחדש אוטומטית. ניתן לבטל בכל עת.';
+          
           statusCard.className = 'subscription-card status-card pro';
           statusCard.innerHTML = `
             <div class="status-header">
-              <span class="status-icon">⭐</span>
-              <span class="status-title pro">גרסת פרימיום – מנוי ${this.subscriptionType === 'yearly' ? 'שנתי' : 'חודשי'}</span>
+              <span class="status-icon">${isCancelled ? '⏳' : '⭐'}</span>
+              <span class="status-title pro">${statusText}</span>
             </div>
             <div class="status-user-info">
               <div class="status-user-name">
@@ -8987,28 +9006,35 @@ this.showPage('homepage');
             </div>
             <div class="status-details">
               <div class="status-detail">
-                <span class="status-detail-label">תוקף עד:</span>
+                <span class="status-detail-label">${isCancelled ? 'פעיל עד:' : 'תוקף עד:'}</span>
                 <span class="status-detail-value">${this.planUntil || '---'}</span>
               </div>
+              ${!isCancelled ? `
               <div class="status-detail">
                 <span class="status-detail-label">החיוב הבא:</span>
                 <span class="status-detail-value">${this.nextBilling || '---'}</span>
               </div>
+              ` : ''}
               <div class="status-detail">
                 <span class="status-detail-label">המחיר:</span>
                 <span class="status-detail-value">${this.subscriptionType === 'yearly' ? '₪119.90 לשנה' : '₪10.90 לחודש'}</span>
               </div>
             </div>
-            <p class="status-note">המנוי מתחדש אוטומטית. ניתן לבטל בכל עת.</p>
+            <p class="status-note">${noteText}</p>
           `;
           
-          // הצג כפתורי פעולה
-          actionsCard.style.display = 'block';
-          upgradeCard.style.display = 'none';
-          
-          // אם מנוי חודשי, הצג אפשרות שדרוג לשנתי
-          if (this.subscriptionType === 'monthly') {
-            document.getElementById('upgradeToYearlyBtn').style.display = 'block';
+          // הצג כפתורי פעולה רק אם לא מבוטל
+          if (isCancelled) {
+            actionsCard.style.display = 'none';
+            upgradeCard.style.display = 'block'; // אפשר לחדש מנוי
+          } else {
+            actionsCard.style.display = 'block';
+            upgradeCard.style.display = 'none';
+            
+            // אם מנוי חודשי, הצג אפשרות שדרוג לשנתי
+            if (this.subscriptionType === 'monthly') {
+              document.getElementById('upgradeToYearlyBtn').style.display = 'block';
+            }
           }
           
         } else if (this.isTrialActive) {
@@ -9104,10 +9130,51 @@ this.showPage('homepage');
       },
 
       // אישור ביטול מנוי
-      confirmCancelSubscription() {
-        // כאן יהיה קריאה לביטול ב-סאמיט
-        alert('🚧 ביטול מנוי בבנייה!\n\nהמנוי יישאר פעיל עד סוף התקופה ששולמה.');
-        this.closeCancelSubscriptionModal();
+      async confirmCancelSubscription() {
+        if (!currentUser) {
+          alert('יש להתחבר כדי לבטל מנוי');
+          return;
+        }
+
+        try {
+          // עדכון סטטוס ל-cancelled בטבלת subscriptions
+          const { error: subError } = await supabaseClient
+            .from('subscriptions')
+            .update({
+              status: 'cancelled',
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', currentUser.id)
+            .eq('status', 'active');
+
+          if (subError) {
+            console.error('שגיאה בביטול מנוי:', subError);
+            alert('שגיאה בביטול המנוי. אנא נסה שוב.');
+            return;
+          }
+
+          // קבלת תאריך התפוגה
+          const { data: subData } = await supabaseClient
+            .from('subscriptions')
+            .select('expires_at')
+            .eq('user_id', currentUser.id)
+            .single();
+
+          const expiresDate = subData?.expires_at 
+            ? new Date(subData.expires_at).toLocaleDateString('he-IL')
+            : 'סוף התקופה';
+
+          this.closeCancelSubscriptionModal();
+          
+          alert(`✅ המנוי בוטל בהצלחה!\n\nהמנוי יישאר פעיל עד ${expiresDate}.\nלא יתבצע חיוב נוסף.`);
+          
+          // רענון הדף לעדכון התצוגה
+          location.reload();
+
+        } catch (err) {
+          console.error('שגיאה:', err);
+          alert('שגיאה בביטול המנוי. אנא נסה שוב.');
+        }
       },
 
       // פתיחת מודאל מידע פרימיום
