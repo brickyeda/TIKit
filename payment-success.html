@@ -258,24 +258,20 @@
         console.log('משתמש לא מחובר, משתמש ב-externalId:', params.externalId);
       }
 
-      const userId = user?.id || params.externalId;
       const userEmail = user?.email || null; // שמירת המייל
 
-      if (!userId) {
-        showError('לא ניתן לזהות את המשתמש. אנא התחבר ונסה שוב.');
-        return;
-      }
-
-      // פענוח סוג המנוי מה-externalId
+      // פענוח סוג המנוי מה-externalId (תמיד מה-URL)
       // הפורמט: userId_planType או רק userId
-      let actualUserId = userId;
+      let actualUserId = user?.id || params.externalId;
       let planType = 'monthly'; // ברירת מחדל
       let price = 10.90;
       let expiresAt = new Date();
       
-      if (userId.includes('_')) {
-        const parts = userId.split('_');
-        actualUserId = parts[0];
+      // בדיקה אם יש _yearly או _monthly ב-externalId מה-URL
+      if (params.externalId && params.externalId.includes('_')) {
+        const parts = params.externalId.split('_');
+        // אם המשתמש מחובר, נשתמש ב-user.id, אחרת בחלק הראשון מה-URL
+        actualUserId = user?.id || parts[0];
         const planFromUrl = parts[1];
         
         if (planFromUrl === 'yearly') {
@@ -290,6 +286,11 @@
       } else {
         // אין מידע על סוג המנוי - ברירת מחדל חודשי
         expiresAt.setMonth(expiresAt.getMonth() + 1);
+      }
+
+      if (!actualUserId) {
+        showError('לא ניתן לזהות את המשתמש. אנא התחבר ונסה שוב.');
+        return;
       }
 
       console.log('📊 סוג מנוי:', planType, '| מחיר:', price, '| משתמש:', actualUserId);
