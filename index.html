@@ -6916,6 +6916,12 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
   </div>
 </div>
 
+      <!-- כפתור יציאה ממצב מיקוד -->
+      <button class="focus-mode-exit" onclick="app.toggleFocusMode()">
+        <span>✕</span>
+        <span>יציאה ממצב מיקוד</span>
+      </button>
+
       <div id="notebookContent">
         <!-- תוכן המחברת יטען כאן -->
       </div>
@@ -9891,6 +9897,10 @@ this.showPage('homepage');
           // Reset zoom when leaving notebook
           this.currentZoom = 100;
           this.applyZoom();
+          
+          // יציאה ממצב מיקוד
+          document.body.classList.remove('focus-mode');
+        }
        
 // שמור ציורים לפני מעבר לדף אחר
 if (this.currentNotebook && pageId !== 'notebookView') {
@@ -10403,6 +10413,26 @@ applyZoom() {
         }
       },
       
+      // מצב מיקוד - תצוגה נקייה
+      toggleFocusMode() {
+        document.body.classList.toggle('focus-mode');
+        
+        const btn = document.getElementById('focusModeBtn');
+        if (document.body.classList.contains('focus-mode')) {
+          // נכנסים למצב מיקוד
+          if (btn) {
+            btn.innerHTML = '<span>🎯</span> יציאה ממיקוד';
+            btn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+          }
+        } else {
+          // יוצאים ממצב מיקוד
+          if (btn) {
+            btn.innerHTML = '<span>🎯</span> מצב מיקוד';
+            btn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+          }
+        }
+      },
+
       // יצירת דף מחברת
       createNotebookPage(pageData, index, pageType) {
         const pageDiv = document.createElement('div');
