@@ -2923,112 +2923,6 @@ padding: 0px 10px 10px 10px;
   margin-top: 100px; /* גובה סרגל הכלים הראשי + סרגל הציור + מרווחים */
 }
 
-/* סגנונות דפדוף מחברת */
-.notebook-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  padding: 15px 20px;
-  background: var(--background-card);
-  border-radius: 15px;
-  box-shadow: 0 4px 15px var(--shadow-light);
-  margin-bottom: 20px;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-.page-nav-btn {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: none;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.page-nav-btn:hover:not(:disabled) {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-}
-
-.page-nav-btn:disabled {
-  background: linear-gradient(135deg, #ccc, #aaa);
-  cursor: not-allowed;
-  opacity: 0.5;
-  box-shadow: none;
-}
-
-.page-indicator {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.page-jump-input {
-  width: 60px;
-  padding: 8px 12px;
-  border: 2px solid var(--border-color);
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 600;
-  text-align: center;
-  background: var(--background-main);
-  color: var(--text-primary);
-  transition: border-color 0.3s ease;
-}
-
-.page-jump-input:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.page-wrapper {
-  min-height: 500px;
-  transition: opacity 0.3s ease;
-}
-
-/* אנימציית מעבר דף */
-.page-wrapper.page-transition {
-  opacity: 0.5;
-}
-
-/* התאמה למובייל */
-@media (max-width: 768px) {
-  .notebook-pagination {
-    gap: 10px;
-    padding: 10px 15px;
-  }
-  
-  .page-nav-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 20px;
-  }
-  
-  .page-indicator {
-    font-size: 14px;
-    gap: 6px;
-  }
-  
-  .page-jump-input {
-    width: 50px;
-    padding: 6px 8px;
-    font-size: 14px;
-  }
-}
-
     .toolbar-group {
       display: flex;
       align-items: center;
@@ -8511,7 +8405,6 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 autoSaveInterval: null,
       // נתונים
       currentNotebook: null,
-      currentPageIndex: 0, // אינדקס הדף הנוכחי במחברת
       activeTextareaIndex: undefined,
       saveInterval: null,
       userData: {},
@@ -10018,7 +9911,6 @@ createNotebookCard(subjectKey, subject, isOverLimit = false) {
       // פתיחת מחברת
 openNotebook(notebookKey) {
   this.currentNotebook = notebookKey;
-  this.currentPageIndex = 0; // איפוס לדף הראשון
   const notebook = this.subjects[notebookKey];
   
   // עדכון כותרת
@@ -10287,57 +10179,20 @@ applyZoom() {
         
         if (!container || !notebook) return;
         
-        // אתחול עמוד נוכחי אם לא קיים
-        if (this.currentPageIndex === undefined || this.currentPageIndex >= notebook.pages.length) {
-          this.currentPageIndex = 0;
-        }
-        
         container.innerHTML = '';
         
-        // יצירת מיכל הדפדוף
-        const paginationContainer = document.createElement('div');
-        paginationContainer.className = 'notebook-pagination';
-        paginationContainer.innerHTML = `
-          <button class="page-nav-btn prev-btn" onclick="app.goToPrevPage()" ${this.currentPageIndex === 0 ? 'disabled' : ''}>
-            <span>→</span>
-          </button>
-          <div class="page-indicator">
-            <span>עמוד</span>
-            <input type="number" class="page-jump-input" id="pageJumpInput" 
-                   value="${this.currentPageIndex + 1}" 
-                   min="1" max="${notebook.pages.length}"
-                   onchange="app.goToPage(parseInt(this.value) - 1)"
-                   onkeydown="if(event.key === 'Enter') app.goToPage(parseInt(this.value) - 1)">
-            <span>מתוך ${notebook.pages.length}</span>
-          </div>
-          <button class="page-nav-btn next-btn" onclick="app.goToNextPage()" ${this.currentPageIndex >= notebook.pages.length - 1 ? 'disabled' : ''}>
-            <span>←</span>
-          </button>
-        `;
-        container.appendChild(paginationContainer);
-        
-        // יצירת מיכל הדף עם תמיכה בסוויפ
-        const pageWrapper = document.createElement('div');
-        pageWrapper.className = 'page-wrapper';
-        pageWrapper.id = 'pageWrapper';
-        container.appendChild(pageWrapper);
-        
-        // רינדור הדף הנוכחי בלבד
-        if (notebook.pages.length > 0) {
-          const page = notebook.pages[this.currentPageIndex];
-          const pageElement = this.createNotebookPage(page, this.currentPageIndex, notebook.pageType);
-          pageWrapper.appendChild(pageElement);
+        notebook.pages.forEach((page, index) => {
+          const pageElement = this.createNotebookPage(page, index, notebook.pageType);
+          container.appendChild(pageElement);
+style="position: sticky !important;"
           
           // טעינת עיצוב שמור
           if (page.formatting) {
             setTimeout(() => {
-              this.loadPageFormatting(this.currentPageIndex, page.formatting);
+              this.loadPageFormatting(index, page.formatting);
             }, 100);
           }
-        }
-        
-        // הוספת תמיכה בסוויפ למובייל
-        this.initSwipeSupport(pageWrapper);
+        });
 
         // הוספת בוחרי צבעים לכלי העיצוב הגלובליים
         this.initializeGlobalColorPickers();
@@ -10350,81 +10205,6 @@ applyZoom() {
             });
           }
         });
-      },
-      
-      // מעבר לדף הקודם
-      goToPrevPage() {
-        if (this.currentPageIndex > 0) {
-          this.saveCurrentPageBeforeNav();
-          this.currentPageIndex--;
-          this.renderNotebookContent();
-        }
-      },
-      
-      // מעבר לדף הבא
-      goToNextPage() {
-        const notebook = this.subjects[this.currentNotebook];
-        if (notebook && this.currentPageIndex < notebook.pages.length - 1) {
-          this.saveCurrentPageBeforeNav();
-          this.currentPageIndex++;
-          this.renderNotebookContent();
-        }
-      },
-      
-      // מעבר לדף ספציפי
-      goToPage(pageIndex) {
-        const notebook = this.subjects[this.currentNotebook];
-        if (!notebook) return;
-        
-        // וידוא שהאינדקס בטווח
-        if (pageIndex < 0) pageIndex = 0;
-        if (pageIndex >= notebook.pages.length) pageIndex = notebook.pages.length - 1;
-        
-        if (pageIndex !== this.currentPageIndex) {
-          this.saveCurrentPageBeforeNav();
-          this.currentPageIndex = pageIndex;
-          this.renderNotebookContent();
-        }
-      },
-      
-      // שמירת הדף הנוכחי לפני מעבר
-      saveCurrentPageBeforeNav() {
-        const textarea = document.getElementById(`textarea-${this.currentPageIndex}`);
-        if (textarea) {
-          this.savePage(this.currentPageIndex, textarea.value || textarea.innerHTML);
-        }
-        this.saveCurrentNotebookDrawings();
-      },
-      
-      // תמיכה בסוויפ למובייל
-      initSwipeSupport(element) {
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
-        element.addEventListener('touchstart', (e) => {
-          touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
-        
-        element.addEventListener('touchend', (e) => {
-          touchEndX = e.changedTouches[0].screenX;
-          this.handleSwipe(touchStartX, touchEndX);
-        }, { passive: true });
-      },
-      
-      // טיפול בסוויפ
-      handleSwipe(startX, endX) {
-        const swipeThreshold = 50; // מינימום פיקסלים לסוויפ
-        const diff = startX - endX;
-        
-        if (Math.abs(diff) > swipeThreshold) {
-          if (diff > 0) {
-            // סוויפ שמאלה - דף הבא (בעברית)
-            this.goToNextPage();
-          } else {
-            // סוויפ ימינה - דף קודם (בעברית)
-            this.goToPrevPage();
-          }
-        }
       },
 
       // יצירת דף מחברת
@@ -10441,9 +10221,6 @@ applyZoom() {
           pageDiv.innerHTML = this.createChecklistPageHTML(pageData, index);
           return pageDiv;
         }
-        
-        // קבלת מספר הדפים הכולל
-        const totalPages = this.subjects[this.currentNotebook]?.pages?.length || 1;
         
         pageDiv.innerHTML = `
 <div class="notebook-header">
@@ -10462,10 +10239,6 @@ applyZoom() {
               <div style="display: flex; gap: 8px; align-items: center;">
                 <label style="font-weight: 600; color: var(--text-primary);">תאריך:</label>
                 <span style="font-size: 0.9rem; color: var(--text-secondary); padding: 6px 10px; background: var(--background-main); border-radius: 6px;">${pageData.date}</span>
-              </div>
-              <div style="display: flex; gap: 8px; align-items: center;">
-                <label style="font-weight: 600; color: var(--text-primary);">עמוד:</label>
-                <span style="font-size: 0.9rem; color: var(--text-secondary); padding: 6px 10px; background: var(--background-main); border-radius: 6px;">${index + 1} מתוך ${totalPages}</span>
               </div>
             </div>
             <button class="tool-btn delete-page-btn" onclick="app.deletePage(${index})" title="מחק דף זה">
@@ -10597,10 +10370,15 @@ if (pageData.formulas && pageData.formulas.length > 0) {
         
         this.subjects[this.currentNotebook].pages.push(newPage);
         this.saveNotebookData();
-        
-        // מעבר לדף החדש (האחרון)
-        this.currentPageIndex = this.subjects[this.currentNotebook].pages.length - 1;
         this.renderNotebookContent();
+        
+        // גלילה לדף החדש
+        setTimeout(() => {
+          const notebookContent = document.getElementById('notebookContent');
+          if (notebookContent) {
+            notebookContent.scrollTop = notebookContent.scrollHeight;
+          }
+        }, 100);
       },
 
       // === פונקציות צ'קליסט ===
@@ -10638,9 +10416,6 @@ if (pageData.formulas && pageData.formulas.length > 0) {
           `;
         }
         
-        // קבלת מספר הדפים הכולל
-        const totalPages = this.subjects[this.currentNotebook]?.pages?.length || 1;
-        
         return `
           <div class="notebook-header">
             <div style="display: flex; gap: 20px; align-items: center; flex: 1;">
@@ -10658,10 +10433,6 @@ if (pageData.formulas && pageData.formulas.length > 0) {
               <div style="display: flex; gap: 8px; align-items: center;">
                 <label style="font-weight: 600; color: var(--text-primary);">תאריך:</label>
                 <span style="font-size: 0.9rem; color: var(--text-secondary); padding: 6px 10px; background: var(--background-main); border-radius: 6px;">${pageData.date}</span>
-              </div>
-              <div style="display: flex; gap: 8px; align-items: center;">
-                <label style="font-weight: 600; color: var(--text-primary);">עמוד:</label>
-                <span style="font-size: 0.9rem; color: var(--text-secondary); padding: 6px 10px; background: var(--background-main); border-radius: 6px;">${index + 1} מתוך ${totalPages}</span>
               </div>
             </div>
             <button class="tool-btn delete-page-btn" onclick="app.deletePage(${index})" title="מחק רשימה זו">
@@ -10762,14 +10533,6 @@ if (pageData.formulas && pageData.formulas.length > 0) {
         if (confirm(`האם אתה בטוח שברצונך למחוק את הדף "${pageTitle}"?\n\nהתוכן ימחק לצמיתות ולא ניתן יהיה לשחזר אותו.`)) {
           notebook.pages.splice(pageIndex, 1);
           this.saveNotebookData();
-          
-          // עדכון אינדקס הדף הנוכחי
-          if (notebook.pages.length === 0) {
-            this.currentPageIndex = 0;
-          } else if (this.currentPageIndex >= notebook.pages.length) {
-            this.currentPageIndex = notebook.pages.length - 1;
-          }
-          
           this.renderNotebookContent();
           
           alert(`הדף "${pageTitle}" נמחק בהצלחה.`);
@@ -10784,8 +10547,9 @@ savePage(pageIndex, content) {
   if (this.subjects[this.currentNotebook].pages[pageIndex]) {
     this.subjects[this.currentNotebook].pages[pageIndex].content = content;
     
-    // שמירת ציורים - עכשיו יש רק דף אחד מוצג
-    const pageContainer = document.querySelector('.lined-page, .grid-page, .blank-page');
+    // שמירת ציורים
+    const pages = document.querySelectorAll('.lined-page, .grid-page, .blank-page');
+    const pageContainer = pages[pageIndex];
     if (pageContainer) {
       const canvas = pageContainer.querySelector('.page-canvas');
       if (canvas) {
@@ -12619,7 +12383,7 @@ async exportAllNotebook() {
   await this.exportNotebookToPDF();
 },
 
-// ייצוא מחברת ל-PDF - משתמש באותה לוגיקה של exportCurrentPage
+// ייצוא מחברת ל-PDF
 async exportNotebookToPDF() {
   if (!this.currentNotebook) {
     alert('לא נבחרה מחברת לייצוא');
@@ -12627,240 +12391,576 @@ async exportNotebookToPDF() {
   }
   
   const notebook = this.subjects[this.currentNotebook];
-  if (!notebook || !notebook.pages || notebook.pages.length === 0) {
-    alert('אין דפים במחברת');
+  if (!notebook) {
+    alert('שגיאה: המחברת לא נמצאה');
     return;
   }
   
   const loadingMessage = document.createElement('div');
-  loadingMessage.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:40px;border-radius:20px;box-shadow:0 10px 50px rgba(0,0,0,0.3);z-index:10001;text-align:center;';
-  loadingMessage.innerHTML = '<div style="margin-bottom:15px;font-size:2rem;">📄</div><div style="font-size:1.2rem;font-weight:600;">מייצא מחברת...</div>';
+  loadingMessage.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px 50px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    z-index: 10000;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+  `;
+  loadingMessage.innerHTML = `
+    <div style="margin-bottom: 15px;">📄</div>
+    <div>יוצר PDF...</div>
+    <div style="font-size: 0.9rem; color: #666; margin-top: 10px;">אנא המתן</div>
+  `;
   document.body.appendChild(loadingMessage);
-
+  
   try {
-    // טעינת ספריות
-    if (!window.jspdf) {
-      const s = document.createElement('script');
-      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-      document.head.appendChild(s);
-      await new Promise(r => setTimeout(r, 2000));
+    // טעינת html2canvas לציורים
+    if (typeof html2canvas === 'undefined') {
+      await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
     }
-    if (!window.html2canvas) {
-      const s = document.createElement('script');
-      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-      document.head.appendChild(s);
-      await new Promise(r => setTimeout(r, 2000));
+    
+    // טעינת jsPDF
+    if (typeof jspdf === 'undefined') {
+      await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
     }
-
+    
     const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    
     // טעינת גופן עברי
-    const fontResp = await fetch('https://fonts.gstatic.com/s/rubik/v28/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4i1UA.ttf');
-    const fontBuf = await fontResp.arrayBuffer();
-    const bytes = new Uint8Array(fontBuf);
-    let binary = '';
-    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-    pdf.addFileToVFS('Rubik.ttf', btoa(binary));
-    pdf.addFont('Rubik.ttf', 'Rubik', 'normal');
-    pdf.setFont('Rubik');
-
-    const pageWidth = 210, pageHeight = 297, marginLeft = 20, marginTop = 30, lineHeight = 8, marginRight = 25;
-
-    // פונקציות עזר
-    const toRGB = (color) => {
-      if (!color) return { r: 44, g: 62, b: 80 };
-      if (color.startsWith('#')) {
-        const hex = color.slice(1);
-        if (hex.length === 3) return { r: parseInt(hex[0]+hex[0], 16), g: parseInt(hex[1]+hex[1], 16), b: parseInt(hex[2]+hex[2], 16) };
-        return { r: parseInt(hex.slice(0,2), 16), g: parseInt(hex.slice(2,4), 16), b: parseInt(hex.slice(4,6), 16) };
+    try {
+      const response = await fetch('https://fonts.gstatic.com/s/rubik/v28/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4i1UA.ttf');
+      const arrayBuffer = await response.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      let binary = '';
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      pdf.addFileToVFS('Rubik.ttf', btoa(binary));
+      pdf.addFont('Rubik.ttf', 'Rubik', 'normal');
+      pdf.setFont('Rubik');
+    } catch(e) {
+      console.error('שגיאה בטעינת גופן:', e);
+    }
+    
+    // הגדרות עמוד
+    const pageWidth = 210, pageHeight = 297;
+    const marginRight = 25, marginLeft = 20, marginTop = 30, lineHeight = 8;
+    const linesPerPage = Math.floor((pageHeight - marginTop - 20) / lineHeight);
+    
+    pdf.setFontSize(12);
+    
+    // פונקציה להפיכת טקסט עברי בלבד (שומרת על אנגלית ומספרים)
+    const processLineForPDF = (str) => {
+      const hasHebrew = /[\u0590-\u05FF]/.test(str);
+      if (!hasHebrew) return { text: str, isRTL: false };
+      
+      const hasEnglish = /[a-zA-Z]/.test(str);
+      if (!hasEnglish) {
+        // עברית בלבד - להפוך
+        return { text: str.split('').reverse().join(''), isRTL: true };
       }
-      if (color.startsWith('rgb')) {
-        const m = color.match(/(\d+)/g);
-        if (m) return { r: +m[0], g: +m[1], b: +m[2] };
+      
+      // שורה מעורבת
+      const parts = str.match(/[\u0590-\u05FF]+|\s+|[^\u0590-\u05FF\s]+/g);
+      
+      let hebrewEnd = 0;
+      for (let i = 0; i < parts.length; i++) {
+        if (/[a-zA-Z0-9]/.test(parts[i])) {
+          hebrewEnd = i;
+          break;
+        }
       }
-      return { r: 44, g: 62, b: 80 };
+      
+      const hebrewPart = parts.slice(0, hebrewEnd).join('');
+      const englishPart = parts.slice(hebrewEnd).join('');
+      
+      return { text: englishPart + hebrewPart, isRTL: true };
     };
-
-    // פונקציה לפרסור HTML לטקסט נקי עם צבעים
-    const parseHTMLContent = (html) => {
+    
+    // פונקציה לחילוץ צבעים מ-HTML - מחזירה מערך של שורות עם קטעים צבעוניים
+    const parseColoredHTML = (html) => {
+      // יצירת אלמנט זמני לפרסור
       const temp = document.createElement('div');
       temp.innerHTML = html;
       
       const lines = [];
       let currentLine = [];
       
-      const processNode = (node, styles) => {
-        if (node.nodeType === 3) { // text node
+      const processNode = (node, inheritedColor = null) => {
+        if (node.nodeType === Node.TEXT_NODE) {
           const text = node.textContent;
-          if (text.includes('\n')) {
-            text.split('\n').forEach((part, i, arr) => {
-              if (part) currentLine.push({ text: part, ...styles });
-              if (i < arr.length - 1) { lines.push([...currentLine]); currentLine = []; }
+          if (text) {
+            // פצל לפי שורות חדשות
+            const parts = text.split('\n');
+            parts.forEach((part, idx) => {
+              if (part) {
+                currentLine.push({ text: part, color: inheritedColor });
+              }
+              if (idx < parts.length - 1) {
+                lines.push([...currentLine]);
+                currentLine = [];
+              }
             });
-          } else if (text) {
-            currentLine.push({ text, ...styles });
           }
-        } else if (node.nodeType === 1) { // element node
-          const tag = node.tagName;
-          if (tag === 'BR') { lines.push([...currentLine]); currentLine = []; return; }
-          if (['DIV','P'].includes(tag) && currentLine.length > 0) { lines.push([...currentLine]); currentLine = []; }
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          // בדוק אם זה אלמנט שיוצר שורה חדשה
+          const tagName = node.tagName.toUpperCase();
           
-          let newStyles = { ...styles };
-          if (tag === 'FONT' && node.getAttribute('color')) newStyles.color = node.getAttribute('color');
-          if (node.style?.color) newStyles.color = node.style.color;
+          // BR תמיד יוצר שורה חדשה
+          if (tagName === 'BR') {
+            lines.push([...currentLine]);
+            currentLine = [];
+            return;
+          }
           
-          for (const child of node.childNodes) processNode(child, newStyles);
+          // DIV יוצר שורה חדשה לפני ואחרי (אם יש תוכן)
+          const isBlockElement = ['DIV', 'P', 'LI', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(tagName);
           
-          if (['DIV','P'].includes(tag) && currentLine.length > 0) { lines.push([...currentLine]); currentLine = []; }
+          if (isBlockElement && currentLine.length > 0) {
+            lines.push([...currentLine]);
+            currentLine = [];
+          }
+          
+          let color = inheritedColor;
+          
+          // בדוק צבע מתגית font
+          if (tagName === 'FONT' && node.getAttribute('color')) {
+            color = node.getAttribute('color');
+          }
+          
+          // בדוק צבע מ-style
+          if (node.style && node.style.color) {
+            color = node.style.color;
+          }
+          
+          // עבור על ילדים
+          for (const child of node.childNodes) {
+            processNode(child, color);
+          }
+          
+          // אחרי אלמנט בלוק, סיים שורה
+          if (isBlockElement && currentLine.length > 0) {
+            lines.push([...currentLine]);
+            currentLine = [];
+          }
         }
       };
       
-      processNode(temp, { color: null });
-      if (currentLine.length > 0) lines.push(currentLine);
+      processNode(temp);
+      
+      // הוסף שורה אחרונה אם יש
+      if (currentLine.length > 0) {
+        lines.push(currentLine);
+      }
+      
       return lines;
     };
-
-    // שמירת הדף הנוכחי
-    const originalPageIndex = this.currentPageIndex;
     
-    // שמור את הדף הנוכחי לפני הייצוא
-    this.saveCurrentPageBeforeNav();
-
-    // עבור על כל דף במחברת - מהנתונים השמורים
-    for (let pageIdx = 0; pageIdx < notebook.pages.length; pageIdx++) {
-      const pageData = notebook.pages[pageIdx];
+    // פונקציה להמרת צבע לפורמט RGB
+    const colorToRGB = (color) => {
+      if (!color) return { r: 44, g: 62, b: 80 }; // ברירת מחדל - אפור כהה
       
-      loadingMessage.innerHTML = `<div style="margin-bottom:15px;font-size:2rem;">📄</div><div style="font-size:1.2rem;font-weight:600;">מייצא דף ${pageIdx + 1} מתוך ${notebook.pages.length}...</div>`;
-      
-      if (pageIdx > 0) {
-        pdf.addPage();
-      }
-      
-      const isGridPage = notebook.pageType === 'grid';
-      const isChecklistPage = notebook.pageType === 'checklist';
-      const hasDrawings = pageData.drawing || pageData.interactiveShapes?.length > 0 || pageData.formulas?.length > 0;
-
-      // רקע
-      pdf.setFillColor(248, 250, 252);
-      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-      
-      // קווי רקע
-      if (isGridPage) {
-        pdf.setDrawColor(200, 220, 240);
-        pdf.setLineWidth(0.1);
-        for (let x = 10; x < pageWidth - 10; x += 5) pdf.line(x, 20, x, pageHeight - 15);
-        for (let y = 20; y < pageHeight - 15; y += 5) pdf.line(10, y, pageWidth - 10, y);
-      } else if (!isChecklistPage) {
-        pdf.setDrawColor(210, 225, 240);
-        pdf.setLineWidth(0.2);
-        for (let y = marginTop; y < pageHeight - 15; y += lineHeight) pdf.line(15, y, pageWidth - 15, y);
-        // קו אדום
-        pdf.setDrawColor(255, 107, 107);
-        pdf.setLineWidth(0.4);
-        pdf.line(pageWidth - marginRight + 5, 15, pageWidth - marginRight + 5, pageHeight - 10);
-      }
-
-      // כותרת ותאריך
-      pdf.setFontSize(10);
-      pdf.setTextColor(100, 100, 100);
-      const title = pageData.title || `דף ${pageIdx + 1}`;
-      pdf.text(title.split('').reverse().join(''), pageWidth - marginRight, 15, { align: 'right' });
-      pdf.text(pageData.date || '', marginLeft, 15);
-      
-      // אם יש ציורים - צריך לרנדר את הדף הזה ולצלם
-      if (hasDrawings) {
-        // עבור לדף הזה, צלם, וחזור
-        this.currentPageIndex = pageIdx;
-        this.renderNotebookContent();
-        await new Promise(r => setTimeout(r, 300));
-        
-        const pageEl = document.querySelector('#notebookContent .lined-page, #notebookContent .grid-page, #notebookContent .blank-page');
-        if (pageEl) {
-          const canvas = await html2canvas(pageEl, { scale: 2, useCORS: true, logging: false, backgroundColor: '#f8fafc' });
-          const imgData = canvas.toDataURL('image/jpeg', 0.95);
-          pdf.addImage(imgData, 'JPEG', 10, 20, pageWidth - 20, pageHeight - 30);
+      // אם זה כבר hex
+      if (color.startsWith('#')) {
+        const hex = color.slice(1);
+        if (hex.length === 3) {
+          return {
+            r: parseInt(hex[0] + hex[0], 16),
+            g: parseInt(hex[1] + hex[1], 16),
+            b: parseInt(hex[2] + hex[2], 16)
+          };
         }
-      } else if (isChecklistPage) {
-        // צ'קליסט - ייצוא פשוט
-        pdf.setFontSize(12);
-        pdf.setTextColor(44, 62, 80);
-        let y = marginTop;
-        const items = pageData.checklistItems || [];
-        for (const item of items) {
-          const checkbox = item.checked ? '☑' : '☐';
-          const text = `${checkbox} ${item.text || ''}`;
-          pdf.text(text.split('').reverse().join(''), pageWidth - marginRight, y, { align: 'right' });
-          y += lineHeight;
+        return {
+          r: parseInt(hex.slice(0, 2), 16),
+          g: parseInt(hex.slice(2, 4), 16),
+          b: parseInt(hex.slice(4, 6), 16)
+        };
+      }
+      
+      // אם זה rgb()
+      const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+      if (rgbMatch) {
+        return {
+          r: parseInt(rgbMatch[1]),
+          g: parseInt(rgbMatch[2]),
+          b: parseInt(rgbMatch[3])
+        };
+      }
+      
+      // צבעים בסיסיים
+      const namedColors = {
+        'red': { r: 255, g: 0, b: 0 },
+        'green': { r: 0, g: 128, b: 0 },
+        'blue': { r: 0, g: 0, b: 255 },
+        'yellow': { r: 255, g: 255, b: 0 },
+        'orange': { r: 255, g: 165, b: 0 },
+        'purple': { r: 128, g: 0, b: 128 },
+        'black': { r: 0, g: 0, b: 0 },
+        'white': { r: 255, g: 255, b: 255 }
+      };
+      
+      return namedColors[color.toLowerCase()] || { r: 44, g: 62, b: 80 };
+    };
+    
+    // קבלת הדפים לייצוא
+    const notebookContent = document.getElementById('notebookContent');
+    const pagesToExport = notebookContent.querySelectorAll('.export-this-page');
+    const pageElements = pagesToExport.length > 0 ? pagesToExport : notebookContent.querySelectorAll('.lined-page, .grid-page, .blank-page');
+    
+    if (pageElements.length === 0) {
+      alert('אין דפים לייצוא');
+      document.body.removeChild(loadingMessage);
+      return;
+    }
+    
+    let isFirstPdfPage = true;
+    
+    // עבור על כל דף במחברת
+    for (let pageIdx = 0; pageIdx < pageElements.length; pageIdx++) {
+      const pageEl = pageElements[pageIdx];
+      
+      // בדוק אם יש ציורים או צורות בדף
+      const hasDrawings = pageEl.querySelector('canvas') || pageEl.querySelector('.interactive-shape') || pageEl.querySelector('.draggable-image') || pageEl.querySelector('.dropped-formula');
+      const richTextElement = pageEl.querySelector('[data-is-richtext="true"]');
+      
+      if (hasDrawings) {
+        // אם יש ציורים או צורות - ייצוא משולב
+        try {
+          loadingMessage.innerHTML = `
+            <div style="margin-bottom: 15px;">📄</div>
+            <div>יוצר PDF...</div>
+            <div style="font-size: 0.9rem; color: #666; margin-top: 10px;">מייצא דף ${pageIdx + 1} עם ציורים...</div>
+          `;
+          
+          if (!isFirstPdfPage) {
+            pdf.addPage();
+          }
+          isFirstPdfPage = false;
+          
+          const isGridPage = pageEl.classList.contains('grid-page');
+          const textarea = pageEl.querySelector('textarea');
+          // אם יש richText, קח ממנו. אחרת מ-textarea
+          const hasColoredContent = richTextElement && (
+            richTextElement.innerHTML.includes('color=') || 
+            richTextElement.innerHTML.includes('color:') || 
+            richTextElement.innerHTML.includes('<font')
+          );
+          const text = richTextElement ? richTextElement.innerText || '' : (textarea ? textarea.value || '' : '');
+          const textLines = text.split('\n');
+          const shapes = pageEl.querySelectorAll('.interactive-shape');
+          
+          // רקע
+          pdf.setFillColor(248, 250, 252);
+          pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+          
+          // משבצות או שורות
+          if (isGridPage) {
+            pdf.setDrawColor(180, 200, 220);
+            pdf.setLineWidth(0.15);
+            for (let x = 10; x < pageWidth - 10; x += 5) pdf.line(x, 10, x, pageHeight - 10);
+            for (let y = 10; y < pageHeight - 10; y += 5) pdf.line(10, y, pageWidth - 10, y);
+          } else {
+            pdf.setDrawColor(210, 225, 240);
+            pdf.setLineWidth(0.2);
+            for (let y = marginTop; y < pageHeight - 15; y += lineHeight) pdf.line(15, y, pageWidth - 15, y);
+          }
+          
+          // קו אדום
+          pdf.setDrawColor(255, 107, 107);
+          pdf.setLineWidth(0.4);
+          pdf.line(pageWidth - marginRight + 5, 15, pageWidth - marginRight + 5, pageHeight - 10);
+          
+          // צילום כל הצורות
+          const pageRect = pageEl.getBoundingClientRect();
+          
+          for (const shape of shapes) {
+            const svg = shape.querySelector('svg');
+            if (!svg) continue;
+            
+            const shapeRect = shape.getBoundingClientRect();
+            
+            // תקן את ה-SVG viewBox
+            const polygon = svg.querySelector('polygon, rect, ellipse, path, circle');
+            if (polygon) {
+              const bbox = polygon.getBBox();
+              const padding = 5;
+              svg.setAttribute('viewBox', `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + padding*2} ${bbox.height + padding*2}`);
+            }
+            
+            await new Promise(r => setTimeout(r, 30));
+            
+            const shapeCanvas = await html2canvas(shape, {
+              scale: 2,
+              useCORS: true,
+              allowTaint: true,
+              backgroundColor: null,
+              logging: false
+            });
+            
+            // מיקום באחוזים
+            const xPercent = (shapeRect.left - pageRect.left + shapeRect.width/2) / pageRect.width;
+            const yPercent = (shapeRect.top - pageRect.top + shapeRect.height/2) / pageRect.height;
+            
+            const scaleX = pageWidth / pageRect.width;
+            
+            // שמור על יחס הגובה-רוחב המקורי של הצורה
+            const aspectRatio = shapeCanvas.height / shapeCanvas.width;
+            const shapeW = shapeRect.width * scaleX;
+            const shapeH = shapeW * aspectRatio;
+            
+            const shapeX = (xPercent * pageWidth) - (shapeW / 2);
+            const shapeY = (yPercent * pageHeight) - (shapeH / 2);
+            
+            const imgData = shapeCanvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', shapeX, shapeY, shapeW, shapeH);
+          }
+          
+          // ייצוא נוסחאות
+          const droppedFormulas = pageEl.querySelectorAll('.dropped-formula');
+          for (const formula of droppedFormulas) {
+            // הסתר ידיות וכפתור מחיקה לפני הצילום
+            const handles = formula.querySelectorAll('.formula-resize-handle, .formula-delete-btn');
+            handles.forEach(h => h.style.display = 'none');
+            
+            await new Promise(r => setTimeout(r, 30));
+            
+            const formulaCanvas = await html2canvas(formula, {
+              scale: 2,
+              backgroundColor: '#ffffff',
+              logging: false
+            });
+            
+            // החזר את הידיות
+            handles.forEach(h => h.style.display = '');
+            
+            const formulaRect = formula.getBoundingClientRect();
+            const scaleX = pageWidth / pageRect.width;
+            const scaleY = pageHeight / pageRect.height;
+            
+            const fX = (formulaRect.left - pageRect.left) * scaleX;
+            const fY = (formulaRect.top - pageRect.top) * scaleY;
+            const fW = formulaRect.width * scaleX;
+            const fH = formulaRect.height * scaleY;
+            
+            const imgData = formulaCanvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', fX, fY, fW, fH);
+          }
+          
+          // טקסט - עם תמיכה בצבעים
+          pdf.setFontSize(14);
+          let y = marginTop;
+          
+          if (hasColoredContent && richTextElement) {
+            // יש טקסט צבעוני - פרסר את ה-HTML
+            const coloredLines = parseColoredHTML(richTextElement.innerHTML);
+            
+            for (const lineSegments of coloredLines) {
+              if (lineSegments.length === 0) {
+                y += lineHeight;
+                continue;
+              }
+              
+              // חבר את כל הקטעים לשורה אחת לבדיקת כיוון
+              const fullLineText = lineSegments.map(s => s.text).join('');
+              if (!fullLineText.trim()) {
+                y += lineHeight;
+                continue;
+              }
+              
+              const hasHebrew = /[\u0590-\u05FF]/.test(fullLineText);
+              
+              if (hasHebrew) {
+                // שורה עברית - כתוב מימין לשמאל
+                let xPos = pageWidth - marginRight;
+                
+                // הפוך את סדר הקטעים לכתיבה מימין
+                const reversedSegments = [...lineSegments].reverse();
+                
+                for (const segment of reversedSegments) {
+                  if (!segment.text) continue;
+                  
+                  const rgb = colorToRGB(segment.color);
+                  pdf.setTextColor(rgb.r, rgb.g, rgb.b);
+                  
+                  // הפוך טקסט עברי
+                  const processedText = segment.text.split('').reverse().join('');
+                  
+                  pdf.text(processedText, xPos, y, { align: 'right' });
+                  
+                  // חשב את רוחב הטקסט וזוז שמאלה
+                  const textWidth = pdf.getTextWidth(processedText);
+                  xPos -= textWidth;
+                }
+              } else {
+                // שורה באנגלית - כתוב משמאל לימין
+                let xPos = marginLeft;
+                
+                for (const segment of lineSegments) {
+                  if (!segment.text) continue;
+                  
+                  const rgb = colorToRGB(segment.color);
+                  pdf.setTextColor(rgb.r, rgb.g, rgb.b);
+                  
+                  pdf.text(segment.text, xPos, y, { align: 'left' });
+                  
+                  const textWidth = pdf.getTextWidth(segment.text);
+                  xPos += textWidth;
+                }
+              }
+              
+              y += lineHeight;
+            }
+          } else {
+            // טקסט רגיל ללא צבעים
+            pdf.setTextColor(44, 62, 80);
+            for (const line of textLines) {
+              if (line.trim()) {
+                const result = processLineForPDF(line);
+                pdf.text(result.text, result.isRTL ? pageWidth - marginRight : marginLeft, y, { align: result.isRTL ? 'right' : 'left' });
+              }
+              y += lineHeight;
+            }
+          }
+          
+        } catch (drawingError) {
+          console.error('שגיאה בייצוא ציורים:', drawingError);
         }
       } else {
-        // טקסט רגיל - מהנתונים השמורים
-        const content = pageData.content || '';
-        pdf.setFontSize(14);
-        let y = marginTop;
+        // אם אין ציורים - בדוק אם יש טקסט צבעוני
+        const richTextEl = pageEl.querySelector('[data-is-richtext="true"]');
+        const textarea = pageEl.querySelector('textarea');
         
-        // בדוק אם התוכן הוא HTML
-        if (content.includes('<font') || content.includes('<div') || content.includes('<br')) {
-          const lines = parseHTMLContent(content);
-          
-          for (const line of lines) {
-            if (y > pageHeight - 20) { pdf.addPage(); y = marginTop; }
-            if (line.length === 0) { y += lineHeight; continue; }
-            
-            const fullText = line.map(s => s.text).join('');
-            const hasHebrew = /[\u0590-\u05FF]/.test(fullText);
-            
-            if (hasHebrew) {
-              let xPos = pageWidth - marginRight;
-              const reversed = [...line].reverse();
-              for (const seg of reversed) {
-                if (!seg.text) continue;
-                const rgb = toRGB(seg.color);
-                pdf.setTextColor(rgb.r, rgb.g, rgb.b);
-                const text = seg.text.split('').reverse().join('');
-                pdf.text(text, xPos, y, { align: 'right' });
-                xPos -= pdf.getTextWidth(text);
-              }
-            } else {
-              let xPos = marginLeft;
-              for (const seg of line) {
-                if (!seg.text) continue;
-                const rgb = toRGB(seg.color);
-                pdf.setTextColor(rgb.r, rgb.g, rgb.b);
-                pdf.text(seg.text, xPos, y);
-                xPos += pdf.getTextWidth(seg.text);
-              }
-            }
-            y += lineHeight;
+        const hasColoredContent = richTextEl && (
+          richTextEl.innerHTML.includes('color=') || 
+          richTextEl.innerHTML.includes('color:') || 
+          richTextEl.innerHTML.includes('<font')
+        );
+        
+        // קבל את הטקסט מהמקור המתאים
+        const text = richTextEl ? richTextEl.innerText || '' : (textarea ? textarea.value || '' : '');
+        if (!text.trim()) continue;
+        
+        const textLines = text.split('\n');
+        let currentLine = 0;
+        
+        // אם יש צבעים, פרסר את ה-HTML
+        const coloredLines = hasColoredContent ? parseColoredHTML(richTextEl.innerHTML) : null;
+        
+        while (currentLine < textLines.length || (coloredLines && currentLine < coloredLines.length)) {
+          if (!isFirstPdfPage) {
+            pdf.addPage();
           }
-        } else {
-          // טקסט פשוט
-          const textLines = content.split('\n');
-          pdf.setTextColor(44, 62, 80);
+          isFirstPdfPage = false;
           
-          for (const line of textLines) {
-            if (y > pageHeight - 20) { pdf.addPage(); y = marginTop; }
-            if (line.trim()) {
-              const hasHebrew = /[\u0590-\u05FF]/.test(line);
-              if (hasHebrew) {
-                pdf.text(line.split('').reverse().join(''), pageWidth - marginRight, y, { align: 'right' });
-              } else {
-                pdf.text(line, marginLeft, y);
-              }
+          // בדיקה אם זה דף משובץ או שורות
+          const isGridPage = pageEl.classList.contains('grid-page');
+          
+          if (isGridPage) {
+            // ציור משבצות
+            pdf.setDrawColor(200, 220, 240);
+            pdf.setLineWidth(0.1);
+            const gridSize = 5;
+            for (let x = 10; x < pageWidth - 10; x += gridSize) {
+              pdf.line(x, 20, x, pageHeight - 15);
             }
-            y += lineHeight;
+            for (let y = 20; y < pageHeight - 15; y += gridSize) {
+              pdf.line(10, y, pageWidth - 10, y);
+            }
+          } else {
+            // ציור קווי מחברת
+            pdf.setDrawColor(210, 225, 240);
+            pdf.setLineWidth(0.2);
+            for (let y = marginTop; y < pageHeight - 15; y += lineHeight) {
+              pdf.line(15, y, pageWidth - 15, y);
+            }
+          }
+          
+          // קו שוליים אדום
+          pdf.setDrawColor(255, 107, 107);
+          pdf.setLineWidth(0.4);
+          pdf.line(pageWidth - marginRight + 5, 15, pageWidth - marginRight + 5, pageHeight - 10);
+          
+          // כתיבת הטקסט
+          pdf.setFontSize(14);
+          let y = marginTop;
+          
+          if (hasColoredContent && coloredLines) {
+            // טקסט צבעוני
+            for (let i = 0; i < linesPerPage && currentLine < coloredLines.length; i++) {
+              const lineSegments = coloredLines[currentLine];
+              
+              if (!lineSegments || lineSegments.length === 0) {
+                y += lineHeight;
+                currentLine++;
+                continue;
+              }
+              
+              const fullLineText = lineSegments.map(s => s.text).join('');
+              if (!fullLineText.trim()) {
+                y += lineHeight;
+                currentLine++;
+                continue;
+              }
+              
+              const hasHebrew = /[\u0590-\u05FF]/.test(fullLineText);
+              
+              if (hasHebrew) {
+                let xPos = pageWidth - marginRight;
+                const reversedSegments = [...lineSegments].reverse();
+                
+                for (const segment of reversedSegments) {
+                  if (!segment.text) continue;
+                  const rgb = colorToRGB(segment.color);
+                  pdf.setTextColor(rgb.r, rgb.g, rgb.b);
+                  const processedText = segment.text.split('').reverse().join('');
+                  pdf.text(processedText, xPos, y, { align: 'right' });
+                  xPos -= pdf.getTextWidth(processedText);
+                }
+              } else {
+                let xPos = marginLeft;
+                for (const segment of lineSegments) {
+                  if (!segment.text) continue;
+                  const rgb = colorToRGB(segment.color);
+                  pdf.setTextColor(rgb.r, rgb.g, rgb.b);
+                  pdf.text(segment.text, xPos, y, { align: 'left' });
+                  xPos += pdf.getTextWidth(segment.text);
+                }
+              }
+              
+              y += lineHeight;
+              currentLine++;
+            }
+          } else {
+            // טקסט רגיל
+            pdf.setTextColor(44, 62, 80);
+          
+            for (let i = 0; i < linesPerPage && currentLine < textLines.length; i++) {
+              const line = textLines[currentLine];
+              if (line && line.trim()) {
+                const result = processLineForPDF(line);
+                if (result.isRTL) {
+                  pdf.text(result.text, pageWidth - marginRight, y, { align: 'right' });
+                } else {
+                  pdf.text(result.text, marginLeft, y, { align: 'left' });
+                }
+              }
+              y += lineHeight;
+              currentLine++;
+            }
           }
         }
       }
     }
-
-    // החזרת הדף המקורי
-    this.currentPageIndex = originalPageIndex;
-    this.renderNotebookContent();
     
     // שמירת הקובץ
-    const firstPage = notebook.pages[0];
-    const fileName = `${notebook.title}, ${firstPage?.title || 'ללא כותרת'}, ${firstPage?.date || ''}.pdf`;
+    const firstPage = notebook.pages && notebook.pages.length > 0 ? notebook.pages[0] : null;
+    const pageTitle = firstPage && firstPage.title ? firstPage.title : 'ללא כותרת';
+    const pageDate = firstPage && firstPage.date ? firstPage.date : '';
+    const fileName = `${notebook.title}, ${pageTitle}, ${pageDate}.pdf`;
     pdf.save(fileName);
     
     document.body.removeChild(loadingMessage);
@@ -12868,9 +12968,7 @@ async exportNotebookToPDF() {
     
   } catch (error) {
     console.error('שגיאה בייצוא PDF:', error);
-    if (document.body.contains(loadingMessage)) {
-      document.body.removeChild(loadingMessage);
-    }
+    document.body.removeChild(loadingMessage);
     alert('אירעה שגיאה בייצוא ל-PDF. אנא נסה שוב.');
   }
 },
