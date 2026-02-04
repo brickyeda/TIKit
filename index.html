@@ -3031,6 +3031,76 @@ padding: 0px 10px 10px 10px;
   }
 }
 
+/* === מצב מיקוד === */
+body.focus-mode .sidebar,
+body.focus-mode .top-bar,
+body.focus-mode .notebook-header-bar,
+body.focus-mode .notebook-pagination,
+body.focus-mode .zoom-controls,
+body.focus-mode .gallery-controls {
+  display: none !important;
+}
+
+body.focus-mode .main-content {
+  margin-right: 0 !important;
+  padding: 0 !important;
+}
+
+body.focus-mode #notebookView {
+  padding: 0 !important;
+}
+
+body.focus-mode #notebookContent {
+  margin-top: 60px !important;
+  max-width: 100% !important;
+  padding: 20px !important;
+}
+
+body.focus-mode .notebook-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+body.focus-mode .formatting-toolbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+}
+
+/* כפתור יציאה ממצב מיקוד */
+.focus-mode-exit {
+  position: fixed;
+  top: 70px;
+  left: 20px;
+  z-index: 1001;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.focus-mode-exit:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(231, 76, 60, 0.5);
+}
+
+body:not(.focus-mode) .focus-mode-exit {
+  display: none;
+}
+
     .toolbar-group {
       display: flex;
       align-items: center;
@@ -6902,6 +6972,10 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
         </div>
       </div>
     </div>
+    <button id="focusModeBtn" class="add-page-btn" onclick="app.toggleFocusMode()" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">
+      <span>🎯</span>
+      מצב מיקוד
+    </button>
     <button id="galleryViewBtn" class="add-page-btn" onclick="app.toggleGalleryView()" style="background: linear-gradient(135deg, #667eea, #764ba2);">
       <span>📱</span>
       תצוגת גלריה
@@ -6916,6 +6990,12 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     </button>
   </div>
 </div>
+
+      <!-- כפתור יציאה ממצב מיקוד -->
+      <button class="focus-mode-exit" onclick="app.toggleFocusMode()">
+        <span>✕</span>
+        <span>יציאה ממצב מיקוד</span>
+      </button>
 
       <div id="notebookContent">
         <!-- תוכן המחברת יטען כאן -->
@@ -9892,6 +9972,9 @@ this.showPage('homepage');
           // Reset zoom when leaving notebook
           this.currentZoom = 100;
           this.applyZoom();
+          
+          // יציאה ממצב מיקוד
+          document.body.classList.remove('focus-mode');
         }
        
 // שמור ציורים לפני מעבר לדף אחר
@@ -10402,6 +10485,26 @@ applyZoom() {
             </div>
             <button class="page-nav-btn" onclick="app.nextPage()" ${this.currentPageIndex >= notebook.pages.length - 1 ? 'disabled' : ''}>←</button>
           `;
+        }
+      },
+      
+      // מצב מיקוד - תצוגה נקייה
+      toggleFocusMode() {
+        document.body.classList.toggle('focus-mode');
+        
+        const btn = document.getElementById('focusModeBtn');
+        if (document.body.classList.contains('focus-mode')) {
+          // נכנסים למצב מיקוד
+          if (btn) {
+            btn.innerHTML = '<span>🎯</span> יציאה ממיקוד';
+            btn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+          }
+        } else {
+          // יוצאים ממצב מיקוד
+          if (btn) {
+            btn.innerHTML = '<span>🎯</span> מצב מיקוד';
+            btn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+          }
         }
       },
 
