@@ -12667,39 +12667,7 @@ async exportNotebookToPDF() {
 
     const pageWidth = 210, pageHeight = 297, marginLeft = 20, marginTop = 30, lineHeight = 8, marginRight = 25;
 
-    // פונקציות עזר (אותו דבר כמו exportCurrentPage)
-    const parseHTML = (el) => {
-      const lines = [];
-      let currentLine = [];
-      const processNode = (node, styles) => {
-        if (node.nodeType === 3) {
-          const text = node.textContent;
-          if (text.includes('\n')) {
-            text.split('\n').forEach((part, i, arr) => {
-              if (part) currentLine.push({ text: part, ...styles });
-              if (i < arr.length - 1) { lines.push([...currentLine]); currentLine = []; }
-            });
-          } else if (text) currentLine.push({ text, ...styles });
-        } else if (node.nodeType === 1) {
-          const tag = node.tagName;
-          if (tag === 'BR') { lines.push([...currentLine]); currentLine = []; return; }
-          if (['DIV','P'].includes(tag) && currentLine.length > 0) { lines.push([...currentLine]); currentLine = []; }
-          let newStyles = { ...styles };
-          if (tag === 'FONT' && node.getAttribute('color')) newStyles.color = node.getAttribute('color');
-          if (node.style?.color) newStyles.color = node.style.color;
-          if (node.style?.backgroundColor) newStyles.bgColor = node.style.backgroundColor;
-          if (tag === 'B' || tag === 'STRONG') newStyles.bold = true;
-          if (tag === 'U') newStyles.underline = true;
-          if (tag === 'S' || tag === 'STRIKE' || tag === 'DEL') newStyles.strike = true;
-          for (const child of node.childNodes) processNode(child, newStyles);
-          if (['DIV','P'].includes(tag) && currentLine.length > 0) { lines.push([...currentLine]); currentLine = []; }
-        }
-      };
-      processNode(el, { color: null, bold: false, underline: false, strike: false, bgColor: null });
-      if (currentLine.length > 0) lines.push(currentLine);
-      return lines;
-    };
-
+    // פונקציות עזר
     const toRGB = (color) => {
       if (!color) return { r: 44, g: 62, b: 80 };
       if (color.startsWith('#')) {
@@ -12713,155 +12681,165 @@ async exportNotebookToPDF() {
       }
       return { r: 44, g: 62, b: 80 };
     };
-    
-    const splitSegment = (segment) => {
-      const parts = segment.text.match(/[\u0590-\u05FF]+|[^\u0590-\u05FF]+/g) || [segment.text];
-      return parts.map(part => ({
-        ...segment,
-        text: part,
-        isHebrew: /[\u0590-\u05FF]/.test(part)
-      }));
+
+    // פונקציה לפרסור HTML לטקסט נקי עם צבעים
+    const parseHTMLContent = (html) => {
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+      
+      const lines = [];
+      let currentLine = [];
+      
+      const processNode = (node, styles) => {
+        if (node.nodeType === 3) { // text node
+          const text = node.textContent;
+          if (text.includes('\n')) {
+            text.split('\n').forEach((part, i, arr) => {
+              if (part) currentLine.push({ text: part, ...styles });
+              if (i < arr.length - 1) { lines.push([...currentLine]); currentLine = []; }
+            });
+          } else if (text) {
+            currentLine.push({ text, ...styles });
+          }
+        } else if (node.nodeType === 1) { // element node
+          const tag = node.tagName;
+          if (tag === 'BR') { lines.push([...currentLine]); currentLine = []; return; }
+          if (['DIV','P'].includes(tag) && currentLine.length > 0) { lines.push([...currentLine]); currentLine = []; }
+          
+          let newStyles = { ...styles };
+          if (tag === 'FONT' && node.getAttribute('color')) newStyles.color = node.getAttribute('color');
+          if (node.style?.color) newStyles.color = node.style.color;
+          
+          for (const child of node.childNodes) processNode(child, newStyles);
+          
+          if (['DIV','P'].includes(tag) && currentLine.length > 0) { lines.push([...currentLine]); currentLine = []; }
+        }
+      };
+      
+      processNode(temp, { color: null });
+      if (currentLine.length > 0) lines.push(currentLine);
+      return lines;
     };
 
     // שמירת הדף הנוכחי
     const originalPageIndex = this.currentPageIndex;
-    let isFirstPdfPage = true;
+    
+    // שמור את הדף הנוכחי לפני הייצוא
+    this.saveCurrentPageBeforeNav();
 
-    // עבור על כל דף במחברת
+    // עבור על כל דף במחברת - מהנתונים השמורים
     for (let pageIdx = 0; pageIdx < notebook.pages.length; pageIdx++) {
+      const pageData = notebook.pages[pageIdx];
+      
       loadingMessage.innerHTML = `<div style="margin-bottom:15px;font-size:2rem;">📄</div><div style="font-size:1.2rem;font-weight:600;">מייצא דף ${pageIdx + 1} מתוך ${notebook.pages.length}...</div>`;
       
-      // רינדור הדף הזה על המסך
-      this.currentPageIndex = pageIdx;
-      this.renderNotebookContent();
-      
-      // המתן לרינדור מלא
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
-      // מצא את הדף
-      const pageEl = document.querySelector('#notebookContent .lined-page, #notebookContent .grid-page, #notebookContent .blank-page, #notebookContent .checklist-page');
-      if (!pageEl) continue;
-      
-      if (!isFirstPdfPage) {
+      if (pageIdx > 0) {
         pdf.addPage();
       }
-      isFirstPdfPage = false;
       
-      const pageRect = pageEl.getBoundingClientRect();
-      const scaleX = pageWidth / pageRect.width;
-      const isGridPage = pageEl.classList.contains('grid-page');
-      const isChecklistPage = pageEl.classList.contains('checklist-page');
+      const isGridPage = notebook.pageType === 'grid';
+      const isChecklistPage = notebook.pageType === 'checklist';
+      const hasDrawings = pageData.drawing || pageData.interactiveShapes?.length > 0 || pageData.formulas?.length > 0;
 
       // רקע
       pdf.setFillColor(248, 250, 252);
       pdf.rect(0, 0, pageWidth, pageHeight, 'F');
       
+      // קווי רקע
       if (isGridPage) {
-        // קווי רשת לדף משובץ
         pdf.setDrawColor(200, 220, 240);
         pdf.setLineWidth(0.1);
         for (let x = 10; x < pageWidth - 10; x += 5) pdf.line(x, 20, x, pageHeight - 15);
         for (let y = 20; y < pageHeight - 15; y += 5) pdf.line(10, y, pageWidth - 10, y);
       } else if (!isChecklistPage) {
-        // קווי מחברת רגילה
         pdf.setDrawColor(210, 225, 240);
         pdf.setLineWidth(0.2);
         for (let y = marginTop; y < pageHeight - 15; y += lineHeight) pdf.line(15, y, pageWidth - 15, y);
-        
         // קו אדום
         pdf.setDrawColor(255, 107, 107);
         pdf.setLineWidth(0.4);
         pdf.line(pageWidth - marginRight + 5, 15, pageWidth - marginRight + 5, pageHeight - 10);
       }
 
-      // ייצוא ציורים וצורות אם יש
-      const hasDrawings = pageEl.querySelector('canvas') || pageEl.querySelector('.interactive-shape') || pageEl.querySelector('.dropped-formula');
+      // כותרת ותאריך
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      const title = pageData.title || `דף ${pageIdx + 1}`;
+      pdf.text(title.split('').reverse().join(''), pageWidth - marginRight, 15, { align: 'right' });
+      pdf.text(pageData.date || '', marginLeft, 15);
       
-      if (hasDrawings || isChecklistPage) {
-        // צלם את כל הדף עם html2canvas
-        const canvas = await html2canvas(pageEl, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#f8fafc'
-        });
+      // אם יש ציורים - צריך לרנדר את הדף הזה ולצלם
+      if (hasDrawings) {
+        // עבור לדף הזה, צלם, וחזור
+        this.currentPageIndex = pageIdx;
+        this.renderNotebookContent();
+        await new Promise(r => setTimeout(r, 300));
         
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        pdf.addImage(imgData, 'JPEG', 10, 10, pageWidth - 20, pageHeight - 20);
-      } else {
-        // דף טקסט רגיל - ייצוא טקסט עם עיצוב
-        const richText = pageEl.querySelector('[data-is-richtext="true"]');
-        const textarea = pageEl.querySelector('textarea');
-        
+        const pageEl = document.querySelector('#notebookContent .lined-page, #notebookContent .grid-page, #notebookContent .blank-page');
+        if (pageEl) {
+          const canvas = await html2canvas(pageEl, { scale: 2, useCORS: true, logging: false, backgroundColor: '#f8fafc' });
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+          pdf.addImage(imgData, 'JPEG', 10, 20, pageWidth - 20, pageHeight - 30);
+        }
+      } else if (isChecklistPage) {
+        // צ'קליסט - ייצוא פשוט
+        pdf.setFontSize(12);
+        pdf.setTextColor(44, 62, 80);
         let y = marginTop;
+        const items = pageData.checklistItems || [];
+        for (const item of items) {
+          const checkbox = item.checked ? '☑' : '☐';
+          const text = `${checkbox} ${item.text || ''}`;
+          pdf.text(text.split('').reverse().join(''), pageWidth - marginRight, y, { align: 'right' });
+          y += lineHeight;
+        }
+      } else {
+        // טקסט רגיל - מהנתונים השמורים
+        const content = pageData.content || '';
         pdf.setFontSize(14);
+        let y = marginTop;
         
-        if (richText) {
-          // טקסט עם עיצוב
-          const lines = parseHTML(richText);
+        // בדוק אם התוכן הוא HTML
+        if (content.includes('<font') || content.includes('<div') || content.includes('<br')) {
+          const lines = parseHTMLContent(content);
           
           for (const line of lines) {
-            if (y > pageHeight - 20) {
-              pdf.addPage();
-              y = marginTop;
-              // רקע ושורות לעמוד חדש
-              pdf.setFillColor(248, 250, 252);
-              pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-              pdf.setDrawColor(210, 225, 240);
-              pdf.setLineWidth(0.2);
-              for (let ly = marginTop; ly < pageHeight - 15; ly += lineHeight) pdf.line(15, ly, pageWidth - 15, ly);
-            }
-            
+            if (y > pageHeight - 20) { pdf.addPage(); y = marginTop; }
             if (line.length === 0) { y += lineHeight; continue; }
             
-            // בדיקת כיוון
             const fullText = line.map(s => s.text).join('');
             const hasHebrew = /[\u0590-\u05FF]/.test(fullText);
             
-            // פיצול לחלקים
-            const allParts = [];
-            for (const seg of line) {
-              allParts.push(...splitSegment(seg));
-            }
-            
             if (hasHebrew) {
-              // RTL - מימין לשמאל
               let xPos = pageWidth - marginRight;
-              const reversed = [...allParts].reverse();
-              
-              for (const part of reversed) {
-                if (!part.text) continue;
-                const rgb = toRGB(part.color);
+              const reversed = [...line].reverse();
+              for (const seg of reversed) {
+                if (!seg.text) continue;
+                const rgb = toRGB(seg.color);
                 pdf.setTextColor(rgb.r, rgb.g, rgb.b);
-                const text = part.isHebrew ? part.text.split('').reverse().join('') : part.text;
+                const text = seg.text.split('').reverse().join('');
                 pdf.text(text, xPos, y, { align: 'right' });
                 xPos -= pdf.getTextWidth(text);
               }
             } else {
-              // LTR - משמאל לימין
               let xPos = marginLeft;
-              for (const part of allParts) {
-                if (!part.text) continue;
-                const rgb = toRGB(part.color);
+              for (const seg of line) {
+                if (!seg.text) continue;
+                const rgb = toRGB(seg.color);
                 pdf.setTextColor(rgb.r, rgb.g, rgb.b);
-                pdf.text(part.text, xPos, y);
-                xPos += pdf.getTextWidth(part.text);
+                pdf.text(seg.text, xPos, y);
+                xPos += pdf.getTextWidth(seg.text);
               }
             }
             y += lineHeight;
           }
-        } else if (textarea) {
-          // טקסט רגיל
-          const text = textarea.value || '';
-          const textLines = text.split('\n');
+        } else {
+          // טקסט פשוט
+          const textLines = content.split('\n');
           pdf.setTextColor(44, 62, 80);
           
           for (const line of textLines) {
-            if (y > pageHeight - 20) {
-              pdf.addPage();
-              y = marginTop;
-            }
-            
+            if (y > pageHeight - 20) { pdf.addPage(); y = marginTop; }
             if (line.trim()) {
               const hasHebrew = /[\u0590-\u05FF]/.test(line);
               if (hasHebrew) {
@@ -12882,9 +12860,7 @@ async exportNotebookToPDF() {
     
     // שמירת הקובץ
     const firstPage = notebook.pages[0];
-    const pageTitle = firstPage?.title || 'ללא כותרת';
-    const pageDate = firstPage?.date || '';
-    const fileName = `${notebook.title}, ${pageTitle}, ${pageDate}.pdf`;
+    const fileName = `${notebook.title}, ${firstPage?.title || 'ללא כותרת'}, ${firstPage?.date || ''}.pdf`;
     pdf.save(fileName);
     
     document.body.removeChild(loadingMessage);
