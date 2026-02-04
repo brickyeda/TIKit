@@ -2923,6 +2923,112 @@ padding: 0px 10px 10px 10px;
   margin-top: 100px; /* גובה סרגל הכלים הראשי + סרגל הציור + מרווחים */
 }
 
+/* סגנונות דפדוף מחברת */
+.notebook-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 15px 20px;
+  background: var(--background-card);
+  border-radius: 15px;
+  box-shadow: 0 4px 15px var(--shadow-light);
+  margin-bottom: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.page-nav-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.page-nav-btn:hover:not(:disabled) {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.page-nav-btn:disabled {
+  background: linear-gradient(135deg, #ccc, #aaa);
+  cursor: not-allowed;
+  opacity: 0.5;
+  box-shadow: none;
+}
+
+.page-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.page-jump-input {
+  width: 60px;
+  padding: 8px 12px;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  background: var(--background-main);
+  color: var(--text-primary);
+  transition: border-color 0.3s ease;
+}
+
+.page-jump-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.page-wrapper {
+  min-height: 500px;
+  transition: opacity 0.3s ease;
+}
+
+/* אנימציית מעבר דף */
+.page-wrapper.page-transition {
+  opacity: 0.5;
+}
+
+/* התאמה למובייל */
+@media (max-width: 768px) {
+  .notebook-pagination {
+    gap: 10px;
+    padding: 10px 15px;
+  }
+  
+  .page-nav-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+  
+  .page-indicator {
+    font-size: 14px;
+    gap: 6px;
+  }
+  
+  .page-jump-input {
+    width: 50px;
+    padding: 6px 8px;
+    font-size: 14px;
+  }
+}
+
     .toolbar-group {
       display: flex;
       align-items: center;
@@ -8405,6 +8511,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 autoSaveInterval: null,
       // נתונים
       currentNotebook: null,
+      currentPageIndex: 0, // אינדקס הדף הנוכחי במחברת
       activeTextareaIndex: undefined,
       saveInterval: null,
       userData: {},
@@ -9911,6 +10018,7 @@ createNotebookCard(subjectKey, subject, isOverLimit = false) {
       // פתיחת מחברת
 openNotebook(notebookKey) {
   this.currentNotebook = notebookKey;
+  this.currentPageIndex = 0; // איפוס לדף הראשון
   const notebook = this.subjects[notebookKey];
   
   // עדכון כותרת
@@ -10179,20 +10287,57 @@ applyZoom() {
         
         if (!container || !notebook) return;
         
+        // אתחול עמוד נוכחי אם לא קיים
+        if (this.currentPageIndex === undefined || this.currentPageIndex >= notebook.pages.length) {
+          this.currentPageIndex = 0;
+        }
+        
         container.innerHTML = '';
         
-        notebook.pages.forEach((page, index) => {
-          const pageElement = this.createNotebookPage(page, index, notebook.pageType);
-          container.appendChild(pageElement);
-style="position: sticky !important;"
+        // יצירת מיכל הדפדוף
+        const paginationContainer = document.createElement('div');
+        paginationContainer.className = 'notebook-pagination';
+        paginationContainer.innerHTML = `
+          <button class="page-nav-btn prev-btn" onclick="app.goToPrevPage()" ${this.currentPageIndex === 0 ? 'disabled' : ''}>
+            <span>→</span>
+          </button>
+          <div class="page-indicator">
+            <span>עמוד</span>
+            <input type="number" class="page-jump-input" id="pageJumpInput" 
+                   value="${this.currentPageIndex + 1}" 
+                   min="1" max="${notebook.pages.length}"
+                   onchange="app.goToPage(parseInt(this.value) - 1)"
+                   onkeydown="if(event.key === 'Enter') app.goToPage(parseInt(this.value) - 1)">
+            <span>מתוך ${notebook.pages.length}</span>
+          </div>
+          <button class="page-nav-btn next-btn" onclick="app.goToNextPage()" ${this.currentPageIndex >= notebook.pages.length - 1 ? 'disabled' : ''}>
+            <span>←</span>
+          </button>
+        `;
+        container.appendChild(paginationContainer);
+        
+        // יצירת מיכל הדף עם תמיכה בסוויפ
+        const pageWrapper = document.createElement('div');
+        pageWrapper.className = 'page-wrapper';
+        pageWrapper.id = 'pageWrapper';
+        container.appendChild(pageWrapper);
+        
+        // רינדור הדף הנוכחי בלבד
+        if (notebook.pages.length > 0) {
+          const page = notebook.pages[this.currentPageIndex];
+          const pageElement = this.createNotebookPage(page, this.currentPageIndex, notebook.pageType);
+          pageWrapper.appendChild(pageElement);
           
           // טעינת עיצוב שמור
           if (page.formatting) {
             setTimeout(() => {
-              this.loadPageFormatting(index, page.formatting);
+              this.loadPageFormatting(this.currentPageIndex, page.formatting);
             }, 100);
           }
-        });
+        }
+        
+        // הוספת תמיכה בסוויפ למובייל
+        this.initSwipeSupport(pageWrapper);
 
         // הוספת בוחרי צבעים לכלי העיצוב הגלובליים
         this.initializeGlobalColorPickers();
@@ -10205,6 +10350,81 @@ style="position: sticky !important;"
             });
           }
         });
+      },
+      
+      // מעבר לדף הקודם
+      goToPrevPage() {
+        if (this.currentPageIndex > 0) {
+          this.saveCurrentPageBeforeNav();
+          this.currentPageIndex--;
+          this.renderNotebookContent();
+        }
+      },
+      
+      // מעבר לדף הבא
+      goToNextPage() {
+        const notebook = this.subjects[this.currentNotebook];
+        if (notebook && this.currentPageIndex < notebook.pages.length - 1) {
+          this.saveCurrentPageBeforeNav();
+          this.currentPageIndex++;
+          this.renderNotebookContent();
+        }
+      },
+      
+      // מעבר לדף ספציפי
+      goToPage(pageIndex) {
+        const notebook = this.subjects[this.currentNotebook];
+        if (!notebook) return;
+        
+        // וידוא שהאינדקס בטווח
+        if (pageIndex < 0) pageIndex = 0;
+        if (pageIndex >= notebook.pages.length) pageIndex = notebook.pages.length - 1;
+        
+        if (pageIndex !== this.currentPageIndex) {
+          this.saveCurrentPageBeforeNav();
+          this.currentPageIndex = pageIndex;
+          this.renderNotebookContent();
+        }
+      },
+      
+      // שמירת הדף הנוכחי לפני מעבר
+      saveCurrentPageBeforeNav() {
+        const textarea = document.getElementById(`textarea-${this.currentPageIndex}`);
+        if (textarea) {
+          this.savePage(this.currentPageIndex, textarea.value || textarea.innerHTML);
+        }
+        this.saveCurrentNotebookDrawings();
+      },
+      
+      // תמיכה בסוויפ למובייל
+      initSwipeSupport(element) {
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        element.addEventListener('touchstart', (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        
+        element.addEventListener('touchend', (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          this.handleSwipe(touchStartX, touchEndX);
+        }, { passive: true });
+      },
+      
+      // טיפול בסוויפ
+      handleSwipe(startX, endX) {
+        const swipeThreshold = 50; // מינימום פיקסלים לסוויפ
+        const diff = startX - endX;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+          if (diff > 0) {
+            // סוויפ שמאלה - דף הבא (בעברית)
+            this.goToNextPage();
+          } else {
+            // סוויפ ימינה - דף קודם (בעברית)
+            this.goToPrevPage();
+          }
+        }
       },
 
       // יצירת דף מחברת
@@ -10370,15 +10590,10 @@ if (pageData.formulas && pageData.formulas.length > 0) {
         
         this.subjects[this.currentNotebook].pages.push(newPage);
         this.saveNotebookData();
-        this.renderNotebookContent();
         
-        // גלילה לדף החדש
-        setTimeout(() => {
-          const notebookContent = document.getElementById('notebookContent');
-          if (notebookContent) {
-            notebookContent.scrollTop = notebookContent.scrollHeight;
-          }
-        }, 100);
+        // מעבר לדף החדש (האחרון)
+        this.currentPageIndex = this.subjects[this.currentNotebook].pages.length - 1;
+        this.renderNotebookContent();
       },
 
       // === פונקציות צ'קליסט ===
@@ -10533,6 +10748,14 @@ if (pageData.formulas && pageData.formulas.length > 0) {
         if (confirm(`האם אתה בטוח שברצונך למחוק את הדף "${pageTitle}"?\n\nהתוכן ימחק לצמיתות ולא ניתן יהיה לשחזר אותו.`)) {
           notebook.pages.splice(pageIndex, 1);
           this.saveNotebookData();
+          
+          // עדכון אינדקס הדף הנוכחי
+          if (notebook.pages.length === 0) {
+            this.currentPageIndex = 0;
+          } else if (this.currentPageIndex >= notebook.pages.length) {
+            this.currentPageIndex = notebook.pages.length - 1;
+          }
+          
           this.renderNotebookContent();
           
           alert(`הדף "${pageTitle}" נמחק בהצלחה.`);
@@ -10547,9 +10770,8 @@ savePage(pageIndex, content) {
   if (this.subjects[this.currentNotebook].pages[pageIndex]) {
     this.subjects[this.currentNotebook].pages[pageIndex].content = content;
     
-    // שמירת ציורים
-    const pages = document.querySelectorAll('.lined-page, .grid-page, .blank-page');
-    const pageContainer = pages[pageIndex];
+    // שמירת ציורים - עכשיו יש רק דף אחד מוצג
+    const pageContainer = document.querySelector('.lined-page, .grid-page, .blank-page');
     if (pageContainer) {
       const canvas = pageContainer.querySelector('.page-canvas');
       if (canvas) {
