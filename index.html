@@ -2200,6 +2200,36 @@ padding: 0px 10px 10px 10px;
       background: linear-gradient(135deg, #f39c12, #e67e22);
     }
 
+    /* כפתור הוסף דף נעול */
+    .add-page-btn.premium-locked-btn {
+      background: linear-gradient(135deg, #95a5a6, #7f8c8d) !important;
+      cursor: pointer;
+    }
+
+    .add-page-btn.premium-locked-btn:hover {
+      background: linear-gradient(135deg, #f39c12, #e67e22) !important;
+    }
+
+    /* כרטיס מחברת מוגבלת */
+    .subject-card.notebook-limited {
+      position: relative;
+      opacity: 0.85;
+    }
+
+    .notebook-limit-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(243, 156, 18, 0.4);
+    }
+
     /* Placeholder Pages */
     .placeholder-page {
       text-align: center;
@@ -8035,7 +8065,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
       <div class="about-contact">
         <div class="about-contact-label">📧 לשאלות, הצעות ומשוב</div>
         <div class="about-contact-email">
-          <a href="mailto:brickyeda@gmail.com">brickyeda@gmail.com</a>
+          <a href="/cdn-cgi/l/email-protection#bfddcdd6dcd4c6dadbdeffd8d2ded6d391dcd0d2"><span class="__cf_email__" data-cfemail="ff9d8d969c94869a9b9ebf98929e9693d19c9092">[email&#160;protected]</span></a>
         </div>
       </div>
       
@@ -8082,7 +8112,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     </div>
   </div>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // ========== About Modal Functions ==========
     function openAboutModal() {
       document.getElementById('aboutModal').classList.add('active');
@@ -9266,6 +9296,15 @@ this.showPage('homepage');
         const notebook = this.subjects[notebookKey];
         if (!notebook) return false;
 
+        // בדיקה אם המחברת מעבר למגבלת 5 המחברות הראשונות
+        const notebookKeys = Object.keys(this.subjects);
+        const notebookIndex = notebookKeys.indexOf(notebookKey);
+        
+        if (notebookIndex >= FREE_LIMITS.maxNotebooks) {
+          this.openUpgradeModal('הוספת דפים למחברות נוספות');
+          return false;
+        }
+
         const pageType = notebook.pageType || 'lined';
         const maxPages = FREE_LIMITS.maxPages[pageType] || 20;
         const currentPages = notebook.pages ? notebook.pages.length : 0;
@@ -9294,6 +9333,36 @@ this.showPage('homepage');
         }
 
         return true;
+      },
+
+      // עדכון מצב כפתור הוסף דף לפי הרשאות
+      updateAddPageButton(notebookKey) {
+        const addPageBtn = document.querySelector('.add-page-btn[onclick="app.addNotebookPage()"]');
+        if (!addPageBtn) return;
+        
+        if (this.isPro) {
+          // משתמש פרימיום - כפתור רגיל
+          addPageBtn.innerHTML = '<span>➕</span> הוסף דף';
+          addPageBtn.classList.remove('premium-locked-btn');
+          addPageBtn.style.opacity = '1';
+          return;
+        }
+        
+        // בדיקה אם המחברת מעבר למגבלה
+        const notebookKeys = Object.keys(this.subjects);
+        const notebookIndex = notebookKeys.indexOf(notebookKey);
+        
+        if (notebookIndex >= FREE_LIMITS.maxNotebooks) {
+          // מחברת מעבר למגבלה - כפתור נעול
+          addPageBtn.innerHTML = '<span>➕</span> הוסף דף <span class="premium-badge-small">⭐</span>';
+          addPageBtn.classList.add('premium-locked-btn');
+          addPageBtn.style.opacity = '0.7';
+        } else {
+          // מחברת בתוך המגבלה - כפתור רגיל
+          addPageBtn.innerHTML = '<span>➕</span> הוסף דף';
+          addPageBtn.classList.remove('premium-locked-btn');
+          addPageBtn.style.opacity = '1';
+        }
       },
 
       // עדכון ממשק משתמש
@@ -9769,17 +9838,19 @@ if (this.currentNotebook && pageId !== 'notebookView') {
         
         container.innerHTML = '';
         
-        Object.keys(this.subjects).forEach(subjectKey => {
+        const notebookKeys = Object.keys(this.subjects);
+        notebookKeys.forEach((subjectKey, index) => {
           const subject = this.subjects[subjectKey];
-          const card = this.createNotebookCard(subjectKey, subject);
+          const isOverLimit = !this.isPro && index >= FREE_LIMITS.maxNotebooks;
+          const card = this.createNotebookCard(subjectKey, subject, isOverLimit);
           container.appendChild(card);
         });
       },
 
       // יצירת כרטיס מחברת
-createNotebookCard(subjectKey, subject) {
+createNotebookCard(subjectKey, subject, isOverLimit = false) {
   const cardDiv = document.createElement('div');
-  cardDiv.className = `subject-card ${subjectKey}`;
+  cardDiv.className = `subject-card ${subjectKey}${isOverLimit ? ' notebook-limited' : ''}`;
   cardDiv.onclick = () => this.openNotebook(subjectKey);
   
   // Set the color variable for CSS
@@ -9793,7 +9864,11 @@ createNotebookCard(subjectKey, subject) {
     `<button class="notebook-duplicate-btn" onclick="event.stopPropagation(); app.duplicateNotebook('${subjectKey}')" title="שכפול מחברת">📋</button>` : 
     `<button class="notebook-duplicate-btn premium-locked" onclick="event.stopPropagation(); app.openUpgradeModal('שכפול מחברות')" title="שכפול מחברת - פרימיום">📋⭐</button>`;
   
+  // תווית מגבלה למחברות מעבר ל-5
+  const limitBadge = isOverLimit ? '<span class="notebook-limit-badge">עריכה בלבד ⭐</span>' : '';
+  
   cardDiv.innerHTML = `
+    ${limitBadge}
     <span class="subject-icon">${subject.icon}</span>
     <div class="subject-title">${subject.title}</div>
     <div class="subject-info">${subject.description}</div>
@@ -9821,6 +9896,9 @@ openNotebook(notebookKey) {
   
   // רינדור תוכן המחברת
   this.renderNotebookContent();
+  
+  // עדכון מצב כפתור הוסף דף לפי הרשאות
+  this.updateAddPageButton(notebookKey);
   
   // המרה אוטומטית של דפים עם תוכן HTML
   setTimeout(() => {
@@ -20773,19 +20851,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .cancel-modal-buttons {
   display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.cancel-btn-back {
-  padding: 12px 25px;
-  background: #f3f4f6;
-  border: none;
-  border-radius: 8px;
-  color: #374151;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.cancel-btn-confirm {
-  padding: 12px 25px;
+  gap
