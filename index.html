@@ -6771,7 +6771,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     </div>
     
     <div class="export-btn-wrapper">
-      <button class="add-page-btn premium-feature-btn" onclick="app.toggleExportMenu(event)">
+      <button id="exportPdfBtn" class="add-page-btn premium-feature-btn" onclick="app.toggleExportMenu(event)">
         <span>📄</span>
         ייצא ל-PDF
         <span class="premium-badge">⭐</span>
@@ -6794,11 +6794,11 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
         </div>
       </div>
     </div>
-    <button class="add-page-btn" onclick="app.toggleGalleryView()" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+    <button id="galleryViewBtn" class="add-page-btn" onclick="app.toggleGalleryView()" style="background: linear-gradient(135deg, #667eea, #764ba2);">
       <span>📱</span>
       תצוגת גלריה
     </button>
-    <button class="add-page-btn" onclick="app.addNotebookPage()">
+    <button id="addPageBtn" class="add-page-btn" onclick="app.addNotebookPage()">
       <span>➕</span>
       הוסף דף
     </button>
@@ -9335,33 +9335,56 @@ this.showPage('homepage');
         return true;
       },
 
-      // עדכון מצב כפתור הוסף דף לפי הרשאות
-      updateAddPageButton(notebookKey) {
-        const addPageBtn = document.querySelector('.add-page-btn[onclick="app.addNotebookPage()"]');
-        if (!addPageBtn) return;
-        
-        if (this.isPro) {
-          // משתמש פרימיום - כפתור רגיל
-          addPageBtn.innerHTML = '<span>➕</span> הוסף דף';
-          addPageBtn.classList.remove('premium-locked-btn');
-          addPageBtn.style.opacity = '1';
-          return;
-        }
+      // עדכון מצב כפתורי המחברת לפי הרשאות
+      updateNotebookButtons(notebookKey) {
+        const addPageBtn = document.getElementById('addPageBtn');
+        const galleryViewBtn = document.getElementById('galleryViewBtn');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
         
         // בדיקה אם המחברת מעבר למגבלה
         const notebookKeys = Object.keys(this.subjects);
         const notebookIndex = notebookKeys.indexOf(notebookKey);
+        const isOverLimit = !this.isPro && notebookIndex >= FREE_LIMITS.maxNotebooks;
         
-        if (notebookIndex >= FREE_LIMITS.maxNotebooks) {
-          // מחברת מעבר למגבלה - כפתור נעול
-          addPageBtn.innerHTML = '<span>➕</span> הוסף דף <span class="premium-badge-small">⭐</span>';
-          addPageBtn.classList.add('premium-locked-btn');
-          addPageBtn.style.opacity = '0.7';
-        } else {
-          // מחברת בתוך המגבלה - כפתור רגיל
-          addPageBtn.innerHTML = '<span>➕</span> הוסף דף';
-          addPageBtn.classList.remove('premium-locked-btn');
-          addPageBtn.style.opacity = '1';
+        // כפתור הוסף דף
+        if (addPageBtn) {
+          if (this.isPro || !isOverLimit) {
+            addPageBtn.innerHTML = '<span>➕</span> הוסף דף';
+            addPageBtn.classList.remove('premium-locked-btn');
+            addPageBtn.style.opacity = '1';
+          } else {
+            addPageBtn.innerHTML = '<span>➕</span> הוסף דף <span class="premium-badge-small">⭐</span>';
+            addPageBtn.classList.add('premium-locked-btn');
+            addPageBtn.style.opacity = '0.7';
+          }
+        }
+        
+        // כפתור תצוגת גלריה - פרימיום בלבד
+        if (galleryViewBtn) {
+          if (this.isPro) {
+            galleryViewBtn.innerHTML = '<span>📱</span> תצוגת גלריה';
+            galleryViewBtn.classList.remove('premium-locked-btn');
+            galleryViewBtn.style.opacity = '1';
+            galleryViewBtn.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+          } else {
+            galleryViewBtn.innerHTML = '<span>📱</span> תצוגת גלריה <span class="premium-badge-small">⭐</span>';
+            galleryViewBtn.classList.add('premium-locked-btn');
+            galleryViewBtn.style.opacity = '0.7';
+            galleryViewBtn.style.background = 'linear-gradient(135deg, #95a5a6, #7f8c8d)';
+          }
+        }
+        
+        // כפתור ייצוא - פרימיום בלבד
+        if (exportPdfBtn) {
+          if (this.isPro) {
+            exportPdfBtn.innerHTML = '<span>📄</span> ייצא ל-PDF';
+            exportPdfBtn.classList.remove('premium-locked-btn');
+            exportPdfBtn.style.opacity = '1';
+          } else {
+            exportPdfBtn.innerHTML = '<span>📄</span> ייצא ל-PDF <span class="premium-badge">⭐</span>';
+            exportPdfBtn.classList.add('premium-locked-btn');
+            exportPdfBtn.style.opacity = '0.7';
+          }
         }
       },
 
@@ -9897,8 +9920,8 @@ openNotebook(notebookKey) {
   // רינדור תוכן המחברת
   this.renderNotebookContent();
   
-  // עדכון מצב כפתור הוסף דף לפי הרשאות
-  this.updateAddPageButton(notebookKey);
+  // עדכון מצב כפתורי המחברת לפי הרשאות
+  this.updateNotebookButtons(notebookKey);
   
   // המרה אוטומטית של דפים עם תוכן HTML
   setTimeout(() => {
@@ -9932,6 +9955,12 @@ openNotebook(notebookKey) {
 
 // Toggle Gallery View
 toggleGalleryView() {
+  // בדיקת פרימיום
+  if (!this.isPro) {
+    this.openUpgradeModal('תצוגת גלריה');
+    return;
+  }
+  
   const galleryView = document.getElementById('galleryView');
   const notebookContent = document.getElementById('notebookContent');
   
@@ -19395,6 +19424,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <li>♾️ דפים ללא הגבלה</li>
             <li>✅ צ'קליסט - דפים ופריטים ללא הגבלה</li>
             <li>📋 משימות פעילות ללא הגבלה</li>
+            <li>📱 תצוגת גלריה</li>
             <li>📤 ייצוא מחברות ל-PDF</li>
             <li>📋 שכפול מחברות</li>
           </ul>
