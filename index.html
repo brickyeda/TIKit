@@ -10442,6 +10442,9 @@ applyZoom() {
           return pageDiv;
         }
         
+        // קבלת מספר הדפים הכולל
+        const totalPages = this.subjects[this.currentNotebook]?.pages?.length || 1;
+        
         pageDiv.innerHTML = `
 <div class="notebook-header">
             <div style="display: flex; gap: 20px; align-items: center; flex: 1;">
@@ -10459,6 +10462,10 @@ applyZoom() {
               <div style="display: flex; gap: 8px; align-items: center;">
                 <label style="font-weight: 600; color: var(--text-primary);">תאריך:</label>
                 <span style="font-size: 0.9rem; color: var(--text-secondary); padding: 6px 10px; background: var(--background-main); border-radius: 6px;">${pageData.date}</span>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <label style="font-weight: 600; color: var(--text-primary);">עמוד:</label>
+                <span style="font-size: 0.9rem; color: var(--text-secondary); padding: 6px 10px; background: var(--background-main); border-radius: 6px;">${index + 1} מתוך ${totalPages}</span>
               </div>
             </div>
             <button class="tool-btn delete-page-btn" onclick="app.deletePage(${index})" title="מחק דף זה">
@@ -10631,6 +10638,9 @@ if (pageData.formulas && pageData.formulas.length > 0) {
           `;
         }
         
+        // קבלת מספר הדפים הכולל
+        const totalPages = this.subjects[this.currentNotebook]?.pages?.length || 1;
+        
         return `
           <div class="notebook-header">
             <div style="display: flex; gap: 20px; align-items: center; flex: 1;">
@@ -10648,6 +10658,10 @@ if (pageData.formulas && pageData.formulas.length > 0) {
               <div style="display: flex; gap: 8px; align-items: center;">
                 <label style="font-weight: 600; color: var(--text-primary);">תאריך:</label>
                 <span style="font-size: 0.9rem; color: var(--text-secondary); padding: 6px 10px; background: var(--background-main); border-radius: 6px;">${pageData.date}</span>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <label style="font-weight: 600; color: var(--text-primary);">עמוד:</label>
+                <span style="font-size: 0.9rem; color: var(--text-secondary); padding: 6px 10px; background: var(--background-main); border-radius: 6px;">${index + 1} מתוך ${totalPages}</span>
               </div>
             </div>
             <button class="tool-btn delete-page-btn" onclick="app.deletePage(${index})" title="מחק רשימה זו">
