@@ -14349,10 +14349,17 @@ insertLink() {
 
 // Insert image function - שומר על יחס מקורי ודוחס תמונות
 insertImage() {
+  // בדוק שיש דף פעיל
+  if (this.activeTextareaIndex === undefined) {
+    alert('נא לבחור דף במחברת תחילה');
+    return;
+  }
+  
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
   const self = this;
+  const activeIndex = this.activeTextareaIndex;
   
   input.onchange = (e) => {
     const file = e.target.files[0];
@@ -14367,13 +14374,13 @@ insertImage() {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
-        // חישוב מידות חדשות - מקסימום 800px רוחב תוך שמירה על יחס
+        // חישוב מידות חדשות - מקסימום 600px רוחב תוך שמירה על יחס
         let width = tempImg.naturalWidth;
         let height = tempImg.naturalHeight;
-        const maxWidth = 800;
+        const maxWidth = 600;
         
         if (width > maxWidth) {
-          height = (height * maxWidth) / width;
+          height = Math.round((height * maxWidth) / width);
           width = maxWidth;
         }
         
@@ -14384,46 +14391,97 @@ insertImage() {
         ctx.drawImage(tempImg, 0, 0, width, height);
         
         // המרה ל-base64 עם דחיסה
-        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
         
-        const pageContent = document.querySelector('.notebook-page-content');
-        if (pageContent) {
-          const img = document.createElement('img');
-          img.src = compressedDataUrl;
-          img.style.maxWidth = '100%';
-          img.style.height = 'auto';
-          img.style.margin = '10px 0';
-          img.style.borderRadius = '8px';
-          img.style.display = 'block';
-          
-          const selection = window.getSelection();
-          if (selection.rangeCount > 0 && pageContent.contains(selection.anchorNode)) {
-            const range = selection.getRangeAt(0);
-            range.insertNode(img);
-            
-            // הוסף שורה חדשה אחרי התמונה
-            const br = document.createElement('br');
-            range.setStartAfter(img);
-            range.insertNode(br);
-            range.setStartAfter(br);
-            range.collapse(true);
-            selection.removeAllRanges();
-            selection.addRange(range);
-          } else {
-            pageContent.appendChild(img);
-            pageContent.appendChild(document.createElement('br'));
-          }
-          
-          // שמירה נכונה - שומר את כל תוכן הדף
-          if (self.activeTextareaIndex !== undefined) {
-            const textarea = document.getElementById(`textarea-${self.activeTextareaIndex}`);
-            if (textarea) {
-              self.savePage(self.activeTextareaIndex, textarea.innerHTML);
-            }
-          }
+        // מצא את האלמנט הפעיל
+        let element = document.getElementById(`textarea-${activeIndex}`);
+        if (!element) {
+          alert('לא נמצא דף פעיל');
+          return;
         }
+        
+        // אם זה textarea רגיל, המר אותו ל-contenteditable
+        if (element.tagName === 'TEXTAREA') {
+          // שמור את התוכן הנוכחי
+          const currentContent = element.value;
+          
+          // צור div חדש
+          const div = document.createElement('div');
+          div.id = `textarea-${activeIndex}`;
+          div.className = element.className;
+          div.contentEditable = 'true';
+          div.innerHTML = currentContent || '';
+          
+          // העתק סגנונות
+          div.style.cssText = element.style.cssText;
+          div.style.whiteSpace = 'pre-wrap';
+          div.style.overflowWrap = 'break-word';
+          
+          // העתק אטריביוטים
+          div.setAttribute('onfocus', `app.setActiveTextarea(${activeIndex})`);
+          div.setAttribute('data-is-richtext', 'true');
+          
+          // החלף
+          element.parentNode.replaceChild(div, element);
+          
+          // הוסף מאזינים
+          div.addEventListener('input', () => {
+            self.savePage(activeIndex, div.innerHTML);
+          });
+          
+          div.addEventListener('blur', () => {
+            self.savePage(activeIndex, div.innerHTML);
+          });
+          
+          element = div;
+        }
+        
+        // הוסף את התמונה
+        const img = document.createElement('img');
+        img.src = compressedDataUrl;
+        img.style.maxWidth = '100%';
+        img.style.height = 'auto';
+        img.style.margin = '10px 0';
+        img.style.borderRadius = '8px';
+        img.style.display = 'block';
+        
+        // הכנס את התמונה במיקום הסמן או בסוף
+        element.focus();
+        const selection = window.getSelection();
+        
+        if (selection.rangeCount > 0 && element.contains(selection.anchorNode)) {
+          const range = selection.getRangeAt(0);
+          range.insertNode(img);
+          
+          // הוסף שורה חדשה אחרי התמונה
+          const br = document.createElement('br');
+          range.setStartAfter(img);
+          range.insertNode(br);
+          range.setStartAfter(br);
+          range.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        } else {
+          element.appendChild(document.createElement('br'));
+          element.appendChild(img);
+          element.appendChild(document.createElement('br'));
+        }
+        
+        // שמירה
+        self.savePage(activeIndex, element.innerHTML);
+        
+        console.log('תמונה נוספה ונשמרה, גודל:', compressedDataUrl.length);
       };
+      
+      tempImg.onerror = function() {
+        alert('שגיאה בטעינת התמונה');
+      };
+      
       tempImg.src = event.target.result;
+    };
+    
+    reader.onerror = function() {
+      alert('שגיאה בקריאת הקובץ');
     };
     
     reader.readAsDataURL(file);
