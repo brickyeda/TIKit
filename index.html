@@ -8206,7 +8206,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
       <div class="about-contact">
         <div class="about-contact-label">📧 לשאלות, הצעות ומשוב</div>
         <div class="about-contact-email">
-          BRICKEDA@GMAIL.COM
+          <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b8faeaf1fbf3fdfcf9f8fff5f9f1f496fbf7f5">[email&#160;protected]</a>
         </div>
       </div>
       
@@ -8253,7 +8253,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     </div>
   </div>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // ========== About Modal Functions ==========
     function openAboutModal() {
       document.getElementById('aboutModal').classList.add('active');
@@ -10590,6 +10590,52 @@ if (pageData.formulas && pageData.formulas.length > 0) {
   }, 100);
 }
 
+// טעינת תמונות אינטראקטיביות שמורות
+if (pageData.interactiveImages && pageData.interactiveImages.length > 0) {
+  setTimeout(() => {
+    const pageContainer = pageDiv.querySelector('.lined-page, .grid-page, .blank-page');
+    if (pageContainer) {
+      console.log('🖼️ טוען', pageData.interactiveImages.length, 'תמונות לדף', index);
+      
+      pageData.interactiveImages.forEach(imgData => {
+        const imageContainer = document.createElement('div');
+        imageContainer.className = 'interactive-image-container';
+        imageContainer.style.left = imgData.left;
+        imageContainer.style.top = imgData.top;
+        imageContainer.style.width = imgData.width;
+        imageContainer.style.height = imgData.height;
+        if (imgData.transform) {
+          imageContainer.style.transform = imgData.transform;
+        }
+        
+        imageContainer.innerHTML = `
+          <div class="image-controls">
+            <button class="image-control-btn" onclick="app.rotateImage(this)" title="סובב 90°">↻</button>
+            <button class="image-control-btn" onclick="app.enableFreeRotation(this)" title="סובב חופשי">🔄</button>
+            <button class="image-control-btn" onclick="app.flipImageH(this)" title="היפוך אופקי">↔️</button>
+            <button class="image-control-btn" onclick="app.flipImageV(this)" title="היפוך אנכי">↕️</button>
+            <button class="image-control-btn" onclick="app.deleteImage(this)" title="מחק">🗑️</button>
+          </div>
+          <img src="${imgData.src}" draggable="false">
+          <div class="resize-handle nw"></div>
+          <div class="resize-handle ne"></div>
+          <div class="resize-handle sw"></div>
+          <div class="resize-handle se"></div>
+        `;
+        
+        pageContainer.appendChild(imageContainer);
+        app.makeImageDraggable(imageContainer);
+        app.makeImageResizable(imageContainer);
+        
+        imageContainer.addEventListener('click', (e) => {
+          e.stopPropagation();
+          app.selectImage(imageContainer);
+        });
+      });
+    }
+  }, 350);
+}
+
         return pageDiv;
       },
 
@@ -10828,6 +10874,23 @@ savePage(pageIndex, content) {
         });
       });
       this.subjects[this.currentNotebook].pages[pageIndex].interactiveShapes = shapes;
+      
+      // שמירת תמונות אינטראקטיביות
+      const images = [];
+      pageContainer.querySelectorAll('.interactive-image-container').forEach(imgContainer => {
+        const img = imgContainer.querySelector('img');
+        if (img && img.src) {
+          images.push({
+            src: img.src,
+            left: imgContainer.style.left,
+            top: imgContainer.style.top,
+            width: imgContainer.style.width,
+            height: imgContainer.style.height,
+            transform: imgContainer.style.transform || ''
+          });
+        }
+      });
+      this.subjects[this.currentNotebook].pages[pageIndex].interactiveImages = images;
     }
     
     this.saveNotebookData();
@@ -10840,18 +10903,21 @@ saveCurrentNotebookDrawings() {
   
   const pages = document.querySelectorAll('.lined-page, .grid-page, .blank-page');
   pages.forEach((pageContainer, index) => {
-    if (!this.subjects[this.currentNotebook].pages[index]) return;
+    if (!this.subjects[this.currentNotebook]?.pages?.[index]) return;
     
-    // שמירת ציור
+    // שמירת ציור - עם בדיקת גודל canvas
     const canvas = pageContainer.querySelector('.page-canvas');
-    if (canvas) {
-      const ctx = canvas.getContext('2d');
-      // בדוק אם יש משהו מצויר
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const hasDrawing = imageData.data.some(pixel => pixel !== 0);
-      
-      if (hasDrawing) {
-        this.subjects[this.currentNotebook].pages[index].drawing = canvas.toDataURL();
+    if (canvas && canvas.width > 0 && canvas.height > 0) {
+      try {
+        const ctx = canvas.getContext('2d');
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const hasDrawing = imageData.data.some(pixel => pixel !== 0);
+        
+        if (hasDrawing) {
+          this.subjects[this.currentNotebook].pages[index].drawing = canvas.toDataURL();
+        }
+      } catch(e) {
+        console.log('⚠️ דילוג על קנבס בדף', index);
       }
     }
     
@@ -10873,6 +10939,25 @@ saveCurrentNotebookDrawings() {
     });
     if (shapes.length > 0) {
       this.subjects[this.currentNotebook].pages[index].interactiveShapes = shapes;
+    }
+    
+    // שמירת תמונות אינטראקטיביות
+    const images = [];
+    pageContainer.querySelectorAll('.interactive-image-container').forEach(imgContainer => {
+      const img = imgContainer.querySelector('img');
+      if (img && img.src) {
+        images.push({
+          src: img.src,
+          left: imgContainer.style.left,
+          top: imgContainer.style.top,
+          width: imgContainer.style.width,
+          height: imgContainer.style.height,
+          transform: imgContainer.style.transform || ''
+        });
+      }
+    });
+    if (images.length > 0) {
+      this.subjects[this.currentNotebook].pages[index].interactiveImages = images;
     }
     
     // שמירת נוסחאות
@@ -13684,6 +13769,7 @@ toolbarInsertImage() {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
+  const self = this;
   
   input.onchange = (e) => {
     const file = e.target.files[0];
@@ -13691,11 +13777,35 @@ toolbarInsertImage() {
     
     const reader = new FileReader();
     reader.onload = (event) => {
-      const pageContainer = document.querySelector(`#textarea-${this.activeTextareaIndex}`).closest('.lined-page, .grid-page, .blank-page');
-      if (!pageContainer) return;
-      
-      // יצירת קונטיינר תמונה אינטראקטיבי
-      this.createInteractiveImage(pageContainer, event.target.result, this.activeTextareaIndex);
+      // טוען תמונה זמנית לקבלת הגדלים המקוריים
+      const tempImg = new Image();
+      tempImg.onload = function() {
+        const pageContainer = document.querySelector(`#textarea-${self.activeTextareaIndex}`).closest('.lined-page, .grid-page, .blank-page');
+        if (!pageContainer) return;
+        
+        // דחיסת תמונה
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width = tempImg.naturalWidth;
+        let height = tempImg.naturalHeight;
+        const maxWidth = 600;
+        
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(tempImg, 0, 0, width, height);
+        
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        
+        // יצירת קונטיינר תמונה אינטראקטיבי עם גדלים נכונים
+        self.createInteractiveImage(pageContainer, compressedDataUrl, self.activeTextareaIndex, width, height);
+      };
+      tempImg.src = event.target.result;
     };
     
     reader.readAsDataURL(file);
@@ -13704,18 +13814,29 @@ toolbarInsertImage() {
   input.click();
 },
 
-// יצירת תמונה אינטראקטיבית
-createInteractiveImage(container, imageSrc, pageIndex) {
+// יצירת תמונה אינטראקטיבית עם יחס גובה-רוחב נכון
+createInteractiveImage(container, imageSrc, pageIndex, imgWidth, imgHeight) {
   const imageContainer = document.createElement('div');
   imageContainer.className = 'interactive-image-container';
   imageContainer.style.left = '100px';
   imageContainer.style.top = '100px';
-  imageContainer.style.width = '200px';
-  imageContainer.style.height = '200px';
+  
+  // חישוב גודל תצוגה עם שמירה על יחס גובה-רוחב
+  let displayWidth = imgWidth || 200;
+  let displayHeight = imgHeight || 200;
+  const maxWidth = 400;
+  
+  if (displayWidth > maxWidth) {
+    displayHeight = Math.round((displayHeight * maxWidth) / displayWidth);
+    displayWidth = maxWidth;
+  }
+  
+  imageContainer.style.width = displayWidth + 'px';
+  imageContainer.style.height = displayHeight + 'px';
   
   imageContainer.innerHTML = `
     <div class="image-controls">
-<button class="image-control-btn" onclick="app.rotateImage(this)" title="סובב 90°">↻</button>
+      <button class="image-control-btn" onclick="app.rotateImage(this)" title="סובב 90°">↻</button>
       <button class="image-control-btn" onclick="app.enableFreeRotation(this)" title="סובב חופשי">🔄</button>
       <button class="image-control-btn" onclick="app.flipImageH(this)" title="היפוך אופקי">↔️</button>
       <button class="image-control-btn" onclick="app.flipImageV(this)" title="היפוך אנכי">↕️</button>
@@ -13741,6 +13862,9 @@ createInteractiveImage(container, imageSrc, pageIndex) {
     e.stopPropagation();
     this.selectImage(imageContainer);
   });
+  
+  // שמירה אחרי יצירת תמונה
+  this.saveCurrentNotebookDrawings();
 },
 
 // בחירת תמונה
@@ -21244,20 +21368,4 @@ document.addEventListener('DOMContentLoaded', function() {
   padding: 30px;
   max-width: 400px;
   width: 90%;
-  text-align: center;
-}
-
-.cancel-modal-content h3 {
-  color: #1f2937;
-  margin-bottom: 15px;
-}
-
-.cancel-modal-content p {
-  color: #6b7280;
-  margin-bottom: 25px;
-  line-height: 1.6;
-}
-
-.cancel-modal-buttons {
-  display: flex;
-  gap
+  te
