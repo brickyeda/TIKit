@@ -13162,23 +13162,23 @@ async exportNotebookToPDF() {
               if (controls) controls.style.display = '';
               imgHandles.forEach(h => h.style.display = '');
               
-              const imgRect = imgContainer.getBoundingClientRect();
+              // קח את המיקום והגודל מה-style של האלמנט
+              const imgLeft = parseFloat(imgContainer.style.left) || 0;
+              const imgTop = parseFloat(imgContainer.style.top) || 0;
+              const imgWidth = parseFloat(imgContainer.style.width) || imgContainer.offsetWidth;
+              const imgHeight = parseFloat(imgContainer.style.height) || imgContainer.offsetHeight;
+              
+              // המר מפיקסלים של הדף לפיקסלים של PDF
               const scaleX = pageWidth / pageRect.width;
+              const scaleY = pageHeight / pageRect.height;
               
-              // חישוב מיקום באחוזים מהמרכז (כמו בייצוא דף יחיד)
-              const xPercent = (imgRect.left - pageRect.left + imgRect.width/2) / pageRect.width;
-              const yPercent = (imgRect.top - pageRect.top + imgRect.height/2) / pageRect.height;
-              
-              // שמירה על יחס גובה-רוחב
-              const aspectRatio = imgCanvas.height / imgCanvas.width;
-              const imgW = imgRect.width * scaleX;
-              const imgH = imgW * aspectRatio;
-              
-              const imgX = (xPercent * pageWidth) - (imgW / 2);
-              const imgY = (yPercent * pageHeight) - (imgH / 2);
+              const pdfX = imgLeft * scaleX;
+              const pdfY = imgTop * scaleY;
+              const pdfW = imgWidth * scaleX;
+              const pdfH = imgHeight * scaleY;
               
               const imgData = imgCanvas.toDataURL('image/png');
-              pdf.addImage(imgData, 'PNG', imgX, imgY, imgW, imgH);
+              pdf.addImage(imgData, 'PNG', pdfX, pdfY, pdfW, pdfH);
             } catch(e) { console.log('Image export error:', e); }
           }
           
