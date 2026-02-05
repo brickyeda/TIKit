@@ -13062,6 +13062,9 @@ async exportNotebookToPDF() {
           pdf.setLineWidth(0.4);
           pdf.line(pageWidth - marginRight + 5, 15, pageWidth - marginRight + 5, pageHeight - 10);
           
+          // המתן שהדף יתרנדר לגמרי
+          await new Promise(r => setTimeout(r, 100));
+          
           // צילום כל הצורות
           const pageRect = pageEl.getBoundingClientRect();
           
@@ -13140,6 +13143,8 @@ async exportNotebookToPDF() {
           
           // ייצוא תמונות אינטראקטיביות
           const interactiveImages = pageEl.querySelectorAll('.interactive-image-container');
+          const scaleXForImages = pageWidth / pageRect.width;
+          
           for (const imgContainer of interactiveImages) {
             try {
               // הסתר כפתורי בקרה וידיות לפני הצילום
@@ -13162,23 +13167,18 @@ async exportNotebookToPDF() {
               if (controls) controls.style.display = '';
               imgHandles.forEach(h => h.style.display = '');
               
-              // קח את המיקום והגודל מה-style של האלמנט
-              const imgLeft = parseFloat(imgContainer.style.left) || 0;
-              const imgTop = parseFloat(imgContainer.style.top) || 0;
-              const imgWidth = parseFloat(imgContainer.style.width) || imgContainer.offsetWidth;
-              const imgHeight = parseFloat(imgContainer.style.height) || imgContainer.offsetHeight;
-              
-              // המר מפיקסלים של הדף לפיקסלים של PDF
-              const scaleX = pageWidth / pageRect.width;
-              const scaleY = pageHeight / pageRect.height;
-              
-              const pdfX = imgLeft * scaleX;
-              const pdfY = imgTop * scaleY;
-              const pdfW = imgWidth * scaleX;
-              const pdfH = imgHeight * scaleY;
+              // חישוב זהה לייצוא דף יחיד
+              const imgRect = imgContainer.getBoundingClientRect();
+              const xPercent = (imgRect.left - pageRect.left + imgRect.width/2) / pageRect.width;
+              const yPercent = (imgRect.top - pageRect.top + imgRect.height/2) / pageRect.height;
+              const aspectRatio = imgCanvas.height / imgCanvas.width;
+              const imgW = imgRect.width * scaleXForImages;
+              const imgH = imgW * aspectRatio;
+              const imgX = (xPercent * pageWidth) - (imgW / 2);
+              const imgY = (yPercent * pageHeight) - (imgH / 2);
               
               const imgData = imgCanvas.toDataURL('image/png');
-              pdf.addImage(imgData, 'PNG', pdfX, pdfY, pdfW, pdfH);
+              pdf.addImage(imgData, 'PNG', imgX, imgY, imgW, imgH);
             } catch(e) { console.log('Image export error:', e); }
           }
           
