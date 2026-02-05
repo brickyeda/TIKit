@@ -12479,6 +12479,34 @@ async exportCurrentPage() {
       } catch(e) { console.log('Formula error:', e); }
     }
 
+    // תמונות אינטראקטיביות
+    for (const imgContainer of pageEl.querySelectorAll('.interactive-image-container')) {
+      try {
+        // הסתרת כפתורי בקרה וידיות לפני הצילום
+        const controls = imgContainer.querySelector('.image-controls');
+        const handles = imgContainer.querySelectorAll('.resize-handle');
+        if (controls) controls.style.display = 'none';
+        handles.forEach(h => h.style.display = 'none');
+        
+        await new Promise(r => setTimeout(r, 30));
+        const imgCanvas = await html2canvas(imgContainer, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: null, logging: false });
+        
+        // החזרת הכפתורים
+        if (controls) controls.style.display = '';
+        handles.forEach(h => h.style.display = '');
+        
+        const imgRect = imgContainer.getBoundingClientRect();
+        const xPercent = (imgRect.left - pageRect.left + imgRect.width/2) / pageRect.width;
+        const yPercent = (imgRect.top - pageRect.top + imgRect.height/2) / pageRect.height;
+        const aspectRatio = imgCanvas.height / imgCanvas.width;
+        const imgW = imgRect.width * scaleX;
+        const imgH = imgW * aspectRatio;
+        const imgX = (xPercent * pageWidth) - (imgW / 2);
+        const imgY = (yPercent * pageHeight) - (imgH / 2);
+        pdf.addImage(imgCanvas.toDataURL('image/png'), 'PNG', imgX, imgY, imgW, imgH);
+      } catch(e) { console.log('Image error:', e); }
+    }
+
     // טקסט
     const richText = pageEl.querySelector('[data-is-richtext="true"]');
     const textarea = pageEl.querySelector('textarea');
@@ -12984,7 +13012,7 @@ async exportNotebookToPDF() {
       const pageEl = pageElements[pageIdx];
       
       // בדוק אם יש ציורים או צורות בדף
-      const hasDrawings = pageEl.querySelector('canvas') || pageEl.querySelector('.interactive-shape') || pageEl.querySelector('.draggable-image') || pageEl.querySelector('.dropped-formula');
+      const hasDrawings = pageEl.querySelector('canvas') || pageEl.querySelector('.interactive-shape') || pageEl.querySelector('.draggable-image') || pageEl.querySelector('.dropped-formula') || pageEl.querySelector('.interactive-image-container');
       const richTextElement = pageEl.querySelector('[data-is-richtext="true"]');
       
       if (hasDrawings) {
@@ -13108,6 +13136,44 @@ async exportNotebookToPDF() {
             
             const imgData = formulaCanvas.toDataURL('image/png');
             pdf.addImage(imgData, 'PNG', fX, fY, fW, fH);
+          }
+          
+          // ייצוא תמונות אינטראקטיביות
+          const interactiveImages = pageEl.querySelectorAll('.interactive-image-container');
+          for (const imgContainer of interactiveImages) {
+            try {
+              // הסתר כפתורי בקרה וידיות לפני הצילום
+              const controls = imgContainer.querySelector('.image-controls');
+              const imgHandles = imgContainer.querySelectorAll('.resize-handle');
+              if (controls) controls.style.display = 'none';
+              imgHandles.forEach(h => h.style.display = 'none');
+              
+              await new Promise(r => setTimeout(r, 30));
+              
+              const imgCanvas = await html2canvas(imgContainer, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: null,
+                logging: false
+              });
+              
+              // החזר את הכפתורים
+              if (controls) controls.style.display = '';
+              imgHandles.forEach(h => h.style.display = '');
+              
+              const imgRect = imgContainer.getBoundingClientRect();
+              const scaleX = pageWidth / pageRect.width;
+              const scaleY = pageHeight / pageRect.height;
+              
+              const imgX = (imgRect.left - pageRect.left) * scaleX;
+              const imgY = (imgRect.top - pageRect.top) * scaleY;
+              const imgW = imgRect.width * scaleX;
+              const imgH = imgRect.height * scaleY;
+              
+              const imgData = imgCanvas.toDataURL('image/png');
+              pdf.addImage(imgData, 'PNG', imgX, imgY, imgW, imgH);
+            } catch(e) { console.log('Image export error:', e); }
           }
           
           // טקסט - עם תמיכה בצבעים
