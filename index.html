@@ -4809,6 +4809,21 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
   transition: stroke-dashoffset 0.3s ease;
 }
 
+.timer-circle-fg {
+  fill: none;
+  stroke: #667eea;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 565.48;
+  stroke-dashoffset: 565.48;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.timer-circle-fg.timer {
+  stroke: #22c55e;
+  stroke-dashoffset: 0;
+}
+
 .timer-pulse-ring {
   position: absolute;
   top: 50%;
@@ -6799,10 +6814,10 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 
         <!-- List Group -->
         <div class="toolbar-group">
-          <button class="toolbar-btn" onclick="app.insertGlobalList('bullet')" title="רשימת תבליטים">
+          <button class="toolbar-btn" id="bulletListBtn" onclick="app.insertGlobalList('bullet')" title="רשימת תבליטים">
             • ◦ ▪
           </button>
-          <button class="toolbar-btn" onclick="app.insertGlobalList('numbered')" title="רשימה ממוספרת">
+          <button class="toolbar-btn" id="numberedListBtn" onclick="app.insertGlobalList('numbered')" title="רשימה ממוספרת">
             1. 2. 3.
           </button>
           <button class="toolbar-btn" onclick="app.insertGlobalSymbol('★')" title="הוסף כוכב">
@@ -7468,6 +7483,10 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
         <div class="timer-header">
           <h1>⏱️ טיימר ושעון עצר</h1>
           <p>מעקב זמן מדויק ומקצועי</p>
+          <button class="back-btn" onclick="app.showPage('homepage')" style="margin-top: 10px;">
+            <span>←</span>
+            חזור לדף הבית
+          </button>
         </div>
 
         <!-- Tabs -->
@@ -8172,7 +8191,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
       <div class="about-contact">
         <div class="about-contact-label">📧 לשאלות, הצעות ומשוב</div>
         <div class="about-contact-email">
-          <a href="/cdn-cgi/l/email-protection#bfddcdd6dcd4c6dadbdeffd8d2ded6d391dcd0d2"><span class="__cf_email__" data-cfemail="ff9d8d969c94869a9b9ebf98929e9693d19c9092">[email&#160;protected]</span></a>
+          BRICKEDA@GMAIL.COM
         </div>
       </div>
       
@@ -8219,7 +8238,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     </div>
   </div>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  <script>
     // ========== About Modal Functions ==========
     function openAboutModal() {
       document.getElementById('aboutModal').classList.add('active');
@@ -11635,6 +11654,22 @@ applyColor(type, color) {
 
       // הוספת רשימה גלובלית
       insertGlobalList(listType) {
+        // עדכן את מצב הכפתורים
+        const bulletBtn = document.getElementById('bulletListBtn');
+        const numberedBtn = document.getElementById('numberedListBtn');
+        
+        if (listType === 'bullet') {
+          if (bulletBtn) {
+            bulletBtn.classList.toggle('active');
+            if (numberedBtn) numberedBtn.classList.remove('active');
+          }
+        } else {
+          if (numberedBtn) {
+            numberedBtn.classList.toggle('active');
+            if (bulletBtn) bulletBtn.classList.remove('active');
+          }
+        }
+        
         // אם אין דף פעיל, נסה לבחור את הדף הראשון
         if (this.activeTextareaIndex === undefined) {
           const notebook = this.subjects[this.currentNotebook];
@@ -14297,7 +14332,7 @@ insertLink() {
   this.saveNotebookData();
 },
 
-// Insert image function - ללא שינוי
+// Insert image function - שומר על יחס מקורי
 insertImage() {
   const input = document.createElement('input');
   input.type = 'file';
@@ -14314,7 +14349,9 @@ insertImage() {
         const img = document.createElement('img');
         img.src = event.target.result;
         img.style.maxWidth = '100%';
+        img.style.width = 'auto';
         img.style.height = 'auto';
+        img.style.objectFit = 'contain';
         img.style.margin = '10px 0';
         img.style.borderRadius = '8px';
         img.style.display = 'block';
@@ -16303,10 +16340,11 @@ saveState();
  
   const getMousePos = (e) => {
     const rect = canvas.getBoundingClientRect();
-    const zoom = 0.85; // התאמה לזום של הדף
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
     return {
-      x: (e.clientX - rect.left) / zoom,
-      y: (e.clientY - rect.top) / zoom
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
     };
   };
  
@@ -16550,9 +16588,11 @@ drawShapeOnCanvas(ctx, startX, startY, x, y) {
 
   getMousePos(e) {
     const rect = this.canvas.getBoundingClientRect();
+    const scaleX = this.canvas.width / rect.width;
+    const scaleY = this.canvas.height / rect.height;
     return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
     };
   },
 
@@ -16798,9 +16838,10 @@ interactiveShapes: {
       if (app.drawing.currentTool !== 'shape') return;
       
       const rect = canvas.getBoundingClientRect();
-      const zoom = 0.85;
-      self.startX = (e.clientX - rect.left) / zoom;
-      self.startY = (e.clientY - rect.top) / zoom;
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      self.startX = (e.clientX - rect.left) * scaleX;
+      self.startY = (e.clientY - rect.top) * scaleY;
       self.isCapturing = true;
       self.currentCanvas = canvas;
       
@@ -16824,9 +16865,10 @@ interactiveShapes: {
       }
       
       const rect = canvas.getBoundingClientRect();
-      const zoom = 0.85;
-      const endX = (e.clientX - rect.left) / zoom;
-      const endY = (e.clientY - rect.top) / zoom;
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const endX = (e.clientX - rect.left) * scaleX;
+      const endY = (e.clientY - rect.top) * scaleY;
       
       const width = Math.abs(endX - self.startX);
       const height = Math.abs(endY - self.startY);
