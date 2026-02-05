@@ -2920,7 +2920,7 @@ padding: 0px 10px 10px 10px;
 
 /* תוסיף ריפוד לתוכן כדי שלא יוסתר */
 #notebookContent {
-  margin-top: 100px; /* גובה סרגל הכלים הראשי + סרגל הציור + מרווחים */
+  margin-top: 20px; /* צומצם משמעותית */
 }
 
 /* === מצב דפדוף במחברות === */
@@ -2945,22 +2945,22 @@ padding: 0px 10px 10px 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding: 15px 20px;
+  gap: 15px;
+  padding: 8px 15px;
   background: var(--background-card);
-  border-radius: 15px;
+  border-radius: 12px;
   box-shadow: 0 4px 15px var(--shadow-light);
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .page-nav-btn {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: none;
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
-  font-size: 24px;
+  font-size: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -3917,6 +3917,17 @@ scrollbar-gutter: stable;
       z-index: 1;
       padding: 0;
       margin: 0;
+    }
+
+    /* תמונות במחברות - שומרות על יחס מקורי */
+    .notebook-page-content img,
+    .enhanced-textarea img,
+    [contenteditable="true"] img {
+      max-width: 100% !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: contain !important;
+      aspect-ratio: auto !important;
     }
 
     /* Formatting classes for rich text */
@@ -7479,14 +7490,18 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     <!-- Timer Page -->
     <div id="timer" class="page">
       <div class="timer-container">
+        <!-- Back Button at Top Left -->
+        <div style="display: flex; justify-content: flex-start; margin-bottom: 15px;">
+          <button class="back-btn" onclick="app.showPage('homepage')">
+            <span>←</span>
+            חזור לדף הבית
+          </button>
+        </div>
+        
         <!-- Header -->
         <div class="timer-header">
           <h1>⏱️ טיימר ושעון עצר</h1>
           <p>מעקב זמן מדויק ומקצועי</p>
-          <button class="back-btn" onclick="app.showPage('homepage')" style="margin-top: 10px;">
-            <span>←</span>
-            חזור לדף הבית
-          </button>
         </div>
 
         <!-- Tabs -->
