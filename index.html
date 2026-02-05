@@ -13164,12 +13164,18 @@ async exportNotebookToPDF() {
               
               const imgRect = imgContainer.getBoundingClientRect();
               const scaleX = pageWidth / pageRect.width;
-              const scaleY = pageHeight / pageRect.height;
               
-              const imgX = (imgRect.left - pageRect.left) * scaleX;
-              const imgY = (imgRect.top - pageRect.top) * scaleY;
+              // חישוב מיקום באחוזים מהמרכז (כמו בייצוא דף יחיד)
+              const xPercent = (imgRect.left - pageRect.left + imgRect.width/2) / pageRect.width;
+              const yPercent = (imgRect.top - pageRect.top + imgRect.height/2) / pageRect.height;
+              
+              // שמירה על יחס גובה-רוחב
+              const aspectRatio = imgCanvas.height / imgCanvas.width;
               const imgW = imgRect.width * scaleX;
-              const imgH = imgRect.height * scaleY;
+              const imgH = imgW * aspectRatio;
+              
+              const imgX = (xPercent * pageWidth) - (imgW / 2);
+              const imgY = (yPercent * pageHeight) - (imgH / 2);
               
               const imgData = imgCanvas.toDataURL('image/png');
               pdf.addImage(imgData, 'PNG', imgX, imgY, imgW, imgH);
