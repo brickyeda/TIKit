@@ -1,0 +1,1903 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIKit - הילקוט הדיגיטלי שלך</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #7C3AED;
+            --primary-dark: #6D28D9;
+            --primary-light: #A78BFA;
+            --primary-lighter: #C4B5FD;
+            --accent: #F59E0B;
+            --accent-light: #FBBF24;
+
+            /* Light-dark scheme */
+            --bg-main: #F5F3FF;
+            --bg-section: #FFFFFF;
+            --bg-alt: #EDE9FE;
+            --bg-card: #FFFFFF;
+            --bg-card-hover: #FAF5FF;
+            --bg-nav: rgba(255, 255, 255, 0.85);
+            --bg-nav-scrolled: rgba(255, 255, 255, 0.97);
+            --bg-footer: #1E1B4B;
+            --bg-footer-2: #312E81;
+
+            --text-primary: #1E1B4B;
+            --text-secondary: #4C4577;
+            --text-muted: #7C7499;
+            --text-on-dark: #F5F3FF;
+            --text-on-dark-secondary: #C4B5FD;
+
+            --surface: rgba(124, 58, 237, 0.04);
+            --border: rgba(124, 58, 237, 0.1);
+            --border-strong: rgba(124, 58, 237, 0.2);
+            --glow: rgba(124, 58, 237, 0.08);
+            --success: #10B981;
+            --gradient-1: linear-gradient(135deg, #7C3AED, #A78BFA, #F59E0B);
+            --gradient-2: linear-gradient(135deg, #7C3AED 0%, #9333EA 50%, #A855F7 100%);
+            --gradient-soft: linear-gradient(135deg, #EDE9FE, #F5F3FF, #FEF3C7);
+
+            --shadow-sm: 0 2px 8px rgba(124, 58, 237, 0.06);
+            --shadow-md: 0 8px 24px rgba(124, 58, 237, 0.08);
+            --shadow-lg: 0 16px 48px rgba(124, 58, 237, 0.1);
+            --shadow-xl: 0 24px 64px rgba(124, 58, 237, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.7;
+        }
+
+        /* === NAVIGATION === */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 14px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(20px);
+            background: var(--bg-nav);
+            border-bottom: 1px solid transparent;
+        }
+
+        nav.scrolled {
+            background: var(--bg-nav-scrolled);
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            object-fit: contain;
+        }
+
+        .nav-logo-text {
+            font-family: 'Rubik', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            right: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: var(--gradient-2) !important;
+            color: white !important;
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s !important;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(124, 58, 237, 0.35);
+        }
+
+        .nav-cta::after {
+            display: none !important;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        /* === HERO SECTION === */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 120px 40px 80px;
+            overflow: hidden;
+            background: var(--bg-section);
+        }
+
+        .hero-bg-shapes {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .hero-bg-shapes .shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+        }
+
+        .hero-bg-shapes .shape-1 {
+            width: 500px;
+            height: 500px;
+            background: #EDE9FE;
+            top: -100px;
+            right: -100px;
+        }
+
+        .hero-bg-shapes .shape-2 {
+            width: 400px;
+            height: 400px;
+            background: #DDD6FE;
+            bottom: -150px;
+            left: -50px;
+        }
+
+        .hero-bg-shapes .shape-3 {
+            width: 250px;
+            height: 250px;
+            background: #FEF3C7;
+            top: 40%;
+            left: 20%;
+        }
+
+        .hero-bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(124, 58, 237, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124, 58, 237, 0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 100%);
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text {
+            animation: fadeInRight 1s ease;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin-bottom: 28px;
+            font-weight: 500;
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.5); }
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+            color: var(--text-primary);
+        }
+
+        .hero-title-gradient {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% 200%;
+            animation: gradientShift 6s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hero-desc {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 520px;
+            line-height: 1.8;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 36px;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--gradient-2);
+            color: white;
+            box-shadow: 0 4px 24px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(124, 58, 237, 0.45);
+        }
+
+        .btn-ghost {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--border-strong);
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-alt);
+            border-color: var(--primary);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-number {
+            font-family: 'Rubik', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .hero-stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Hero Visual */
+        .hero-visual {
+            position: relative;
+            animation: fadeInLeft 1s ease 0.3s both;
+        }
+
+        .hero-mockup {
+            position: relative;
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .mockup-window {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .mockup-topbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 18px;
+            background: var(--bg-alt);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mockup-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .mockup-dot:nth-child(1) { background: #FF5F57; }
+        .mockup-dot:nth-child(2) { background: #FFBD2E; }
+        .mockup-dot:nth-child(3) { background: #28CA41; }
+
+        .mockup-body {
+            padding: 24px;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .mockup-greeting {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .mockup-tools {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .mockup-tool {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .mockup-tool:hover {
+            border-color: var(--primary-light);
+            background: var(--bg-alt);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .mockup-tool-icon {
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+        }
+
+        .mockup-tool-label {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .mockup-float {
+            position: absolute;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 18px;
+            font-size: 0.82rem;
+            box-shadow: var(--shadow-lg);
+            animation: float 4s ease-in-out infinite;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .mockup-float-1 {
+            top: -20px;
+            left: -40px;
+            animation-delay: 0s;
+        }
+
+        .mockup-float-2 {
+            bottom: 40px;
+            right: -50px;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* === SECTIONS === */
+        .section {
+            padding: 100px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-white { background: var(--bg-section); }
+        .section-tinted { background: var(--bg-main); }
+        .section-purple {
+            background: var(--gradient-2);
+            color: white;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 64px;
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .section-purple .section-label {
+            color: var(--primary-lighter);
+        }
+
+        .section-title {
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .section-desc {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .section-purple .section-desc {
+            color: var(--text-on-dark-secondary);
+        }
+
+        /* === FEATURES === */
+        .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 36px 28px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: 3px;
+            background: var(--gradient-2);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--border-strong);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            background: var(--bg-card-hover);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .feature-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* === COMPARISON TABLE === */
+        .comparison-table {
+            max-width: 900px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-md);
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table thead th {
+            padding: 24px 28px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-align: center;
+            border-bottom: 2px solid var(--border);
+            background: var(--bg-main);
+        }
+
+        .comparison-table thead th:first-child {
+            text-align: right;
+            width: 50%;
+        }
+
+        .comparison-table thead th:nth-child(2) {
+            color: var(--text-secondary);
+        }
+
+        .comparison-table thead th:nth-child(3) {
+            background: var(--bg-alt);
+            color: var(--primary);
+            position: relative;
+        }
+
+        .th-badge {
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-2);
+            color: white;
+            font-size: 0.7rem;
+            padding: 4px 14px;
+            border-radius: 0 0 8px 8px;
+            font-weight: 600;
+        }
+
+        .comparison-table tbody td {
+            padding: 18px 28px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+
+        .comparison-table tbody td:first-child {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .comparison-table tbody td:nth-child(2),
+        .comparison-table tbody td:nth-child(3) {
+            text-align: center;
+        }
+
+        .comparison-table tbody td:nth-child(3) {
+            background: rgba(124, 58, 237, 0.02);
+        }
+
+        .comparison-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tbody tr:hover {
+            background: var(--bg-main);
+        }
+
+        .check { color: var(--success); font-size: 1.2rem; font-weight: 600; }
+        .cross { color: #EF4444; font-size: 1.2rem; }
+        .limit { color: var(--text-muted); font-size: 0.85rem; }
+
+        /* === PRICING === */
+        .pricing-cards {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 28px;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 44px 36px;
+            position: relative;
+            transition: all 0.4s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            border-width: 2px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.03), rgba(167, 139, 250, 0.03));
+            box-shadow: 0 16px 64px rgba(124, 58, 237, 0.12);
+        }
+
+        .pricing-popular {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-2);
+            color: white;
+            padding: 6px 24px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pricing-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .pricing-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+
+        .pricing-price {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .pricing-amount {
+            font-family: 'Rubik', sans-serif;
+            font-size: 3.2rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+            color: var(--text-primary);
+        }
+
+        .pricing-currency {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .pricing-period {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .pricing-features li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .pricing-features li .icon {
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        .pricing-features li .icon.yes {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--success);
+        }
+
+        .pricing-features li .icon.no {
+            background: rgba(239, 68, 68, 0.08);
+            color: #EF4444;
+        }
+
+        .pricing-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .pricing-btn-free {
+            background: var(--bg-main);
+            border: 2px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .pricing-btn-free:hover {
+            border-color: var(--primary);
+            background: var(--bg-alt);
+        }
+
+        .pricing-btn-pro {
+            background: var(--gradient-2);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 24px rgba(124, 58, 237, 0.3);
+        }
+
+        .pricing-btn-pro:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(124, 58, 237, 0.45);
+        }
+
+        .pricing-note {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .pricing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .pricing-toggle-label {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pricing-toggle-label.active {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .toggle-switch {
+            width: 52px;
+            height: 28px;
+            background: var(--bg-alt);
+            border-radius: 100px;
+            position: relative;
+            cursor: pointer;
+            border: 2px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            top: 2px;
+            right: 3px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(-23px);
+        }
+
+        .pricing-save {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--success);
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-weight: 600;
+        }
+
+        /* === FAQ === */
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            border-color: var(--border-strong);
+        }
+
+        .faq-item.active {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-md);
+        }
+
+        .faq-question {
+            padding: 22px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.3s;
+            gap: 16px;
+        }
+
+        .faq-question:hover {
+            color: var(--primary);
+        }
+
+        .faq-arrow {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-alt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: all 0.4s ease;
+            color: var(--primary);
+        }
+
+        .faq-item.active .faq-arrow {
+            transform: rotate(180deg);
+            background: var(--primary);
+            color: white;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 300px;
+        }
+
+        .faq-answer-inner {
+            padding: 0 28px 24px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* === TESTIMONIALS === */
+        .testimonials-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .testimonial-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px 24px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .testimonial-stars {
+            color: #F59E0B;
+            font-size: 1rem;
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+        }
+
+        .testimonial-text {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .testimonial-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--gradient-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .testimonial-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .testimonial-role {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* === CTA SECTION === */
+        .cta-section {
+            text-align: center;
+            padding: 120px 40px;
+            position: relative;
+            background: var(--gradient-2);
+            color: white;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -25%;
+            width: 150%;
+            height: 200%;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .cta-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-desc {
+            font-size: 1.15rem;
+            color: var(--text-on-dark-secondary);
+            margin-bottom: 40px;
+            max-width: 550px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-section .btn-primary {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .cta-section .btn-primary:hover {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+
+        .cta-section .btn-ghost {
+            background: rgba(255, 255, 255, 0.12);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .cta-section .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: white;
+        }
+
+        /* === FOOTER === */
+        footer {
+            background: var(--bg-footer);
+            color: var(--text-on-dark);
+            padding: 60px 40px 30px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 48px;
+            margin-bottom: 48px;
+        }
+
+        .footer-brand-desc {
+            font-size: 0.9rem;
+            color: var(--text-on-dark-secondary);
+            margin-top: 16px;
+            line-height: 1.7;
+        }
+
+        .footer-logo .nav-logo-icon {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .footer-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-links a {
+            color: var(--text-on-dark-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-on-dark-secondary);
+        }
+
+        /* === SCROLL ANIMATIONS === */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.7s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 48px;
+                text-align: center;
+            }
+
+            .hero-desc { margin: 0 auto 40px; }
+            .hero-actions { justify-content: center; }
+            .hero-stats { justify-content: center; }
+            .hero-visual { order: -1; }
+            .hero-mockup { max-width: 420px; }
+
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+
+            .footer-content { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 14px 20px; }
+
+            .nav-links {
+                display: none;
+                position: fixed;
+                top: 70px;
+                right: 0;
+                left: 0;
+                bottom: 0;
+                background: rgba(255, 255, 255, 0.98);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 28px;
+                backdrop-filter: blur(20px);
+            }
+
+            .nav-links.open { display: flex; }
+            .mobile-menu-btn { display: block; }
+
+            .hero { padding: 100px 20px 60px; }
+            .section { padding: 70px 20px; }
+
+            .features-grid { grid-template-columns: 1fr; }
+
+            .pricing-cards { grid-template-columns: 1fr; max-width: 420px; }
+            .testimonials-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+
+            .comparison-table { overflow-x: auto; }
+            .comparison-table table { min-width: 600px; }
+
+            .footer-content { grid-template-columns: 1fr; gap: 32px; }
+            .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+
+            .hero-stats { gap: 24px; }
+            .mockup-float { display: none; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-actions { flex-direction: column; width: 100%; }
+            .btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <a href="https://brickyeda.github.io/TIKit/" class="nav-logo">
+            <!-- LOGO: Replace src with your logo path -->
+            <img src="logo.png" alt="TIKit Logo" class="nav-logo-icon" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'; ">
+            <div class="nav-logo-icon" style="display:none; background: var(--gradient-2); color: white; font-weight: 800; font-size: 22px;">T</div>
+            <span class="nav-logo-text">TIKit</span>
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#features">כלים</a></li>
+            <li><a href="#comparison">השוואה</a></li>
+            <li><a href="#pricing">מחירים</a></li>
+            <li><a href="#faq">שאלות נפוצות</a></li>
+            <li><a href="https://brickyeda.github.io/TIKit/" class="nav-cta">התחל בחינם</a></li>
+        </ul>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="תפריט">☰</button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        <div class="hero-bg-grid"></div>
+
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="hero-badge">
+                    <span class="hero-badge-dot"></span>
+                    גרסה חדשה זמינה
+                </div>
+                <h1 class="hero-title">
+                    הילקוט הדיגיטלי<br>
+                    <span class="hero-title-gradient">שהולך איתך לכל מקום</span>
+                </h1>
+                <p class="hero-desc">
+                    מחברות, משימות, יומן, מחשבון ועוד — הכל במקום אחד.
+                    TIKit הוא הכלי שכל תלמיד צריך כדי להצליח בלימודים.
+                </p>
+                <div class="hero-actions">
+                    <a href="https://brickyeda.github.io/TIKit/" class="btn btn-primary">
+                        🚀 התחל בחינם
+                    </a>
+                    <a href="https://brickyeda.github.io/TIKit/viewer.html" class="btn btn-ghost">
+                        👁️ כניסה כאורח
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-number">10+</div>
+                        <div class="hero-stat-label">כלים מובנים</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-number">100%</div>
+                        <div class="hero-stat-label">עברית מלאה</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-number">0₪</div>
+                        <div class="hero-stat-label">להתחיל</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="hero-mockup">
+                    <div class="mockup-float mockup-float-1">
+                        ✅ 3 משימות הושלמו היום
+                    </div>
+                    <div class="mockup-float mockup-float-2">
+                        📚 מחברת חדשה נוצרה
+                    </div>
+                    <div class="mockup-window">
+                        <div class="mockup-topbar">
+                            <div class="mockup-dot"></div>
+                            <div class="mockup-dot"></div>
+                            <div class="mockup-dot"></div>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="mockup-greeting">☀️ בוקר טוב!</div>
+                            <div class="mockup-tools">
+                                <div class="mockup-tool">
+                                    <div class="mockup-tool-icon">📚</div>
+                                    <div class="mockup-tool-label">מחברות</div>
+                                </div>
+                                <div class="mockup-tool">
+                                    <div class="mockup-tool-icon">✅</div>
+                                    <div class="mockup-tool-label">משימות</div>
+                                </div>
+                                <div class="mockup-tool">
+                                    <div class="mockup-tool-icon">📅</div>
+                                    <div class="mockup-tool-label">יומן</div>
+                                </div>
+                                <div class="mockup-tool">
+                                    <div class="mockup-tool-icon">🧮</div>
+                                    <div class="mockup-tool-label">מחשבון</div>
+                                </div>
+                                <div class="mockup-tool">
+                                    <div class="mockup-tool-icon">⏱️</div>
+                                    <div class="mockup-tool-label">טיימר</div>
+                                </div>
+                                <div class="mockup-tool">
+                                    <div class="mockup-tool-icon">📝</div>
+                                    <div class="mockup-tool-label">ממו</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section section-tinted" id="features">
+        <div class="section-header animate-on-scroll">
+            <div class="section-label">✨ כלים</div>
+            <h2 class="section-title">כל מה שצריך, במרחק לחיצה</h2>
+            <p class="section-desc">
+                TIKit מרכז את כל הכלים שתלמיד צריך ביום יום - ממחברות דיגיטליות ועד מחשבון מדעי
+            </p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">📚</div>
+                <h3 class="feature-title">מחברות דיגיטליות</h3>
+                <p class="feature-desc">מחברות בשורות, משובצות, חלקות לציור, ומחברות צ'קליסט. כל סוג מחברת שתצטרך - עם דפים ללא הגבלה בפרימיום.</p>
+            </div>
+
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">✅</div>
+                <h3 class="feature-title">מנהל משימות</h3>
+                <p class="feature-desc">ארגן את כל המשימות שלך עם עדיפויות, תאריכי יעד וסטטוס. עקוב אחרי ההתקדמות שלך ולעולם אל תפספס דדליין.</p>
+            </div>
+
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">📅</div>
+                <h3 class="feature-title">יומן ולוח שנה</h3>
+                <p class="feature-desc">מערכת שעות שבועית, לוח שנה חודשי, ומעקב אירועים. תכנן את הלימודים שלך בצורה חכמה ויעילה.</p>
+            </div>
+
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">🧮</div>
+                <h3 class="feature-title">מחשבון מדעי</h3>
+                <p class="feature-desc">מחשבון בסיסי, מדעי וגיאומטרי - כולם מובנים באפליקציה. תמיד זמין כשצריך לפתור תרגיל.</p>
+            </div>
+
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">⏱️</div>
+                <h3 class="feature-title">שעון עצר וטיימר</h3>
+                <p class="feature-desc">עקוב אחרי זמן הלמידה שלך. שעון עצר לבחינות, טיימר ללימודים ממוקדים, ותזכורות חכמות.</p>
+            </div>
+
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">🎨</div>
+                <h3 class="feature-title">כלי ציור מתקדמים</h3>
+                <p class="feature-desc">ציור חופשי, צורות אינטראקטיביות, עטים בצבעים שונים, ומחיקה - ישירות בתוך המחברת. אידיאלי לשרטוטים וגיאומטריה.</p>
+            </div>
+
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">📤</div>
+                <h3 class="feature-title">ייצוא מקצועי</h3>
+                <p class="feature-desc">ייצוא מחברות ל PDF. שתף את העבודה שלך עם מורים, חברים או שמור עותק מקומי.</p>
+            </div>
+
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">📝</div>
+                <h3 class="feature-title">דפי ממו</h3>
+                <p class="feature-desc">פתקיות מהירות לרעיונות ותזכורות. תמיד נגישים מכל מקום ובכל רגע - בדיוק כמו פוסט-איט דיגיטלי.</p>
+            </div>
+
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">🔢</div>
+                <h3 class="feature-title">נוסחאות מתמטיות</h3>
+                <p class="feature-desc">הכנס נוסחאות מתמטיות ישירות למחברת. תמיכה מלאה בעברית ביטויים מתמטיים.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section class="section section-white" id="comparison">
+        <div class="section-header animate-on-scroll">
+            <div class="section-label">📊 השוואה</div>
+            <h2 class="section-title">חינמי vs פרימיום</h2>
+            <p class="section-desc">
+                הגרסה החינמית מעולה להתחלה, הפרימיום פותח את כל הכלים
+            </p>
+        </div>
+
+        <div class="comparison-table animate-on-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>פיצ'ר</th>
+                        <th>🆓 חינמי</th>
+                        <th>
+                            ⭐ פרימיום
+                            <div class="th-badge">מומלץ</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>מחברות (כמות)</td>
+                        <td><span class="limit">עד 5</span></td>
+                        <td><span class="check">∞ ללא הגבלה</span></td>
+                    </tr>
+                    <tr>
+                        <td>דפים למחברת</td>
+                        <td><span class="limit">עד 20</span></td>
+                        <td><span class="check">∞ ללא הגבלה</span></td>
+                    </tr>
+                    <tr>
+                        <td>מחברת ציור</td>
+                        <td><span class="limit">דף אחד בלבד</span></td>
+                        <td><span class="check">∞ ללא הגבלה</span></td>
+                    </tr>
+                    <tr>
+                        <td>צ'קליסט</td>
+                        <td><span class="limit">דף אחד, 5 פריטים</span></td>
+                        <td><span class="check">∞ ללא הגבלה</span></td>
+                    </tr>
+                    <tr>
+                        <td>משימות פעילות</td>
+                        <td><span class="limit">עד 20</span></td>
+                        <td><span class="check">∞ ללא הגבלה</span></td>
+                    </tr>
+                    <tr>
+                        <td>ייצוא ל-PDF</td>
+                        <td><span class="cross">✕</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                     <tr>
+                        <td>שכפול מחברות</td>
+                        <td><span class="cross">✕</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>יומן, טיימר, מחשבון, ממו</td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>לוח שנה ומערכת שבועית</td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="section section-tinted" id="pricing">
+        <div class="section-header animate-on-scroll">
+            <div class="section-label">💰 מחירים</div>
+            <h2 class="section-title">בחר את המסלול שלך</h2>
+            <p class="section-desc">
+                התחל בחינם, שדרג כשמתאים לך. ביטול בכל עת.
+            </p>
+        </div>
+
+        <div class="pricing-toggle animate-on-scroll">
+            <span class="pricing-toggle-label active" id="monthlyLabel">חודשי</span>
+            <div class="toggle-switch" id="pricingToggle"></div>
+            <span class="pricing-toggle-label" id="yearlyLabel">שנתי</span>
+            <span class="pricing-save">חיסכון 17%</span>
+        </div>
+
+        <div class="pricing-cards">
+            <div class="pricing-card animate-on-scroll">
+                <div class="pricing-name">חינמי</div>
+                <div class="pricing-desc">מושלם להתחלה</div>
+                <div class="pricing-price">
+                    <span class="pricing-amount">0</span>
+                    <span class="pricing-currency">₪</span>
+                </div>
+                <div class="pricing-period">לנצח, בלי כרטיס אשראי</div>
+                <ul class="pricing-features">
+                    <li><span class="icon yes">✓</span> עד 5 מחברות</li>
+                    <li><span class="icon yes">✓</span> עד 20 משימות</li>
+                    <li><span class="icon yes">✓</span> יומן ולוח שנה</li>
+                    <li><span class="icon yes">✓</span> מחשבון מדעי</li>
+                    <li><span class="icon yes">✓</span> שעון עצר וטיימר</li>
+                    <li><span class="icon no">✕</span> ייצוא ל PDF</li>
+                    <li><span class="icon no">✕</span> שכפול מחברות</li>
+                </ul>
+                <a href="https://brickyeda.github.io/TIKit/" class="pricing-btn pricing-btn-free">התחל בחינם</a>
+            </div>
+
+            <div class="pricing-card featured animate-on-scroll">
+                <div class="pricing-popular">הכי פופולרי</div>
+                <div class="pricing-name">פרימיום ⭐</div>
+                <div class="pricing-desc">הכל, ללא הגבלות</div>
+                <div class="pricing-price">
+                    <span class="pricing-amount" id="proPrice">10.90</span>
+                    <span class="pricing-currency">₪</span>
+                </div>
+                <div class="pricing-period" id="proPeriod">לחודש, מתחדש אוטומטית</div>
+                <ul class="pricing-features">
+                    <li><span class="icon yes">✓</span> מחברות ללא הגבלה</li>
+                    <li><span class="icon yes">✓</span> דפים ללא הגבלה</li>
+                    <li><span class="icon yes">✓</span> משימות ללא הגבלה</li>
+                    <li><span class="icon yes">✓</span> ייצוא ל-PDF</li>
+                    <li><span class="icon yes">✓</span> שכפול מחברות</li>
+                    <li><span class="icon yes">✓</span> כל הכלים ללא מגבלות</li>
+                    <li><span class="icon yes">✓</span> ביטול בכל עת</li>
+                </ul>
+                <a href="https://brickyeda.github.io/TIKit/" class="pricing-btn pricing-btn-pro">שדרג לפרימיום</a>
+            </div>
+        </div>
+        <p class="pricing-note animate-on-scroll">ביטלת מנוי? התוכן שלך נשמר ולא נמחק 🔒</p>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section section-white">
+        <div class="section-header animate-on-scroll">
+            <div class="section-label">💬 מה אומרים</div>
+            <h2 class="section-title">תלמידים אוהבים את TIKit</h2>
+        </div>
+
+        <div class="testimonials-grid">
+            <div class="testimonial-card animate-on-scroll">
+                <div class="testimonial-stars">★★★★★</div>
+                <p class="testimonial-text">סוף סוף אפליקציה בעברית שבאמת עובדת! המחברות מרגישות כמו אמיתיות, והמחשבון המדעי חוסך לי את הצורך באפליקציה נפרדת.</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">נ</div>
+                    <div>
+                        <div class="testimonial-name">נועה כ.</div>
+                        <div class="testimonial-role">תלמידת תיכון, כיתה י"א</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card animate-on-scroll">
+                <div class="testimonial-stars">★★★★★</div>
+                <p class="testimonial-text">הייצוא ל-PDF ממש שינה לי את החיים. אני מכין סיכומים במחברת ומייצא אותם לשתף עם כל הכיתה. שווה כל שקל!</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">ד</div>
+                    <div>
+                        <div class="testimonial-name">דניאל מ.</div>
+                        <div class="testimonial-role">תלמיד תיכון, כיתה י"ב</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card animate-on-scroll">
+                <div class="testimonial-stars">★★★★★</div>
+                <p class="testimonial-text">הבן שלי משתמש בזה כל יום. הוא אוהב את כלי הציור ואת מנהל המשימות. עזר לו מאוד להתארגן עם שיעורי הבית.</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">ר</div>
+                    <div>
+                        <div class="testimonial-name">רונית ש.</div>
+                        <div class="testimonial-role">הורה</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section section-tinted" id="faq">
+        <div class="section-header animate-on-scroll">
+            <div class="section-label">❓ שאלות נפוצות</div>
+            <h2 class="section-title">יש שאלות? יש תשובות</h2>
+            <p class="section-desc">
+                כל מה שצריך לדעת לפני שמתחילים
+            </p>
+        </div>
+
+        <div class="faq-container">
+            <div class="faq-item animate-on-scroll">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>מה זה TIKit?</span>
+                    <div class="faq-arrow">▼</div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        TIKit הוא ילקוט דיגיטלי - אפליקציה שמרכזת את כל הכלים שתלמיד צריך במקום אחד: מחברות דיגיטליות (בשורות, משובצות, ציור וצ'קליסט), מנהל משימות, יומן ולוח שנה, מחשבון מדעי, שעון עצר, דפי ממו ועוד. הכל בעברית מלאה ובעיצוב נוח.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item animate-on-scroll">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>האם TIKit בחינם?</span>
+                    <div class="faq-arrow">▼</div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        כן! הגרסה החינמית כוללת עד 5 מחברות, 20 משימות, יומן, מחשבון מדעי, טיימר וממו - בלי כרטיס אשראי. מסלול פרימיום מסיר את כל ההגבלות ומוסיף ייצוא ל-PDF, שכפול מחברות, ודפים ומשימות ללא הגבלה.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item animate-on-scroll">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>כמה עולה מנוי פרימיום?</span>
+                    <div class="faq-arrow">▼</div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        מנוי חודשי עולה ₪10.90 לחודש. מנוי שנתי עולה ₪119.90 לשנה (₪9.99 לחודש בממוצע — חיסכון של 17%). ניתן לבטל את המנוי בכל עת.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item animate-on-scroll">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>מה קורה אם אני מבטל את המנוי?</span>
+                    <div class="faq-arrow">▼</div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        כל התוכן שלך נשמר ולא נמחק! ביטול המנוי מחזיר אותך למסלול החינמי - המחברות הקיימות נשארות, אבל פיצ'רים מתקדמים כמו ייצוא ושכפול ייחסמו, ולא תוכל  לייצר עוד מחברות חדשות. ניתן לשדרג מחדש בכל עת.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item animate-on-scroll">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>האם אפשר לנסות לפני שנרשמים?</span>
+                    <div class="faq-arrow">▼</div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        בהחלט! יש אפשרות "כניסה כאורח/ת" שמאפשרת לצפות באפליקציה ולסייר בכל הכלים בלי להירשם. ברגע שתרצה לשמור את העבודה שלך - פשוט צור חשבון חינם.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item animate-on-scroll">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>האם TIKit עובד על הטלפון?</span>
+                    <div class="faq-arrow">▼</div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        על טלפון לא, אך על מסכים גדולים כמו טאבלט - כן. האפליקציה מותאמת בעיקר לשימוש במחשב.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item animate-on-scroll">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>איך נרשמים?</span>
+                    <div class="faq-arrow">▼</div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        ההרשמה פשוטה ומהירה - אפשר להירשם עם כתובת אימייל או להתחבר ישירות עם חשבון Google בלחיצה אחת. תוך שניות את/ה בפנים!
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item animate-on-scroll">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>האם המידע שלי מאובטח?</span>
+                    <div class="faq-arrow">▼</div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                        בהחלט. כל הנתונים נשמרים בצורה מאובטחת בשרתים עם הצפנה. החשבון שלך מוגן באימות דו-שלבי דרך Google, וכל המידע הוא פרטי ונגיש רק לך.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2 class="cta-title animate-on-scroll">מוכנים להתחיל? 🚀</h2>
+        <p class="cta-desc animate-on-scroll">
+            הצטרפו לתלמידים שכבר משתמשים ב-TIKit.
+            חינם, בעברית, ומיידי.
+        </p>
+        <div class="hero-actions animate-on-scroll" style="justify-content: center; position: relative; z-index: 1;">
+            <a href="https://brickyeda.github.io/TIKit/" class="btn btn-primary">צרו חשבון חינם</a>
+            <a href="https://brickyeda.github.io/TIKit/?guest=true" class="btn btn-ghost">👁️ נסה/י כאורח/ת</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <a href="https://brickyeda.github.io/TIKit/" class="nav-logo footer-logo">
+                    <img src="logo.png" alt="TIKit Logo" class="nav-logo-icon" style="filter: brightness(1.2);" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="nav-logo-icon" style="display:none; background: rgba(255,255,255,0.1); color: white; font-weight: 800; font-size: 22px; border: 1px solid rgba(255,255,255,0.15);">T</div>
+                    <span class="nav-logo-text" style="background: linear-gradient(135deg, #C4B5FD, #A78BFA); -webkit-background-clip: text;">TIKit</span>
+                </a>
+                <p class="footer-brand-desc">
+                    הילקוט הדיגיטלי לתלמידים. מחברות, משימות, יומן וכלי למידה - הכל במקום אחד, הכל בעברית.
+                </p>
+            </div>
+            <div>
+                <div class="footer-title">מוצר</div>
+                <ul class="footer-links">
+                    <li><a href="#features">כלים</a></li>
+                    <li><a href="#pricing">מחירים</a></li>
+                    <li><a href="#comparison">השוואת מסלולים</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-title">תמיכה</div>
+                <ul class="footer-links">
+                    <li><a href="#faq">שאלות נפוצות</a></li>
+                    <li><a href="#">צור קשר</a></li>
+                    <li><a href="/cdn-cgi/l/email-protection#6507170c060e1c000104250208040c094b060a08"><span class="__cf_email__" data-cfemail="1476667d777f6d717075547379757d783a777b79">[email&#160;protected]</span></a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-title">מידע</div>
+                <ul class="footer-links">
+                    <li><a href="#">תנאי שימוש</a></li>
+                    <li><a href="#">מדיניות פרטיות</a></li>
+                    <li><a href="#">נגישות</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2025 TIKit. כל הזכויות שמורות.</span>
+            <span>נבנה עם ❤️ לתלמידים ישראלים</span>
+        </div>
+    </footer>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Mobile menu
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('open');
+            mobileMenuBtn.textContent = navLinks.classList.contains('open') ? '✕' : '☰';
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('open');
+                mobileMenuBtn.textContent = '☰';
+            });
+        });
+
+        // Pricing toggle
+        const pricingToggle = document.getElementById('pricingToggle');
+        const proPrice = document.getElementById('proPrice');
+        const proPeriod = document.getElementById('proPeriod');
+        const monthlyLabel = document.getElementById('monthlyLabel');
+        const yearlyLabel = document.getElementById('yearlyLabel');
+        let isYearly = false;
+
+        pricingToggle.addEventListener('click', () => {
+            isYearly = !isYearly;
+            pricingToggle.classList.toggle('active', isYearly);
+            monthlyLabel.classList.toggle('active', !isYearly);
+            yearlyLabel.classList.toggle('active', isYearly);
+
+            if (isYearly) {
+                proPrice.textContent = '119.90';
+                proPeriod.textContent = 'לשנה (₪9.99 לחודש בממוצע)';
+            } else {
+                proPrice.textContent = '10.90';
+                proPeriod.textContent = 'לחודש, מתחדש אוטומטית';
+            }
+        });
+
+        // FAQ toggle
+        function toggleFaq(questionEl) {
+            const faqItem = questionEl.parentElement;
+            const wasActive = faqItem.classList.contains('active');
+            
+            // Close all
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Open clicked (if it wasn't already open)
+            if (!wasActive) {
+                faqItem.classList.add('active');
+            }
+        }
+
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Stagger animations
+        document.querySelectorAll('.features-grid .feature-card').forEach((card, i) => {
+            card.style.transitionDelay = `${i * 0.08}s`;
+        });
+
+        document.querySelectorAll('.testimonials-grid .testimonial-card').forEach((card, i) => {
+                      card.style.transitionDelay = `${i * 0.1}s`;
+        });
+
+        document.querySelectorAll('.faq-container .faq-item').forEach((item, i) => {
+            item.style.transitionDelay = `${i * 0.06}s`;
+        });
+    </script>
+</body>
+</html>
