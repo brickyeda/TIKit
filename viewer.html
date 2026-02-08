@@ -8209,7 +8209,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
       <div class="about-contact">
         <div class="about-contact-label">📧 לשאלות, הצעות ומשוב</div>
         <div class="about-contact-email">
-<a href="mailto:brickyeda@gmail.com">brickyeda@gmail.com</a>
+          <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b8faeaf1fbf3fdfcf9f8fff5f9f1f496fbf7f5">[email&#160;protected]</a>
         </div>
       </div>
       
@@ -8724,77 +8724,83 @@ this.showPage('homepage');
       // === פונקציות מצב צפייה בלבד ===
       
       loadDemoData() {
-        // מחברות לדוגמה
+        // מחברות לדוגמה - שדות: title, description, icon, color, pageType, pages
         this.subjects = {
           'מתמטיקה': {
-            name: 'מתמטיקה',
+            title: 'מתמטיקה',
+            description: 'משוואות, גיאומטריה ואלגברה',
             color: '#7C3AED',
             icon: '📐',
             pageType: 'grid',
             pages: [
-              { title: 'דף 1', content: 'משוואות ריבועיות - דוגמאות ותרגילים\n\nax² + bx + c = 0\n\nנוסחת השורשים:\nx = (-b ± √(b²-4ac)) / 2a', type: 'grid' },
-              { title: 'דף 2', content: 'גיאומטריה - שטחים והיקפים\n\nשטח מעגל: πr²\nהיקף מעגל: 2πr\nשטח משולש: (a×h)/2', type: 'grid' }
+              { title: 'משוואות ריבועיות', content: 'ax² + bx + c = 0\n\nנוסחת השורשים:\nx = (-b ± √(b²-4ac)) / 2a\n\nדוגמה: x² - 5x + 6 = 0\na=1, b=-5, c=6\nx = (5 ± √(25-24)) / 2\nx = 3 או x = 2', type: 'grid' },
+              { title: 'שטחים והיקפים', content: 'שטח מעגל: πr²\nהיקף מעגל: 2πr\nשטח משולש: (a×h)/2\nשטח מלבן: a×b\nשטח טרפז: (a+b)×h/2', type: 'grid' }
             ]
           },
           'אנגלית': {
-            name: 'אנגלית',
-            color: '#2563EB',
+            title: 'אנגלית',
+            description: 'אוצר מילים וכתיבת חיבורים',
+            color: '#DC2626',
             icon: '🌍',
             pageType: 'lined',
             pages: [
-              { title: 'דף 1', content: 'Vocabulary - Unit 3\n\nAchieve - להשיג\nDetermine - לקבוע\nSignificant - משמעותי\nEnvironment - סביבה\nConsequence - תוצאה', type: 'lined' },
-              { title: 'דף 2', content: 'Essay Writing Tips\n\n1. Introduction - Hook the reader\n2. Body paragraphs - Support your thesis\n3. Conclusion - Summarize and reflect', type: 'lined' }
+              { title: 'Vocabulary Unit 3', content: 'Achieve - להשיג\nDetermine - לקבוע\nSignificant - משמעותי\nEnvironment - סביבה\nConsequence - תוצאה\nApproach - גישה\nEstablish - לבסס', type: 'lined' },
+              { title: 'Essay Structure', content: '1. Introduction - Hook + Thesis\n2. Body Paragraph 1 - Main argument\n3. Body Paragraph 2 - Supporting evidence\n4. Body Paragraph 3 - Counter argument\n5. Conclusion - Summary + reflection', type: 'lined' }
             ]
           },
           'היסטוריה': {
-            name: 'היסטוריה',
-            color: '#DC2626',
+            title: 'היסטוריה',
+            description: 'מלחמת העולם השנייה',
+            color: '#2563EB',
             icon: '📜',
             pageType: 'lined',
             pages: [
-              { title: 'דף 1', content: 'מלחמת העולם השנייה - ציר הזמן\n\n1939 - פרוץ המלחמה\n1941 - ארה"ב מצטרפת\n1944 - פלישת נורמנדי\n1945 - סיום המלחמה', type: 'lined' }
+              { title: 'ציר זמן - מלה"ע 2', content: '1939 - פלישת גרמניה לפולין\n1940 - כיבוש צרפת\n1941 - מבצע ברברוסה, ארה"ב מצטרפת\n1942 - קרב סטלינגרד\n1943 - קרב קורסק\n1944 - פלישת נורמנדי (D-Day)\n1945 - נפילת ברלין, סיום המלחמה', type: 'lined' },
+              { title: 'סיכום - השואה', content: 'הרקע: עליית הנאציזם בגרמניה\nחוקי נירנברג 1935\nליל הבדולח 1938\nגטאות ומחנות ריכוז\nועידת ואנזה 1942 - "הפתרון הסופי"\nשחרור המחנות 1945', type: 'lined' }
             ]
           },
           'ציור חופשי': {
-            name: 'ציור חופשי',
+            title: 'ציור חופשי',
+            description: 'שרטוטים ורישומים',
             color: '#F59E0B',
             icon: '🎨',
             pageType: 'blank',
             pages: [
-              { title: 'דף 1', content: '', type: 'blank' }
+              { title: 'דף ציור 1', content: '', type: 'blank' }
             ]
           },
-          'רשימת קניות': {
-            name: 'רשימת קניות',
+          'רשימת מטלות': {
+            title: 'רשימת מטלות',
+            description: 'מעקב משימות שבועי',
             color: '#10B981',
             icon: '✅',
             pageType: 'checklist',
             pages: [
-              { title: 'דף 1', content: '', type: 'checklist', items: [
-                { text: 'מחברת חדשה', checked: true },
-                { text: 'עטים צבעוניים', checked: true },
-                { text: 'סרגל', checked: false },
-                { text: 'מחק', checked: false }
+              { title: 'מטלות השבוע', content: '', type: 'checklist', items: [
+                { text: 'להגיש עבודה במתמטיקה', checked: true },
+                { text: 'לקרוא פרק באנגלית', checked: true },
+                { text: 'להכין מצגת היסטוריה', checked: false },
+                { text: 'לתרגל פיזיקה', checked: false }
               ]}
             ]
           }
         };
         
-        // משימות לדוגמה
+        // משימות לדוגמה - שדות: id, title, category, description, priority, dueDate, dueTime, completed
         this.tasks = [
-          { id: '1', text: 'להגיש עבודה במתמטיקה', priority: 'high', dueDate: this.getFutureDate(2), completed: false },
-          { id: '2', text: 'לקרוא פרק 5 באנגלית', priority: 'medium', dueDate: this.getFutureDate(3), completed: false },
-          { id: '3', text: 'להכין מצגת בהיסטוריה', priority: 'high', dueDate: this.getFutureDate(5), completed: false },
-          { id: '4', text: 'לתרגל שאלות בפיזיקה', priority: 'low', dueDate: this.getFutureDate(1), completed: true },
-          { id: '5', text: 'לסכם את השיעור בביולוגיה', priority: 'medium', dueDate: this.getFutureDate(4), completed: false }
+          { id: '1', title: 'להגיש עבודה במתמטיקה', category: 'לימודים', description: 'תרגילים 1-15 בעמוד 87', priority: 'high', dueDate: this.getFutureDate(2), dueTime: '14:00', completed: false },
+          { id: '2', title: 'לקרוא פרק 5 באנגלית', category: 'לימודים', description: 'לסכם את הנקודות העיקריות', priority: 'medium', dueDate: this.getFutureDate(3), dueTime: '', completed: false },
+          { id: '3', title: 'להכין מצגת בהיסטוריה', category: 'לימודים', description: '10 שקופיות על מלה"ע השנייה', priority: 'high', dueDate: this.getFutureDate(5), dueTime: '09:00', completed: false },
+          { id: '4', title: 'לתרגל שאלות בפיזיקה', category: 'לימודים', description: '', priority: 'low', dueDate: this.getFutureDate(-1), dueTime: '', completed: true },
+          { id: '5', title: 'לסכם שיעור בביולוגיה', category: 'לימודים', description: 'פרק התא והמיטוזה', priority: 'medium', dueDate: this.getFutureDate(4), dueTime: '16:00', completed: false }
         ];
         
         // אירועי יומן לדוגמה
         this.events = [
-          { id: '1', title: 'מבחן מתמטיקה', date: this.getFutureDate(3), time: '09:00', color: '#7C3AED' },
-          { id: '2', title: 'הגשת עבודה באנגלית', date: this.getFutureDate(5), time: '14:00', color: '#2563EB' },
-          { id: '3', title: 'טיול שנתי', date: this.getFutureDate(7), time: '07:30', color: '#10B981' },
-          { id: '4', title: 'אסיפת הורים', date: this.getFutureDate(10), time: '18:00', color: '#F59E0B' }
+          { id: '1', title: 'מבחן מתמטיקה', date: this.getFutureDate(3), time: '09:00', color: '#7C3AED', type: 'exam' },
+          { id: '2', title: 'הגשת עבודה באנגלית', date: this.getFutureDate(5), time: '14:00', color: '#DC2626', type: 'homework' },
+          { id: '3', title: 'טיול שנתי', date: this.getFutureDate(7), time: '07:30', color: '#10B981', type: 'event' },
+          { id: '4', title: 'אסיפת הורים', date: this.getFutureDate(10), time: '18:00', color: '#F59E0B', type: 'meeting' }
         ];
         
         console.log('✅ נתוני דוגמה נטענו');
