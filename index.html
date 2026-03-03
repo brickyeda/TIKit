@@ -4274,7 +4274,7 @@ scrollbar-gutter: stable;
        TABLET OPTIMIZATIONS — 10" tablets (768px–1200px)
        Target: touch-friendly notebook editing
        =================================================== */
-    @media (min-width: 769px) and (max-width: 1200px) {
+    @media (pointer: coarse) and (min-width: 400px) and (max-width: 1200px) {
 
       /* =========================================
          TABLET COLLAPSED TOOLBAR SYSTEM
@@ -10915,7 +10915,7 @@ this.showPage('homepage');
             const bar = document.querySelector('.tablet-toolbar-bar');
             const groups = document.querySelectorAll('#inPageToolbar .toolbar-group');
             const mathBar = document.getElementById('mathFormulasToolbar');
-            const isTab = window.matchMedia('(pointer: coarse)').matches && window.innerWidth >= 769;
+            const isTab = window.matchMedia('(pointer: coarse)').matches;
             if (bar) {
               if (isTab) {
                 bar.style.display = 'flex';
@@ -19593,8 +19593,7 @@ calculateBitwise(first, second, operation) {
       // ===== TABLET TOOLBAR LOGIC =====
       // Detect tablet: touch device with screen >= 769px
       const isTablet = () => (
-        window.matchMedia('(pointer: coarse)').matches &&
-        window.innerWidth >= 769
+        window.matchMedia('(pointer: coarse)').matches
       );
 
       // Show/hide tablet icon bar based on device
