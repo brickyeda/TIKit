@@ -6936,7 +6936,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
               <div class="stat-label">התראות</div>
             </div>
             <div class="stat-item" onclick="app.showPage('notebooks')">
-              <div class="stat-number" id="activeNotebooks">6</div>
+              <div class="stat-number" id="activeNotebooks">0</div>
               <div class="stat-label">מחברות פעילות</div>
             </div>
             <div class="stat-item" onclick="app.showPage('calendar')">
@@ -6966,7 +6966,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
               </div>
               <div class="tool-title">מחברות</div>
               <div class="tool-description">כתיבה, ציור, נוסחאות ו-PDF — הכל בתוך מחברות לפי מקצוע</div>
-              <span class="tool-status" id="notebookStatusHome">6 מחברות פעילות</span>
+              <span class="tool-status" id="notebookStatusHome">טוען...</span>
             </div>
 
             <div class="tool-card" style="--card-accent:#10b981" onclick="app.showPage('tasks')">
@@ -10052,6 +10052,10 @@ this.showPage('homepage');
         const activeNotebooksElement = document.getElementById('activeNotebooks');
         if (activeNotebooksElement) {
           activeNotebooksElement.textContent = notebooksCount;
+        }
+        const notebookStatusEl = document.getElementById('notebookStatusHome');
+        if (notebookStatusEl) {
+          notebookStatusEl.textContent = notebooksCount + ' מחברות פעילות';
         }
 
         // עדכון משימות היום
