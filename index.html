@@ -10920,11 +10920,10 @@ this.showPage('homepage');
               if (isTab) {
                 bar.style.display = 'flex';
                 groups.forEach(g => g.style.setProperty('display','none','important'));
-                if (mathBar) mathBar.style.setProperty('display','none','important');
+                // mathBar visibility controlled by page-type logic
               } else {
                 bar.style.display = 'none';
                 groups.forEach(g => g.style.removeProperty('display'));
-                if (mathBar) mathBar.style.removeProperty('display');
               }
             }
           }, 100);
@@ -11109,6 +11108,16 @@ openNotebook(notebookKey) {
       mathToolbar.style.display = 'flex';
     } else {
       mathToolbar.style.display = 'none';
+    }
+  }
+  // Hide/show formula button in tablet toolbar based on page type
+  const tbFormulaBtn = document.getElementById('tbFormulaBtn');
+  const tbFormulaDivider = tbFormulaBtn ? tbFormulaBtn.closest('div[style]')?.previousElementSibling : null;
+  if (tbFormulaBtn) {
+    const showFormula = notebook.pageType === 'grid';
+    tbFormulaBtn.parentElement.style.display = showFormula ? '' : 'none';
+    if (tbFormulaDivider && tbFormulaDivider.classList.contains('tb-divider')) {
+      tbFormulaDivider.style.display = showFormula ? '' : 'none';
     }
   }
   this.showPage('notebookView');
@@ -19600,16 +19609,14 @@ calculateBitwise(first, second, operation) {
       const applyTabletToolbar = () => {
         const bar = document.querySelector('.tablet-toolbar-bar');
         const groups = document.querySelectorAll('#inPageToolbar .toolbar-group');
-        const mathBar = document.getElementById('mathFormulasToolbar');
         if (!bar) return;
         if (isTablet()) {
           bar.style.display = 'flex';
           groups.forEach(g => g.style.setProperty('display','none','important'));
-          if (mathBar) mathBar.style.setProperty('display','none','important');
+          // mathBar visibility is controlled by page-type logic — don't touch it here
         } else {
           bar.style.display = 'none';
           groups.forEach(g => g.style.removeProperty('display'));
-          if (mathBar) mathBar.style.removeProperty('display');
         }
       };
 
