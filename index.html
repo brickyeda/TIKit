@@ -4276,7 +4276,11 @@ scrollbar-gutter: stable;
        =================================================== */
     @media (min-width: 769px) and (max-width: 1200px) {
 
-      /* --- Toolbar: switch from fixed-with-margins to sticky full-width --- */
+      /* =========================================
+         TABLET COLLAPSED TOOLBAR SYSTEM
+         ========================================= */
+
+      /* Main toolbar: show only the icon bar */
       .global-formatting-toolbar {
         position: sticky !important;
         top: 64px !important;
@@ -4284,33 +4288,149 @@ scrollbar-gutter: stable;
         right: 0 !important;
         width: 100% !important;
         box-sizing: border-box !important;
-        flex-wrap: wrap !important;
-        gap: 6px !important;
-        padding: 8px 12px !important;
+        flex-wrap: nowrap !important;
+        gap: 4px !important;
+        padding: 6px 12px !important;
         z-index: 200 !important;
         border-radius: 0 0 12px 12px !important;
         background: white !important;
+        height: 52px !important;
+        align-items: center !important;
+        overflow: visible !important;
       }
 
-      /* --- Toolbar buttons: 44px touch targets --- */
-      .toolbar-btn {
+      /* Hide all toolbar groups on tablet */
+      .toolbar-group {
+        display: none !important;
+      }
+
+      /* Show only the tablet icon bar */
+      .tablet-toolbar-bar {
+        display: flex !important;
+      }
+
+      /* Each icon trigger button */
+      .tb-icon-btn {
         min-width: 44px !important;
-        height: 44px !important;
+        height: 40px !important;
+        border-radius: 10px !important;
+        border: 1px solid var(--border-color) !important;
+        background: white !important;
+        cursor: pointer !important;
+        font-size: 1.2rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.15s ease !important;
+        position: relative !important;
+        padding: 0 10px !important;
+        gap: 5px !important;
+        color: var(--text-primary) !important;
+        flex-shrink: 0 !important;
+      }
+
+      .tb-icon-btn:hover,
+      .tb-icon-btn.open {
+        background: var(--primary-color) !important;
+        color: white !important;
+        border-color: var(--primary-color) !important;
+      }
+
+      .tb-icon-btn .tb-label {
+        font-size: 0.72rem !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
+      }
+
+      /* Floating panel that appears on tap */
+      .tb-panel {
+        display: none !important;
+        position: absolute !important;
+        top: calc(100% + 6px) !important;
+        right: 0 !important;
+        background: white !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 14px !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
+        padding: 12px !important;
+        z-index: 9999 !important;
+        min-width: 280px !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        align-items: center !important;
+      }
+
+      .tb-panel.open {
+        display: flex !important;
+        animation: tbPanelIn 0.15s ease !important;
+      }
+
+      @keyframes tbPanelIn {
+        from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      /* Buttons INSIDE the floating panel */
+      .tb-panel .toolbar-btn {
+        display: flex !important;
+        min-width: 48px !important;
+        height: 48px !important;
         padding: 8px !important;
         font-size: 1rem !important;
-        border-radius: 8px !important;
+        border-radius: 10px !important;
+        border: 1px solid var(--border-color) !important;
+        background: white !important;
+        cursor: pointer !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.15s !important;
       }
 
-      .toolbar-select {
+      .tb-panel .toolbar-btn:hover,
+      .tb-panel .toolbar-btn.active {
+        background: var(--primary-color) !important;
+        color: white !important;
+        border-color: var(--primary-color) !important;
+      }
+
+      .tb-panel .toolbar-select {
         height: 44px !important;
-        font-size: 0.95rem !important;
-        padding: 8px 10px !important;
+        font-size: 0.9rem !important;
+        border-radius: 8px !important;
+        padding: 6px 10px !important;
       }
 
-      .toolbar-group {
-        gap: 6px !important;
-        padding: 0 8px !important;
-        flex-wrap: wrap !important;
+      .tb-panel input[type="color"] {
+        width: 44px !important;
+        height: 44px !important;
+        border-radius: 8px !important;
+        border: 1px solid var(--border-color) !important;
+        cursor: pointer !important;
+        padding: 2px !important;
+      }
+
+      .tb-panel input[type="range"] {
+        width: 140px !important;
+        accent-color: var(--primary-color) !important;
+      }
+
+      .tb-panel-label {
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+        color: var(--text-secondary) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.06em !important;
+        width: 100% !important;
+        padding-bottom: 4px !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        margin-bottom: 2px !important;
+      }
+
+      .tb-divider {
+        width: 1px !important;
+        height: 28px !important;
+        background: var(--border-color) !important;
+        flex-shrink: 0 !important;
       }
 
       /* --- Math formulas sidebar: collapse to top horizontal strip on tablet --- */
@@ -7476,6 +7596,142 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 <!-- Drawing Toolbar - Vertical Sidebar -->
       <!-- Formatting Toolbar - בתוך הדף עצמו -->
 <div class="global-formatting-toolbar" id="inPageToolbar" style="position: sticky !important; top: 80px !important; z-index: 999 !important; background: #f8f9fa !important; margin-bottom: 20px;">
+
+  <!-- ===== TABLET COLLAPSED ICON BAR ===== -->
+  <!-- Visible only on tablet (tablet CSS shows this, hides .toolbar-group) -->
+  <div class="tablet-toolbar-bar" style="display:none; align-items:center; gap:6px; width:100%;">
+
+    <!-- 1. Font & Size -->
+    <div style="position:relative;">
+      <button class="tb-icon-btn" id="tbFontBtn" onclick="tbToggle('tbFontPanel','tbFontBtn')" title="פונט וגודל">
+        <span>Aa</span><span class="tb-label">פונט</span>
+      </button>
+      <div class="tb-panel" id="tbFontPanel">
+        <span class="tb-panel-label">פונט וגודל</span>
+        <select class="toolbar-select" id="inPageFontFamily2" onchange="app.changeGlobalFontFamily(this.value);document.getElementById('inPageFontFamily').value=this.value;">
+          <option value="Arial">Arial</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Times New Roman">Times New Roman</option>
+          <option value="Helvetica">Helvetica</option>
+          <option value="Courier New">Courier New</option>
+          <option value="David">David</option>
+          <option value="Miriam">Miriam</option>
+        </select>
+        <select class="toolbar-select" id="inPageFontSize2" onchange="app.changeGlobalFontSize(this.value);document.getElementById('inPageFontSize').value=this.value;">
+          <option value="12">12px</option><option value="14">14px</option>
+          <option value="16">16px</option><option value="18">18px</option>
+          <option value="20">20px</option><option value="24">24px</option>
+          <option value="28" selected>28px</option><option value="32">32px</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="tb-divider"></div>
+
+    <!-- 2. Text Formatting -->
+    <div style="position:relative;">
+      <button class="tb-icon-btn" id="tbFormatBtn" onclick="tbToggle('tbFormatPanel','tbFormatBtn')" title="עיצוב טקסט">
+        <span><strong>B</strong></span><span class="tb-label">עיצוב</span>
+      </button>
+      <div class="tb-panel" id="tbFormatPanel">
+        <span class="tb-panel-label">עיצוב טקסט</span>
+        <button class="toolbar-btn" id="inPageBold2" onclick="app.toolbarBold()" title="מודגש"><strong>B</strong></button>
+        <button class="toolbar-btn" id="inPageItalic2" onclick="app.toolbarItalic()" title="נטוי"><em>I</em></button>
+        <button class="toolbar-btn" id="inPageUnderline2" onclick="app.toolbarUnderline()" title="קו תחתון"><u>U</u></button>
+        <button class="toolbar-btn" id="inPageStrike2" onclick="app.toolbarStrikethrough()" title="קו חוצה"><s>S</s></button>
+        <button class="toolbar-btn" onclick="app.toolbarHighlight()" title="סימון">🖍️</button>
+        <button class="toolbar-btn" onclick="app.toolbarInsertLink()" title="קישור">🔗</button>
+        <button class="toolbar-btn" onclick="app.toolbarInsertImage()" title="תמונה">🖼️</button>
+        <button class="toolbar-btn" onclick="app.toolbarInsertPDF()" title="PDF">📄</button>
+        <div style="position:relative; display:flex; align-items:center;">
+          <button class="toolbar-btn toolbar-color-btn text-color-btn" onclick="app.toggleGlobalColorPicker('text')" title="צבע טקסט" style="font-weight:700;">A</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tb-divider"></div>
+
+    <!-- 3. Alignment & Lists -->
+    <div style="position:relative;">
+      <button class="tb-icon-btn" id="tbAlignBtn" onclick="tbToggle('tbAlignPanel','tbAlignBtn')" title="יישור ורשימות">
+        <span>≡</span><span class="tb-label">יישור</span>
+      </button>
+      <div class="tb-panel" id="tbAlignPanel">
+        <span class="tb-panel-label">יישור</span>
+        <button class="toolbar-btn" onclick="app.setGlobalAlignment('right')" title="ימין">⇤</button>
+        <button class="toolbar-btn" onclick="app.setGlobalAlignment('center')" title="מרכז">⇕</button>
+        <button class="toolbar-btn" onclick="app.setGlobalAlignment('left')" title="שמאל">⇥</button>
+        <button class="toolbar-btn" onclick="app.setGlobalAlignment('justify')" title="דו-צדדי">⇿</button>
+        <span class="tb-panel-label" style="margin-top:6px;">רשימות וסמלים</span>
+        <button class="toolbar-btn" id="bulletListBtn2" onclick="app.insertGlobalList('bullet')" title="תבליטים">• ◦</button>
+        <button class="toolbar-btn" id="numberedListBtn2" onclick="app.insertGlobalList('numbered')" title="ממוספרת">1. 2.</button>
+        <button class="toolbar-btn" onclick="app.insertGlobalSymbol('★')" title="כוכב">★</button>
+        <button class="toolbar-btn" onclick="app.insertGlobalSymbol('✓')" title="וי">✓</button>
+        <button class="toolbar-btn" onclick="app.insertGlobalSymbol('→')" title="חץ">→</button>
+      </div>
+    </div>
+
+    <div class="tb-divider"></div>
+
+    <!-- 4. Drawing -->
+    <div style="position:relative;">
+      <button class="tb-icon-btn" id="tbDrawBtn" onclick="tbToggle('tbDrawPanel','tbDrawBtn')" title="כלי ציור">
+        <span>🎨</span><span class="tb-label">ציור</span>
+      </button>
+      <div class="tb-panel" id="tbDrawPanel" style="min-width:320px;">
+        <span class="tb-panel-label">כלי ציור</span>
+        <button class="toolbar-btn" id="drawingModeBtn2" onclick="app.drawing.toggleDrawingMode()" title="הפעל ציור" style="background:#27ae60;color:white;border-color:#27ae60;">🎨</button>
+        <button class="toolbar-btn" id="pencilBtn2" onclick="app.drawing.selectTool('pencil')" title="עיפרון">✏️</button>
+        <button class="toolbar-btn" id="eraserBtn2" onclick="app.drawing.selectTool('eraser')" title="מחק">🧹</button>
+        <select class="toolbar-select" id="shapeSelect2" onchange="app.drawing.selectShape(this.value);document.getElementById('shapeSelect').value=this.value;" style="height:44px;">
+          <option value="">צורות</option>
+          <option value="circle">⭕ עיגול</option>
+          <option value="square">⬜ ריבוע</option>
+          <option value="rectangle">▬ מלבן</option>
+          <option value="triangle">🔺 משולש</option>
+          <option value="line">➖ קו</option>
+          <option value="arrow">➡️ חץ</option>
+          <option value="star">⭐ כוכב</option>
+        </select>
+        <select class="toolbar-select" id="pencilType2" onchange="app.drawing.changePencilType(this.value);document.getElementById('pencilType').value=this.value;" style="height:44px;">
+          <option value="solid">רגיל</option>
+          <option value="marker">טוש</option>
+          <option value="chalk">גיר</option>
+          <option value="spray">ספריי</option>
+        </select>
+        <input type="color" id="drawingColor2" value="#000000" onchange="app.drawing.changeColor(this.value);document.getElementById('drawingColor').value=this.value;" title="צבע">
+        <input type="range" id="thicknessSlider2" min="1" max="20" value="3" oninput="app.drawing.changeThickness(this.value);document.getElementById('thicknessSlider').value=this.value;" title="עובי">
+        <button class="toolbar-btn" onclick="document.querySelectorAll('.page-canvas.drawing-active').forEach(c=>{if(c._undo)c._undo();})" title="ביטול">↶</button>
+        <button class="toolbar-btn" onclick="if(confirm('למחוק הכל?')){document.querySelectorAll('.page-canvas').forEach(c=>c.getContext('2d').clearRect(0,0,c.width,c.height));}" title="נקה" style="background:#ef4444;color:white;border-color:#ef4444;">🗑️</button>
+      </div>
+    </div>
+
+    <div class="tb-divider"></div>
+
+    <!-- 5. Formulas shortcut -->
+    <div style="position:relative;">
+      <button class="tb-icon-btn" id="tbFormulaBtn" onclick="tbToggle('tbFormulaPanel','tbFormulaBtn')" title="נוסחאות">
+        <span>∑</span><span class="tb-label">נוסחאות</span>
+      </button>
+      <div class="tb-panel" id="tbFormulaPanel" style="min-width:300px; max-height:300px; overflow-y:auto; flex-direction:column;">
+        <span class="tb-panel-label">נוסחאות — לחץ להוספה</span>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
+          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('ax² + bx + c = 0')">ax²+bx+c=0</button>
+          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('x = (-b ± √(b²-4ac)) / 2a')">נוסחת השורשים</button>
+          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('a² + b² = c²')">a²+b²=c²</button>
+          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('A = πr²')">A=πr²</button>
+          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('P = 2πr')">P=2πr</button>
+          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('V = 4/3 × πr³')">V=4/3πr³</button>
+          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('F = ma')">F=ma</button>
+          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('E = mc²')">E=mc²</button>
+          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('v = s/t')">v=s/t</button>
+        </div>
+        <a href="nuschon_math.pdf" target="_blank" style="display:block;margin-top:10px;padding:10px;background:#f59e0b;color:white;border-radius:8px;text-align:center;font-weight:600;text-decoration:none;">📄 נוסחאון מלא</a>
+      </div>
+    </div>
+
+  </div>
+  <!-- ===== END TABLET ICON BAR ===== -->
         <!-- Font Group -->
         <div class="toolbar-group">
           <select class="toolbar-select" id="inPageFontFamily" onchange="app.changeGlobalFontFamily(this.value)">
@@ -10650,6 +10906,29 @@ this.showPage('homepage');
 
       // מעבר בין דפים
       showPage(pageId) {
+        // Re-apply tablet toolbar whenever we navigate
+        if (pageId === 'notebooks' || pageId === 'notebookView') {
+          setTimeout(() => {
+            if (typeof applyTabletToolbar === 'function') applyTabletToolbar();
+            // applyTabletToolbar is defined in DOMContentLoaded scope,
+            // so we call the window-scoped version
+            const bar = document.querySelector('.tablet-toolbar-bar');
+            const groups = document.querySelectorAll('#inPageToolbar .toolbar-group');
+            const mathBar = document.getElementById('mathFormulasToolbar');
+            const isTab = window.matchMedia('(pointer: coarse)').matches && window.innerWidth >= 769;
+            if (bar) {
+              if (isTab) {
+                bar.style.display = 'flex';
+                groups.forEach(g => g.style.setProperty('display','none','important'));
+                if (mathBar) mathBar.style.setProperty('display','none','important');
+              } else {
+                bar.style.display = 'none';
+                groups.forEach(g => g.style.removeProperty('display'));
+                if (mathBar) mathBar.style.removeProperty('display');
+              }
+            }
+          }, 100);
+        }
         console.log('עובר לדף:', pageId);
        
         // Close gallery if leaving notebookView
@@ -17136,6 +17415,22 @@ subtitleElement.textContent = 'מיקוד שמוביל להצלחה';
       },
 
       // מעבר למסך מלא או יציאה ממנו
+      // Insert formula text into active notebook page
+      insertFormulaText(text) {
+        const activeArea = document.querySelector('.notebook-page.active-page [contenteditable="true"]');
+        if (activeArea) {
+          activeArea.focus();
+          document.execCommand('insertText', false, ' ' + text + ' ');
+        } else {
+          // fallback: try any visible contenteditable
+          const area = document.querySelector('[contenteditable="true"]');
+          if (area) { area.focus(); document.execCommand('insertText', false, ' ' + text + ' '); }
+        }
+        // close panel after insertion
+        document.querySelectorAll('.tb-panel.open').forEach(p => p.classList.remove('open'));
+        document.querySelectorAll('.tb-icon-btn.open').forEach(b => b.classList.remove('open'));
+      },
+
       toggleDarkMode() {
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         if (isDark) {
@@ -19295,6 +19590,33 @@ calculateBitwise(first, second, operation) {
 
     // הפעלת האפליקציה כשהדף נטען
     document.addEventListener('DOMContentLoaded', function() {
+      // ===== TABLET TOOLBAR LOGIC =====
+      // Detect tablet: touch device with screen >= 769px
+      const isTablet = () => (
+        window.matchMedia('(pointer: coarse)').matches &&
+        window.innerWidth >= 769
+      );
+
+      // Show/hide tablet icon bar based on device
+      const applyTabletToolbar = () => {
+        const bar = document.querySelector('.tablet-toolbar-bar');
+        const groups = document.querySelectorAll('#inPageToolbar .toolbar-group');
+        const mathBar = document.getElementById('mathFormulasToolbar');
+        if (!bar) return;
+        if (isTablet()) {
+          bar.style.display = 'flex';
+          groups.forEach(g => g.style.setProperty('display','none','important'));
+          if (mathBar) mathBar.style.setProperty('display','none','important');
+        } else {
+          bar.style.display = 'none';
+          groups.forEach(g => g.style.removeProperty('display'));
+          if (mathBar) mathBar.style.removeProperty('display');
+        }
+      };
+
+      window.addEventListener('resize', applyTabletToolbar);
+      setTimeout(applyTabletToolbar, 200);
+
       // Restore saved theme
       const savedTheme = localStorage.getItem('tikit-theme');
       if (savedTheme === 'dark') {
@@ -20460,6 +20782,41 @@ calculateBitwise(first, second, operation) {
       // אתחול מערכת טוטוריאל
       TutorialSystem.init();
     });
+
+// ========== Tablet Toolbar Toggle ==========
+function tbToggle(panelId, btnId) {
+  const panel = document.getElementById(panelId);
+  const btn = document.getElementById(btnId);
+  if (!panel) return;
+
+  // Close all other panels first
+  document.querySelectorAll('.tb-panel.open').forEach(p => {
+    if (p.id !== panelId) {
+      p.classList.remove('open');
+    }
+  });
+  document.querySelectorAll('.tb-icon-btn.open').forEach(b => {
+    if (b.id !== btnId) b.classList.remove('open');
+  });
+
+  const isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open', !isOpen);
+  if (btn) btn.classList.toggle('open', !isOpen);
+
+  // Close on outside click
+  if (!isOpen) {
+    setTimeout(() => {
+      const handler = (e) => {
+        if (!panel.contains(e.target) && !btn.contains(e.target)) {
+          panel.classList.remove('open');
+          if (btn) btn.classList.remove('open');
+          document.removeEventListener('click', handler, true);
+        }
+      };
+      document.addEventListener('click', handler, true);
+    }, 50);
+  }
+}
 
 // ========== מערכת טוטוריאל - TIKit ==========
 const TutorialSystem = {
