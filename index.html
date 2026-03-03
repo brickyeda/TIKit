@@ -4304,11 +4304,6 @@ scrollbar-gutter: stable;
         display: none !important;
       }
 
-      /* Hide the orange math formulas sidebar on tablet — use ∑ button instead */
-      .math-formulas-toolbar {
-        display: none !important;
-      }
-
       /* Show only the tablet icon bar */
       .tablet-toolbar-bar {
         display: flex !important;
@@ -7240,6 +7235,10 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           <i data-lucide="layout-grid" class="lucide-icon"></i>
           <span>מערכת</span>
         </li>
+        <li class="navbar-item" onclick="app.showPage('templates-page')" data-page="templates-page">
+          <span>📋</span>
+          תבניות
+        </li>
         <li class="navbar-item" onclick="app.showPage('mylinks')" data-page="mylinks">
           <i data-lucide="link" class="lucide-icon"></i>
           <span>קישורים</span>
@@ -7500,6 +7499,21 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
             <span>←</span>
             חזור לדף הבית
           </button>
+        </div>
+      </div>
+
+      <!-- Usage Meter (Feature 13) -->
+      <div class="usage-meter-bar" id="usageMeterBar" style="display:none;">
+        <div class="usage-meter-top">
+          <span class="usage-meter-label">📚 מחברות בשימוש</span>
+          <span class="usage-meter-count" id="usageMeterCount">0/5</span>
+        </div>
+        <div class="usage-meter-track">
+          <div class="usage-meter-fill" id="usageMeterFill" style="width:0%"></div>
+        </div>
+        <div class="usage-meter-hint">
+          <span id="usageMeterHint">שדרג לפרימיום לעוד מחברות</span>
+          <a class="usage-upgrade-link" onclick="app.openUpgradeModal('שדרוג מהמד')">שדרג עכשיו ⭐</a>
         </div>
       </div>
 
@@ -7921,6 +7935,10 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
         </div>
       </div>
     </div>
+    <button class="add-page-btn" onclick="app.openShareModal()" style="background: linear-gradient(135deg,#06b6d4,#0284c7);" title="שתף דף">
+      <span>📤</span>
+      שתף דף
+    </button>
     <button id="galleryViewBtn" class="add-page-btn" onclick="app.toggleGalleryView()" style="background: linear-gradient(135deg, #667eea, #764ba2);">
       <span>📱</span>
       תצוגת גלריה
@@ -10925,11 +10943,10 @@ this.showPage('homepage');
               if (isTab) {
                 bar.style.display = 'flex';
                 groups.forEach(g => g.style.setProperty('display','none','important'));
-                if (mathBar) mathBar.style.setProperty('display','none','important');
+                // mathBar visibility controlled by page-type logic
               } else {
                 bar.style.display = 'none';
                 groups.forEach(g => g.style.removeProperty('display'));
-                if (mathBar) mathBar.style.removeProperty('display');
               }
             }
           }, 100);
@@ -11033,6 +11050,8 @@ if (this.currentNotebook && pageId !== 'notebookView') {
 
       // רינדור מחברות
       renderNotebooks() {
+        setTimeout(updateUsageMeter, 100);
+
         const container = document.getElementById('subjectsGrid');
         if (!container) return;
         
@@ -11114,6 +11133,16 @@ openNotebook(notebookKey) {
       mathToolbar.style.display = 'flex';
     } else {
       mathToolbar.style.display = 'none';
+    }
+  }
+  // Hide/show formula button in tablet toolbar based on page type
+  const tbFormulaBtn = document.getElementById('tbFormulaBtn');
+  const tbFormulaDivider = tbFormulaBtn ? tbFormulaBtn.closest('div[style]')?.previousElementSibling : null;
+  if (tbFormulaBtn) {
+    const showFormula = notebook.pageType === 'grid';
+    tbFormulaBtn.parentElement.style.display = showFormula ? '' : 'none';
+    if (tbFormulaDivider && tbFormulaDivider.classList.contains('tb-divider')) {
+      tbFormulaDivider.style.display = showFormula ? '' : 'none';
     }
   }
   this.showPage('notebookView');
@@ -17436,6 +17465,108 @@ subtitleElement.textContent = 'מיקוד שמוביל להצלחה';
         document.querySelectorAll('.tb-icon-btn.open').forEach(b => b.classList.remove('open'));
       },
 
+
+      // ===== Feature 10: Open Share Modal =====
+      openShareModal() {
+        const overlay = document.getElementById('shareModalOverlay');
+        if (!overlay) return;
+        overlay.classList.remove('hidden');
+
+        const img = document.getElementById('sharePreviewImg');
+        const loading = document.getElementById('sharePreviewLoading');
+        if (img) img.style.display = 'none';
+        if (loading) loading.style.display = '';
+        _shareImgDataUrl = null;
+
+        // Capture current notebook page
+        setTimeout(() => {
+          const activePage = document.querySelector('.notebook-page.active-page') ||
+                             document.querySelector('.notebook-page');
+          if (!activePage) {
+            if (loading) loading.textContent = 'לא נמצא דף פתוח';
+            return;
+          }
+
+          // Use html2canvas if available, otherwise fallback to basic canvas
+          const doCapture = () => {
+            if (typeof html2canvas !== 'undefined') {
+              html2canvas(activePage, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' })
+                .then(canvas => {
+                  // Add watermark
+                  const ctx = canvas.getContext('2d');
+                  ctx.save();
+                  ctx.font = 'bold 18px Arial';
+                  ctx.fillStyle = 'rgba(99,102,241,0.85)';
+                  ctx.textAlign = 'right';
+                  ctx.fillText('✏️ TIKit — הכלי החכם שלי', canvas.width - 12, canvas.height - 12);
+                  ctx.restore();
+                  _shareImgDataUrl = canvas.toDataURL('image/png');
+                  if (img) { img.src = _shareImgDataUrl; img.style.display = ''; }
+                  if (loading) loading.style.display = 'none';
+                })
+                .catch(() => {
+                  if (loading) loading.textContent = 'שגיאה ביצירת תמונה';
+                });
+            } else {
+              // html2canvas not loaded — load it dynamically
+              const s = document.createElement('script');
+              s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+              s.onload = doCapture;
+              s.onerror = () => { if (loading) loading.textContent = 'לא ניתן לטעון את הכלי לצילום'; };
+              document.head.appendChild(s);
+            }
+          };
+          doCapture();
+        }, 100);
+      },
+
+      // ===== Feature 11: Create from Template =====
+      createFromTemplate(templateId) {
+        if (!this.isPro && templateId === 'lab_report') {
+          this.openUpgradeModal('תבניות Pro');
+          return;
+        }
+
+        const templates = {
+          bagrut_math:  { title: 'בגרות מתמטיקה', icon: '📐', color: '#8b5cf6', type: 'grid',  pages: ['עמוד 1 — שאלה א', 'עמוד 2 — שאלה ב', 'עמוד 3 — שאלה ג'] },
+          summary:      { title: 'סיכום לבחינה',   icon: '📝', color: '#6366f1', type: 'lined', pages: ['מושגים מרכזיים', 'נוסחאות חשובות', 'שאלות תרגול'] },
+          project:      { title: 'פרויקט',          icon: '🗂️', color: '#10b981', type: 'lined', pages: ['תכנון ויעדים', 'מחקר ורקע', 'ביצוע', 'סיכום ומסקנות'] },
+          weekly_plan:  { title: 'תכנון שבועי',     icon: '🗓️', color: '#f59e0b', type: 'lined', pages: ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'] },
+          lab_report:   { title: 'דוח מעבדה',       icon: '🔬', color: '#0ea5e9', type: 'lined', pages: ['השערה ומטרה', 'חומרים ושיטה', 'תוצאות', 'מסקנות'] },
+          vocab:        { title: 'אוצר מילים',      icon: '🌍', color: '#ec4899', type: 'lined', pages: ['יחידה 1', 'יחידה 2', 'יחידה 3'] },
+        };
+
+        const tmpl = templates[templateId];
+        if (!tmpl) return;
+
+        if (!this.checkNotebookLimit(tmpl.type)) return;
+
+        const key = templateId + '_' + Date.now();
+        const pages = tmpl.pages.map((title, i) => ({
+          id: Date.now() + i,
+          title: title,
+          content: '',
+          drawing: null,
+          createdAt: new Date().toISOString()
+        }));
+
+        this.subjects[key] = {
+          title: tmpl.title,
+          icon: tmpl.icon,
+          color: tmpl.color,
+          description: 'נוצר מתבנית',
+          pageType: tmpl.type,
+          pages: pages
+        };
+
+        if (typeof this.saveData === 'function') this.saveData();
+        if (typeof this.renderSubjectsList === 'function') this.renderSubjectsList();
+        this.showPage('notebooks');
+        setTimeout(() => {
+          if (typeof app !== 'undefined') app.openNotebook(key);
+        }, 300);
+      },
+
       toggleDarkMode() {
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         if (isDark) {
@@ -19605,16 +19736,14 @@ calculateBitwise(first, second, operation) {
       const applyTabletToolbar = () => {
         const bar = document.querySelector('.tablet-toolbar-bar');
         const groups = document.querySelectorAll('#inPageToolbar .toolbar-group');
-        const mathBar = document.getElementById('mathFormulasToolbar');
         if (!bar) return;
         if (isTablet()) {
           bar.style.display = 'flex';
           groups.forEach(g => g.style.setProperty('display','none','important'));
-          if (mathBar) mathBar.style.setProperty('display','none','important');
+          // mathBar visibility is controlled by page-type logic — don't touch it here
         } else {
           bar.style.display = 'none';
           groups.forEach(g => g.style.removeProperty('display'));
-          if (mathBar) mathBar.style.removeProperty('display');
         }
       };
 
@@ -19636,6 +19765,12 @@ calculateBitwise(first, second, operation) {
       }, 1500);
 
       app.init();
+
+      // Feature 9: Check onboarding on first load
+      setTimeout(checkAndShowOnboarding, 2000);
+
+      // Feature 13: Show usage meter
+      setTimeout(updateUsageMeter, 2500);
       
       // הפעלת מערכת Auto Logout
       setTimeout(() => {
@@ -20787,6 +20922,159 @@ calculateBitwise(first, second, operation) {
       TutorialSystem.init();
     });
 
+
+// ========== Feature 9: Onboarding ==========
+let _obUserType = null;
+let _obNbType = 'lined';
+
+function obSelectType(btn) {
+  document.querySelectorAll('.onboarding-type-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  _obUserType = btn.dataset.type;
+  const next = document.getElementById('obNext1');
+  if (next) { next.disabled = false; next.style.opacity = '1'; next.style.cursor = 'pointer'; }
+  const titles = { highschool:'באיזה תיכון?', student:'באיזה קמפוס/אוניברסיטה?', teacher:'באיזה מוסד אתה מלמד?', other:'באיזה מוסד לימודים?' };
+  const t = document.getElementById('obInstitutionTitle');
+  if (t) t.textContent = titles[_obUserType] || 'באיזה מוסד לימודים?';
+}
+
+function obSelectNb(btn) {
+  document.querySelectorAll('.onboarding-nb-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  _obNbType = btn.dataset.nbtype;
+}
+
+function obStep(step) {
+  [1,2,3].forEach(s => {
+    const el = document.getElementById('onboardStep'+s);
+    if (el) el.style.display = s === step ? '' : 'none';
+    const dot = document.getElementById('odot'+s);
+    if (dot) {
+      dot.classList.remove('active','done');
+      if (s < step) dot.classList.add('done');
+      if (s === step) dot.classList.add('active');
+    }
+  });
+  const pct = { 1:33, 2:66, 3:100 };
+  const fill = document.getElementById('onboardingProgress');
+  if (fill) fill.style.width = pct[step] + '%';
+}
+
+function obSkip() {
+  localStorage.setItem('tikit_onboarding_done', '1');
+  const overlay = document.getElementById('onboardingOverlay');
+  if (overlay) overlay.classList.add('hidden');
+}
+
+function obFinish() {
+  const institution = (document.getElementById('obInstitutionInput') || {}).value || '';
+  const nbName = (document.getElementById('obNotebookName') || {}).value || 'המחברת שלי';
+
+  // Save institution to settings
+  if (institution) {
+    const settings = JSON.parse(localStorage.getItem('appSettings') || '{}');
+    settings.userSchool = institution;
+    if (_obUserType) settings.userType = _obUserType;
+    localStorage.setItem('appSettings', JSON.stringify(settings));
+    const instEl = document.getElementById('welcomeInstitution');
+    if (instEl) instEl.textContent = institution;
+  }
+
+  // Create first notebook
+  if (typeof app !== 'undefined' && app.subjects) {
+    const key = 'ob_' + Date.now();
+    app.subjects[key] = {
+      title: nbName,
+      icon: _obNbType === 'grid' ? '📐' : _obNbType === 'blank' ? '📄' : '📝',
+      color: '#6366f1',
+      description: 'נוצרה בהגדרה ראשונית',
+      pageType: _obNbType,
+      pages: []
+    };
+    if (typeof app.saveData === 'function') app.saveData();
+    if (typeof app.renderSubjectsList === 'function') app.renderSubjectsList();
+  }
+
+  localStorage.setItem('tikit_onboarding_done', '1');
+  const overlay = document.getElementById('onboardingOverlay');
+  if (overlay) overlay.classList.add('hidden');
+  // Navigate to notebooks
+  if (typeof app !== 'undefined') setTimeout(() => app.showPage('notebooks'), 300);
+}
+
+function checkAndShowOnboarding() {
+  if (localStorage.getItem('tikit_onboarding_done')) return;
+  // Show only if user is logged in
+  setTimeout(() => {
+    const overlay = document.getElementById('onboardingOverlay');
+    if (overlay) overlay.classList.remove('hidden');
+  }, 1800); // after splash screen
+}
+
+// ========== Feature 10: Share Page ==========
+let _shareImgDataUrl = null;
+
+function closeShareModal() {
+  const overlay = document.getElementById('shareModalOverlay');
+  if (overlay) overlay.classList.add('hidden');
+}
+
+function shareDownload() {
+  if (!_shareImgDataUrl) return;
+  const a = document.createElement('a');
+  a.href = _shareImgDataUrl;
+  a.download = 'tikit-page.png';
+  a.click();
+}
+
+function shareWhatsapp() {
+  if (!_shareImgDataUrl) return;
+  // On mobile, share via Web Share API; on desktop, open WhatsApp web
+  if (navigator.share && navigator.canShare) {
+    fetch(_shareImgDataUrl)
+      .then(r => r.blob())
+      .then(blob => {
+        const file = new File([blob], 'tikit-page.png', { type: 'image/png' });
+        if (navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: 'הדף שלי מ-TIKit' });
+          return;
+        }
+        window.open('https://wa.me/?text=' + encodeURIComponent('הדף שלי מ-TIKit &#128218;'), '_blank');
+      });
+  } else {
+    window.open('https://wa.me/?text=' + encodeURIComponent('הדף שלי מ-TIKit &#128218;'), '_blank');
+  }
+}
+
+// ========== Feature 11: Template creation ==========
+// (Logic is in app object below — createFromTemplate)
+
+// ========== Feature 13: Usage Meter ==========
+function updateUsageMeter() {
+  const bar = document.getElementById('usageMeterBar');
+  if (!bar || typeof app === 'undefined') return;
+  if (app.isPro) { bar.style.display = 'none'; return; }
+
+  const FREE_MAX = 5; // matches FREE_LIMITS.maxNotebooks
+  const used = Object.keys(app.subjects || {}).length;
+  const pct = Math.min(100, Math.round((used / FREE_MAX) * 100));
+
+  document.getElementById('usageMeterCount').textContent = used + '/' + FREE_MAX;
+  document.getElementById('usageMeterFill').style.width = pct + '%';
+
+  const remaining = FREE_MAX - used;
+  const hint = document.getElementById('usageMeterHint');
+  if (hint) {
+    if (remaining <= 0) hint.textContent = 'הגעת למגבלה — שדרג לפרימיום לעוד מחברות ✨';
+    else if (remaining === 1) hint.textContent = 'נותרה מחברת 1 בלבד — שקול שדרוג ✨';
+    else hint.textContent = 'נותרות ' + remaining + ' מחברות חינמיות';
+  }
+
+  bar.style.display = '';
+  bar.className = 'usage-meter-bar' + (pct >= 100 ? ' danger' : pct >= 80 ? ' warning' : '');
+}
+
+// ========== tbToggle (Tablet) ==========
 // ========== Tablet Toolbar Toggle ==========
 function tbToggle(panelId, btnId) {
   const panel = document.getElementById(panelId);
@@ -22613,3 +22901,374 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .cancel-modal-overlay {
   positi
+  /* ============================================
+     USAGE METER (Paywall - Feature 13)
+     ============================================ */
+  .usage-meter-bar {
+    margin: 0 0 20px 0;
+    background: var(--background-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 14px 18px;
+    direction: rtl;
+  }
+  .usage-meter-bar.warning { border-color: #fbbf24; background: #fffbeb; }
+  .usage-meter-bar.danger  { border-color: #ef4444; background: #fef2f2; }
+  [data-theme="dark"] .usage-meter-bar.warning { background: #1c1907; }
+  [data-theme="dark"] .usage-meter-bar.danger  { background: #1a0606; }
+  .usage-meter-top {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 8px;
+  }
+  .usage-meter-label { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+  .usage-meter-count { font-size: 0.85rem; font-weight: 800; color: #6366f1; }
+  .usage-meter-bar.warning .usage-meter-count { color: #d97706; }
+  .usage-meter-bar.danger  .usage-meter-count { color: #ef4444; }
+  .usage-meter-track {
+    height: 8px; background: #e2e8f0;
+    border-radius: 99px; overflow: hidden; margin-bottom: 8px;
+  }
+  [data-theme="dark"] .usage-meter-track { background: #334155; }
+  .usage-meter-fill {
+    height: 100%; border-radius: 99px;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    transition: width 0.6s ease;
+  }
+  .usage-meter-bar.warning .usage-meter-fill { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+  .usage-meter-bar.danger  .usage-meter-fill { background: linear-gradient(90deg, #ef4444, #f97316); }
+  .usage-meter-hint {
+    font-size: 0.78rem; color: var(--text-secondary);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .usage-upgrade-link { font-weight: 700; color: #6366f1; cursor: pointer; }
+  .usage-meter-bar.warning .usage-upgrade-link { color: #d97706; }
+  .usage-meter-bar.danger  .usage-upgrade-link { color: #ef4444; }
+  .usage-upgrade-link:hover { text-decoration: underline; }
+
+  /* ============================================
+     ONBOARDING FLOW (Feature 9)
+     ============================================ */
+  .onboarding-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(6px);
+    z-index: 99999;
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 0.3s ease;
+  }
+  .onboarding-overlay.hidden { display: none !important; }
+  .onboarding-modal {
+    background: white; border-radius: 24px; padding: 36px 32px;
+    max-width: 460px; width: 92%;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+    text-align: center; direction: rtl; position: relative;
+  }
+  [data-theme="dark"] .onboarding-modal { background: #1e293b; color: #f1f5f9; }
+  .onboarding-progress-bar {
+    height: 4px; background: #e2e8f0; border-radius: 99px;
+    margin-bottom: 24px; overflow: hidden;
+  }
+  [data-theme="dark"] .onboarding-progress-bar { background: #334155; }
+  .onboarding-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    border-radius: 99px; transition: width 0.4s ease;
+  }
+  .onboarding-steps {
+    display: flex; justify-content: center; gap: 8px; margin-bottom: 24px;
+  }
+  .onboarding-step-dot {
+    width: 10px; height: 10px; border-radius: 50%; background: #e2e8f0; transition: all 0.3s;
+  }
+  .onboarding-step-dot.active { background: #6366f1; transform: scale(1.3); }
+  .onboarding-step-dot.done   { background: #10b981; }
+  .onboarding-emoji { font-size: 3.2rem; margin-bottom: 12px; }
+  .onboarding-title {
+    font-size: 1.4rem; font-weight: 800; color: #1e293b;
+    margin-bottom: 8px; letter-spacing: -0.3px;
+  }
+  [data-theme="dark"] .onboarding-title { color: #f1f5f9; }
+  .onboarding-sub { font-size: 0.9rem; color: #64748b; margin-bottom: 24px; line-height: 1.5; }
+  .onboarding-types {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px;
+  }
+  .onboarding-type-btn {
+    border: 2px solid #e2e8f0; border-radius: 14px;
+    padding: 14px 10px; cursor: pointer;
+    font-size: 0.88rem; font-weight: 600;
+    background: white; color: #1e293b;
+    transition: all 0.2s; font-family: inherit;
+  }
+  [data-theme="dark"] .onboarding-type-btn { background: #334155; border-color: #475569; color: #f1f5f9; }
+  .onboarding-type-btn:hover, .onboarding-type-btn.selected {
+    border-color: #6366f1; color: #6366f1; background: #eef2ff;
+  }
+  [data-theme="dark"] .onboarding-type-btn.selected { background: #312e81; border-color: #818cf8; color: #818cf8; }
+  .onboarding-type-icon { font-size: 1.6rem; display: block; margin-bottom: 5px; }
+  .onboarding-input {
+    width: 100%; padding: 12px 14px;
+    border: 2px solid #e2e8f0; border-radius: 12px;
+    font-size: 0.95rem; font-family: inherit;
+    text-align: right; direction: rtl;
+    background: white; color: #1e293b;
+    box-sizing: border-box; margin-bottom: 24px;
+    transition: border-color 0.2s;
+  }
+  [data-theme="dark"] .onboarding-input { background: #334155; border-color: #475569; color: #f1f5f9; }
+  .onboarding-input:focus { outline: none; border-color: #6366f1; }
+  .onboarding-nb-types {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px;
+  }
+  .onboarding-nb-btn {
+    border: 2px solid #e2e8f0; border-radius: 12px;
+    padding: 12px 8px; cursor: pointer;
+    font-size: 0.8rem; font-weight: 600;
+    background: white; color: #1e293b;
+    transition: all 0.2s; font-family: inherit;
+  }
+  [data-theme="dark"] .onboarding-nb-btn { background: #334155; border-color: #475569; color: #f1f5f9; }
+  .onboarding-nb-btn.selected { border-color: #6366f1; background: #eef2ff; color: #6366f1; }
+  .onboarding-nb-icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+  .onboarding-btn-row { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
+  .onboarding-next-btn {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white; border: none; border-radius: 12px;
+    padding: 13px 28px; font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: all 0.2s; flex: 1;
+  }
+  .onboarding-next-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,0.4); }
+  .onboarding-next-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+  .onboarding-skip-btn {
+    background: transparent; color: #94a3b8; border: none;
+    padding: 13px 14px; font-size: 0.88rem;
+    cursor: pointer; font-family: inherit; border-radius: 12px; transition: color 0.2s;
+  }
+  .onboarding-skip-btn:hover { color: #64748b; }
+
+  /* ============================================
+     SHARE PAGE MODAL (Feature 10)
+     ============================================ */
+  .share-modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .share-modal-overlay.hidden { display: none !important; }
+  .share-modal {
+    background: white; border-radius: 20px; padding: 26px;
+    max-width: 400px; width: 92%;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+    direction: rtl; text-align: center;
+  }
+  [data-theme="dark"] .share-modal { background: #1e293b; color: #f1f5f9; }
+  .share-modal h3 { font-size: 1.2rem; font-weight: 800; margin: 0 0 4px 0; color: #1e293b; }
+  [data-theme="dark"] .share-modal h3 { color: #f1f5f9; }
+  .share-modal p { font-size: 0.85rem; color: #64748b; margin: 0 0 16px 0; }
+  .share-preview-wrap {
+    border-radius: 12px; overflow: hidden; margin-bottom: 16px;
+    border: 1px solid #e2e8f0; background: #f8fafc;
+    min-height: 160px; display: flex; align-items: center; justify-content: center;
+  }
+  [data-theme="dark"] .share-preview-wrap { border-color: #334155; background: #0f172a; }
+  .share-preview-img { max-width: 100%; max-height: 260px; border-radius: 8px; }
+  .share-preview-loading { color: #94a3b8; font-size: 0.88rem; padding: 40px; }
+  .share-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .share-action-btn {
+    padding: 11px; border-radius: 10px; border: none;
+    cursor: pointer; font-size: 0.88rem; font-weight: 700;
+    font-family: inherit; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+  }
+  .share-download-btn { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; }
+  .share-whatsapp-btn { background: #25d366; color: white; }
+  .share-action-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+  .share-close-btn {
+    background: none; border: none; color: #94a3b8;
+    font-size: 0.85rem; cursor: pointer; font-family: inherit; padding: 8px; width: 100%;
+  }
+  #shareCanvas { display: none; }
+
+  /* ============================================
+     TEMPLATES PAGE (Feature 11)
+     ============================================ */
+  #templates-page .page-header { margin-bottom: 24px; }
+
+  .templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .template-card {
+    border: 2px dashed #c7d2fe;
+    border-radius: 16px; padding: 22px 16px;
+    cursor: pointer; background: #fafafe;
+    transition: all 0.2s; text-align: right; direction: rtl;
+    position: relative;
+  }
+  [data-theme="dark"] .template-card { background: #1e293b; border-color: #4338ca; }
+  .template-card:hover {
+    border-color: #6366f1; background: #eef2ff;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(99,102,241,0.15);
+  }
+  [data-theme="dark"] .template-card:hover { background: #312e81; }
+  .template-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+  .template-name { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 5px; }
+  .template-desc { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; }
+  .template-badge {
+    position: absolute; top: 10px; left: 10px;
+    font-size: 0.65rem; font-weight: 700;
+    background: #6366f1; color: white;
+    padding: 2px 8px; border-radius: 99px;
+  }
+  .template-badge.free { background: #10b981; }
+
+</style>
+
+  <!-- ===== TEMPLATES PAGE (Feature 11) ===== -->
+  <div id="templates-page" class="page">
+    <div class="page-header">
+      <h1 class="page-title"><span>📋</span> תבניות מוכנות</h1>
+      <button class="back-btn" onclick="app.showPage('homepage')"><span>←</span> דף הבית</button>
+    </div>
+    <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:24px;direction:rtl;">
+      בחר תבנית ותיצור מחברת מוכנה עם מבנה מוגדר מראש
+    </p>
+    <div class="templates-grid">
+
+      <div class="template-card" onclick="app.createFromTemplate('bagrut_math')">
+        <span class="template-badge free">חינם</span>
+        <span class="template-icon">📐</span>
+        <div class="template-name">לוח בגרות — מתמטיקה</div>
+        <div class="template-desc">דף משובץ עם מקום לנוסחאות, פתרונות ואזור ציור</div>
+      </div>
+
+      <div class="template-card" onclick="app.createFromTemplate('summary')">
+        <span class="template-badge free">חינם</span>
+        <span class="template-icon">📝</span>
+        <div class="template-name">מחברת סיכום לבחינה</div>
+        <div class="template-desc">מבנה מוכן: מושגים מרכזיים, נוסחאות, שאלות תרגול</div>
+      </div>
+
+      <div class="template-card" onclick="app.createFromTemplate('project')">
+        <span class="template-badge free">חינם</span>
+        <span class="template-icon">🗂️</span>
+        <div class="template-name">מחברת פרויקט</div>
+        <div class="template-desc">כולל דפי תכנון, מחקר, ביצוע וסיכום</div>
+      </div>
+
+      <div class="template-card" onclick="app.createFromTemplate('weekly_plan')">
+        <span class="template-badge free">חינם</span>
+        <span class="template-icon">🗓️</span>
+        <div class="template-name">תכנון שבועי</div>
+        <div class="template-desc">7 דפים — יום לכל עמוד, עם שורות ומשימות</div>
+      </div>
+
+      <div class="template-card" onclick="app.createFromTemplate('lab_report')">
+        <span class="template-badge">Pro</span>
+        <span class="template-icon">🔬</span>
+        <div class="template-name">דוח מעבדה</div>
+        <div class="template-desc">מבנה מלא: השערה, שיטה, תוצאות, מסקנות</div>
+      </div>
+
+      <div class="template-card" onclick="app.createFromTemplate('vocab')">
+        <span class="template-badge free">חינם</span>
+        <span class="template-icon">🌍</span>
+        <div class="template-name">אוצר מילים — שפה</div>
+        <div class="template-desc">טבלאות מוכנות לשינון מילים, פועלים ומשפטים</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== ONBOARDING MODAL (Feature 9) ===== -->
+  <div class="onboarding-overlay hidden" id="onboardingOverlay">
+    <div class="onboarding-modal">
+      <div class="onboarding-progress-bar">
+        <div class="onboarding-progress-fill" id="onboardingProgress" style="width:33%"></div>
+      </div>
+      <div class="onboarding-steps">
+        <div class="onboarding-step-dot active" id="odot1"></div>
+        <div class="onboarding-step-dot" id="odot2"></div>
+        <div class="onboarding-step-dot" id="odot3"></div>
+      </div>
+      <!-- Step 1: מה אתה? -->
+      <div id="onboardStep1">
+        <div class="onboarding-emoji">&#128075;</div>
+        <div class="onboarding-title">ברוכים הבאים ל-TIKit!</div>
+        <div class="onboarding-sub">נגדיר הכל תוך 30 שניות — קודם מי אתה?</div>
+        <div class="onboarding-types">
+          <button class="onboarding-type-btn" data-type="highschool" onclick="obSelectType(this)">
+            <span class="onboarding-type-icon">&#127979;</span>תיכונאי/ת
+          </button>
+          <button class="onboarding-type-btn" data-type="student" onclick="obSelectType(this)">
+            <span class="onboarding-type-icon">&#127891;</span>סטודנט/ית
+          </button>
+          <button class="onboarding-type-btn" data-type="teacher" onclick="obSelectType(this)">
+            <span class="onboarding-type-icon">&#128104;&#8205;&#127979;</span>מורה
+          </button>
+          <button class="onboarding-type-btn" data-type="other" onclick="obSelectType(this)">
+            <span class="onboarding-type-icon">&#10024;</span>אחר
+          </button>
+        </div>
+        <div class="onboarding-btn-row">
+          <button class="onboarding-next-btn" onclick="obStep(2)" id="obNext1" disabled>המשך &#8594;</button>
+          <button class="onboarding-skip-btn" onclick="obSkip()">דלג</button>
+        </div>
+      </div>
+      <!-- Step 2: מוסד -->
+      <div id="onboardStep2" style="display:none;">
+        <div class="onboarding-emoji">&#127963;</div>
+        <div class="onboarding-title" id="obInstitutionTitle">באיזה מוסד לימודים?</div>
+        <div class="onboarding-sub">יופיע בדף הבית שלך (אפשר לשנות מאוחר יותר)</div>
+        <input class="onboarding-input" type="text" id="obInstitutionInput" placeholder="שם המוסד" dir="rtl">
+        <div class="onboarding-btn-row">
+          <button class="onboarding-next-btn" onclick="obStep(3)">המשך &#8594;</button>
+          <button class="onboarding-skip-btn" onclick="obStep(3)">דלג</button>
+        </div>
+      </div>
+      <!-- Step 3: מחברת ראשונה -->
+      <div id="onboardStep3" style="display:none;">
+        <div class="onboarding-emoji">&#128218;</div>
+        <div class="onboarding-title">צור את המחברת הראשונה שלך</div>
+        <div class="onboarding-sub">בחר סוג דף</div>
+        <div class="onboarding-nb-types">
+          <button class="onboarding-nb-btn selected" data-nbtype="lined" onclick="obSelectNb(this)">
+            <span class="onboarding-nb-icon">&#128221;</span>שורות
+          </button>
+          <button class="onboarding-nb-btn" data-nbtype="grid" onclick="obSelectNb(this)">
+            <span class="onboarding-nb-icon">&#128208;</span>משובץ
+          </button>
+          <button class="onboarding-nb-btn" data-nbtype="blank" onclick="obSelectNb(this)">
+            <span class="onboarding-nb-icon">&#128196;</span>חלק
+          </button>
+        </div>
+        <input class="onboarding-input" type="text" id="obNotebookName" placeholder="שם המחברת (למשל: מתמטיקה)" dir="rtl" style="margin-top:14px;">
+        <div class="onboarding-btn-row" style="margin-top:0;">
+          <button class="onboarding-next-btn" onclick="obFinish()">&#128640; בואו נתחיל!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SHARE MODAL (Feature 10) ===== -->
+  <div class="share-modal-overlay hidden" id="shareModalOverlay">
+    <div class="share-modal">
+      <h3>&#128228; שתף דף מהמחברת</h3>
+      <p>תמונה מוכנה לשיתוף — כולל לוגו TIKit</p>
+      <div class="share-preview-wrap" id="sharePreviewWrap">
+        <div class="share-preview-loading" id="sharePreviewLoading">&#9203; יוצר תמונה...</div>
+        <img id="sharePreviewImg" class="share-preview-img" style="display:none;">
+      </div>
+      <div class="share-btn-row">
+        <button class="share-action-btn share-download-btn" onclick="shareDownload()">&#11015;&#65039; הורד</button>
+        <button class="share-action-btn share-whatsapp-btn" onclick="shareWhatsapp()">&#128172; וואטסאפ</button>
+      </div>
+      <button class="share-close-btn" onclick="closeShareModal()">סגור</button>
+    </div>
+  </div>
+  <canvas id="shareCanvas"></canvas>
