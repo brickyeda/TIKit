@@ -40,10 +40,6 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://brickyeda.github.io/TIKit/logo.png">
   <link rel="apple-touch-icon" href="https://brickyeda.github.io/TIKit/logo.png">
-  <!-- Inter Font - Modern & Professional -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -51,42 +47,27 @@
       box-sizing: border-box;
     }
     :root {
-      /* Colors — Modern 2025 Palette */
-      --primary-color: #6366f1;
-      --primary-dark: #4f46e5;
-      --secondary-color: #8b5cf6;
-      --accent-color: #06b6d4;
-      --text-primary: #111827;
-      --text-secondary: #6b7280;
-      --background-main: #f5f5f7;
+      /* Colors */
+      --primary-color: #667eea;
+      --secondary-color: #764ba2;
+      --accent-color: #4ecdc4;
+      --text-primary: #2c3e50;
+      --text-secondary: #7f8c8d;
+      --background-main: #f8f9fa;
       --background-card: #ffffff;
-      --border-color: #e5e7eb;
-      --shadow-light: rgba(0,0,0,0.06);
-      --shadow-medium: rgba(0,0,0,0.12);
-      --success-color: #10b981;
-      --warning-color: #f59e0b;
-      --danger-color: #ef4444;
-      --line-color: #d1d5db;
-      --line-dark: #9ca3af;
-      --margin-line: #f87171;
-      --task-high: #ef4444;
-      --task-medium: #f59e0b;
-      --task-low: #10b981;
-      --completed-task: #9ca3af;
-      /* Typography scale */
-      --font-size-xs: 0.75rem;
-      --font-size-sm: 0.875rem;
-      --font-size-base: 1rem;
-      --font-size-lg: 1.125rem;
-      --font-size-xl: 1.25rem;
-      --font-size-2xl: 1.5rem;
-      --font-size-3xl: 1.875rem;
-      /* Border radius scale */
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --radius-xl: 20px;
-      --radius-full: 9999px;
+      --border-color: #e9ecef;
+      --shadow-light: rgba(0,0,0,0.1);
+      --shadow-medium: rgba(0,0,0,0.15);
+      --success-color: #27ae60;
+      --warning-color: #f39c12;
+      --danger-color: #e74c3c;
+      --line-color: #d3d3d3;
+      --line-dark: #b8b8b8;
+      --margin-line: #ff6b6b;
+      --task-high: #e74c3c;
+      --task-medium: #f39c12;
+      --task-low: #27ae60;
+      --completed-task: #95a5a6;
       
       /* Z-Index Scale */
       --z-base: 1;
@@ -113,7 +94,7 @@
     }
 
     body {
-      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: var(--background-main);
       color: var(--text-primary);
       line-height: 1.6;
@@ -281,14 +262,14 @@
     .navbar {
       background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
       color: white;
-      padding: 0 24px;
-      box-shadow: 0 2px 20px rgba(99,102,241,0.25), 0 1px 0 rgba(255,255,255,0.1) inset;
+      padding: 0 20px;
+      box-shadow: 0 4px 20px var(--shadow-medium);
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: var(--z-fixed);
-      height: 64px;
+      height: 70px;
     }
 
     .navbar-content {
@@ -437,8 +418,8 @@
 
     /* Page Container */
     .page-container {
-      margin-top: 64px;
-      min-height: calc(100vh - 64px);
+      margin-top: 70px;
+      min-height: calc(100vh - 70px);
     }
 
     .page {
@@ -921,165 +902,73 @@
       font-size: 0.95rem;
     }
 
-    /* ===== Homepage layout ===== */
-    .homepage-layout {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: 24px;
-      align-items: start;
-    }
-
-    .homepage-main { min-width: 0; }
-
-    .homepage-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      position: sticky;
-      top: 80px;
-    }
-
-    .sidebar-card {
-      background: var(--background-card);
-      border-radius: 16px;
-      border: 1px solid var(--border-color);
-      box-shadow: 0 1px 3px var(--shadow-light);
-      overflow: hidden;
-    }
-
-    .sidebar-card-header {
-      padding: 16px 20px 12px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .sidebar-card-body { padding: 16px 20px; }
-
-    .quick-stat-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border-color);
-      font-size: 0.92rem;
-      cursor: pointer;
-      transition: color 0.15s;
-    }
-    .quick-stat-row:last-child { border-bottom: none; }
-    .quick-stat-row:hover { color: var(--primary-color); }
-    .quick-stat-row .qs-label { color: var(--text-secondary); font-size: 0.88rem; }
-    .quick-stat-row .qs-value { font-weight: 700; font-size: 1rem; }
-
-    /* Section label above tools grid */
-    .section-heading {
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-secondary);
-      margin: 0 0 14px 0;
-    }
-
-    /* ===== Tool cards — new design ===== */
     .tools-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 14px;
-      margin-bottom: 32px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
     }
 
     .tool-card {
       background: var(--background-card);
-      border-radius: 16px;
-      padding: 22px 20px 18px;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 25px var(--shadow-light);
       border: 1px solid var(--border-color);
       cursor: pointer;
-      transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
     }
 
-    /* Colored left accent bar per card */
-    .tool-card::after {
+    .tool-card::before {
       content: '';
       position: absolute;
-      top: 0; right: 0;
-      width: 4px; height: 100%;
-      background: var(--card-accent, var(--primary-color));
-      border-radius: 0 16px 16px 0;
-      opacity: 0;
-      transition: opacity 0.2s ease;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s ease;
+    }
+
+    .tool-card:hover::before {
+      transform: scaleX(1);
+      transform-origin: left;
     }
 
     .tool-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-      border-color: var(--card-accent, var(--primary-color));
-    }
-
-    .tool-card:hover::after { opacity: 1; }
-
-    .tool-card-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px var(--shadow-medium);
     }
 
     .tool-icon {
-      font-size: 2rem;
-      line-height: 1;
+      font-size: 3rem;
+      margin-bottom: 20px;
       display: block;
     }
 
-    .tool-arrow {
-      font-size: 1rem;
-      color: var(--text-secondary);
-      opacity: 0;
-      transform: translateX(4px);
-      transition: opacity 0.2s, transform 0.2s;
-    }
-    .tool-card:hover .tool-arrow { opacity: 1; transform: translateX(0); }
-
     .tool-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      line-height: 1.3;
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 10px;
     }
 
     .tool-description {
       color: var(--text-secondary);
-      font-size: 0.82rem;
+      margin-bottom: 15px;
       line-height: 1.5;
-      flex: 1;
     }
 
     .tool-status {
-      font-size: 0.78rem;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 99px;
-      background: rgba(99,102,241,0.1);
-      color: var(--primary-color);
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: var(--accent-color);
+      color: white;
       display: inline-block;
-      width: fit-content;
-    }
-
-    .tool-status.ready {
-      background: rgba(16,185,129,0.1);
-      color: var(--success-color);
-    }
-
-    .tool-status.wip {
-      background: rgba(245,158,11,0.1);
-      color: var(--warning-color);
     }
 
     /* Page Headers */
@@ -3019,22 +2908,14 @@ padding: 0px 10px 10px 10px;
   gap: 15px;
   flex-wrap: wrap;
   box-shadow: 0 4px 12px var(--shadow-light);
+  
+  /* השתמש ב-fixed */
   position: fixed;
-  top: 64px;   /* updated from 70px */
-  left: 240px;
-  right: 240px;
+  top: 70px;
+  left: 240px;  /* אחרי סרגל הנוסחאות */
+  right: 240px; /* לפני סרגל הציור */
   z-index: 90;
   margin: 0;
-}
-
-/* Desktop only: math formulas sidebar takes space */
-@media (min-width: 1201px) {
-  .global-formatting-toolbar {
-    position: fixed;
-    top: 64px;
-    left: 240px;
-    right: 240px;
-  }
 }
 
 /* תוסיף ריפוד לתוכן כדי שלא יוסתר */
@@ -3249,7 +3130,7 @@ padding: 0px 10px 10px 10px;
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 10px;
-      box-shadow: 0 2px 20px rgba(99,102,241,0.25), 0 1px 0 rgba(255,255,255,0.1) inset;
+      box-shadow: 0 4px 20px var(--shadow-medium);
       z-index: 1000;
       display: none;
       grid-template-columns: repeat(8, 1fr);
@@ -3287,7 +3168,7 @@ padding: 0px 10px 10px 10px;
   box-shadow: 0 4px 12px var(--shadow-light);
   position: absolute;
   left: -190px;
-  top: 56px;
+  top: 120px;
   width: 200px;
   max-height: calc(100vh - 180px);
   overflow-y: auto;
@@ -4270,349 +4151,6 @@ scrollbar-gutter: stable;
     }
 
     /* Responsive Design */
-    /* ===================================================
-       TABLET OPTIMIZATIONS — 10" tablets (768px–1200px)
-       Target: touch-friendly notebook editing
-       =================================================== */
-    @media (pointer: coarse) and (min-width: 400px) and (max-width: 1200px) {
-
-      /* =========================================
-         TABLET COLLAPSED TOOLBAR SYSTEM
-         ========================================= */
-
-      /* Main toolbar: show only the icon bar */
-      .global-formatting-toolbar {
-        position: sticky !important;
-        top: 64px !important;
-        left: 0 !important;
-        right: 0 !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-        flex-wrap: nowrap !important;
-        gap: 4px !important;
-        padding: 6px 12px !important;
-        z-index: 200 !important;
-        border-radius: 0 0 12px 12px !important;
-        background: white !important;
-        height: 52px !important;
-        align-items: center !important;
-        overflow: visible !important;
-      }
-
-      /* Hide all toolbar groups on tablet */
-      .toolbar-group {
-        display: none !important;
-      }
-
-      /* Show only the tablet icon bar */
-      .tablet-toolbar-bar {
-        display: flex !important;
-      }
-
-      /* Each icon trigger button */
-      .tb-icon-btn {
-        min-width: 44px !important;
-        height: 40px !important;
-        border-radius: 10px !important;
-        border: 1px solid var(--border-color) !important;
-        background: white !important;
-        cursor: pointer !important;
-        font-size: 1.2rem !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        transition: all 0.15s ease !important;
-        position: relative !important;
-        padding: 0 10px !important;
-        gap: 5px !important;
-        color: var(--text-primary) !important;
-        flex-shrink: 0 !important;
-      }
-
-      .tb-icon-btn:hover,
-      .tb-icon-btn.open {
-        background: var(--primary-color) !important;
-        color: white !important;
-        border-color: var(--primary-color) !important;
-      }
-
-      .tb-icon-btn .tb-label {
-        font-size: 0.72rem !important;
-        font-weight: 600 !important;
-        white-space: nowrap !important;
-      }
-
-      /* Floating panel that appears on tap */
-      .tb-panel {
-        display: none !important;
-        position: absolute !important;
-        top: calc(100% + 6px) !important;
-        right: 0 !important;
-        background: white !important;
-        border: 1px solid var(--border-color) !important;
-        border-radius: 14px !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
-        padding: 12px !important;
-        z-index: 9999 !important;
-        min-width: 280px !important;
-        flex-wrap: wrap !important;
-        gap: 8px !important;
-        align-items: center !important;
-      }
-
-      .tb-panel.open {
-        display: flex !important;
-        animation: tbPanelIn 0.15s ease !important;
-      }
-
-      @keyframes tbPanelIn {
-        from { opacity: 0; transform: translateY(-6px) scale(0.97); }
-        to   { opacity: 1; transform: translateY(0) scale(1); }
-      }
-
-      /* Buttons INSIDE the floating panel */
-      .tb-panel .toolbar-btn {
-        display: flex !important;
-        min-width: 48px !important;
-        height: 48px !important;
-        padding: 8px !important;
-        font-size: 1rem !important;
-        border-radius: 10px !important;
-        border: 1px solid var(--border-color) !important;
-        background: white !important;
-        cursor: pointer !important;
-        align-items: center !important;
-        justify-content: center !important;
-        transition: all 0.15s !important;
-      }
-
-      .tb-panel .toolbar-btn:hover,
-      .tb-panel .toolbar-btn.active {
-        background: var(--primary-color) !important;
-        color: white !important;
-        border-color: var(--primary-color) !important;
-      }
-
-      .tb-panel .toolbar-select {
-        height: 44px !important;
-        font-size: 0.9rem !important;
-        border-radius: 8px !important;
-        padding: 6px 10px !important;
-      }
-
-      .tb-panel input[type="color"] {
-        width: 44px !important;
-        height: 44px !important;
-        border-radius: 8px !important;
-        border: 1px solid var(--border-color) !important;
-        cursor: pointer !important;
-        padding: 2px !important;
-      }
-
-      .tb-panel input[type="range"] {
-        width: 140px !important;
-        accent-color: var(--primary-color) !important;
-      }
-
-      .tb-panel-label {
-        font-size: 0.75rem !important;
-        font-weight: 700 !important;
-        color: var(--text-secondary) !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.06em !important;
-        width: 100% !important;
-        padding-bottom: 4px !important;
-        border-bottom: 1px solid var(--border-color) !important;
-        margin-bottom: 2px !important;
-      }
-
-      .tb-divider {
-        width: 1px !important;
-        height: 28px !important;
-        background: var(--border-color) !important;
-        flex-shrink: 0 !important;
-      }
-
-      /* --- Math formulas sidebar: collapse to top horizontal strip on tablet --- */
-      .math-formulas-toolbar {
-        position: sticky !important;
-        top: 120px !important;
-        left: 0 !important;
-        width: 100% !important;
-        max-height: none !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        gap: 8px !important;
-        padding: 10px 16px !important;
-        border-radius: 0 0 12px 12px !important;
-        overflow-x: auto !important;
-        overflow-y: hidden !important;
-        z-index: 150 !important;
-        flex-wrap: nowrap !important;
-      }
-
-      .formulas-title {
-        flex-direction: row !important;
-        white-space: nowrap !important;
-        padding-bottom: 0 !important;
-        padding-left: 12px !important;
-        border-bottom: none !important;
-        border-left: 2px solid rgba(255,255,255,0.3) !important;
-        min-width: fit-content !important;
-      }
-
-      .formulas-title span { font-size: 1.2rem !important; }
-
-      .formulas-container {
-        flex-direction: row !important;
-        gap: 6px !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-      }
-
-      .formula-group {
-        flex-direction: row !important;
-        gap: 6px !important;
-        padding: 0 8px !important;
-        border-top: none !important;
-        border-left: 1px solid rgba(255,255,255,0.25) !important;
-        flex-wrap: nowrap !important;
-        min-width: fit-content !important;
-      }
-
-      .formula-item {
-        white-space: nowrap !important;
-        font-size: 0.82rem !important;
-        padding: 8px 12px !important;
-        min-width: fit-content !important;
-        /* tap-friendly */
-        min-height: 40px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-      }
-
-      /* formula-preview tooltip stays on tap — hide by default */
-      .formula-preview { display: none !important; }
-
-      .nuschon-link-btn {
-        white-space: nowrap !important;
-        min-height: 40px !important;
-        padding: 8px 14px !important;
-        font-size: 0.85rem !important;
-        margin-top: 0 !important;
-      }
-
-      /* --- Notebook page: reduce padding for tablet width --- */
-      .lined-page,
-      .grid-page,
-      .blank-page {
-        padding: 32px 40px !important;
-      }
-
-      .lined-page::after {
-        right: 30px !important;
-      }
-
-      /* --- Notebook header bar: wrap when needed --- */
-      #notebookView .page-header {
-        flex-wrap: wrap !important;
-        gap: 10px !important;
-        top: 64px !important;
-      }
-
-      #notebookView .page-header > div {
-        flex-wrap: wrap !important;
-        gap: 8px !important;
-      }
-
-      /* --- Zoom controls: larger touch targets --- */
-      .zoom-btn {
-        min-width: 44px !important;
-        height: 44px !important;
-        font-size: 1.2rem !important;
-      }
-
-      .zoom-level {
-        font-size: 0.95rem !important;
-        min-width: 56px !important;
-      }
-
-      /* --- Page nav buttons (prev/next page): bigger --- */
-      .page-nav-btn {
-        width: 48px !important;
-        height: 48px !important;
-        font-size: 1.3rem !important;
-      }
-
-      /* --- Drawing: bigger slider, easier color picker --- */
-      #thicknessSlider {
-        width: 100px !important;
-        height: 6px !important;
-        accent-color: var(--primary-color) !important;
-      }
-
-      #drawingColor {
-        width: 40px !important;
-        height: 40px !important;
-        border-radius: 8px !important;
-      }
-
-      /* --- Notebook header page buttons: larger tap area --- */
-      .add-page-btn, .back-btn {
-        padding: 12px 18px !important;
-        font-size: 0.95rem !important;
-        min-height: 44px !important;
-      }
-
-      /* --- notebookContent: compensate for sticky elements --- */
-      #notebookContent {
-        margin-top: 12px !important;
-      }
-
-      /* --- touch-action: allow pan on canvas --- */
-      .page-canvas {
-        touch-action: none !important;
-      }
-
-      /* --- Notebooks grid on tablet: 2 columns --- */
-      .subjects-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-      }
-    }
-
-    /* ===================================================
-       POINTER: coarse = touch device (any size)
-       Apply touch-specific tweaks regardless of breakpoint
-       =================================================== */
-    @media (pointer: coarse) {
-      /* Bigger tap targets everywhere */
-      .toolbar-btn {
-        min-width: 44px !important;
-        min-height: 44px !important;
-      }
-      .zoom-btn {
-        min-width: 44px !important;
-        min-height: 44px !important;
-      }
-      .page-nav-btn {
-        width: 52px !important;
-        height: 52px !important;
-      }
-      /* No hover transforms that can stick on touch */
-      .tool-card:hover,
-      .notebook-card:hover {
-        transform: none !important;
-      }
-      /* Scrollable formula bar doesn't show overflow indicator */
-      .math-formulas-toolbar {
-        -webkit-overflow-scrolling: touch;
-      }
-      .formulas-container {
-        -webkit-overflow-scrolling: touch;
-      }
-    }
-
     @media (max-width: 768px) {
       .navbar-menu {
         display: none;
@@ -4950,7 +4488,8 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
   z-index: var(--z-tooltip);
   display: flex;
   flex-direction: column;
-  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  resize: both;
   overflow: auto;
 }
 
@@ -5437,7 +4976,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
   color: #667eea;
   background: white;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Segoe UI', system-ui, sans-serif;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
@@ -6909,295 +6448,9 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 
 .interactive-shape.selected .shape-rotate-line { display: block; }
 
-  /* ===== MODERN DESIGN UPGRADES 2025 ===== */
-
-  /* Smoother welcome section */
-  .welcome-section {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
-    border-radius: 24px !important;
-    box-shadow: 0 8px 32px rgba(99,102,241,0.2) !important;
-  }
-
-  /* Better stat cards */
-  .stat-item {
-    border: 1px solid rgba(255,255,255,0.2) !important;
-    border-radius: 16px !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-  }
-  .stat-item:hover {
-    background: rgba(255,255,255,0.28) !important;
-    transform: translateY(-4px) scale(1.02) !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
-  }
-  .stat-number {
-    font-size: 2.2rem !important;
-    font-weight: 800 !important;
-    letter-spacing: -0.5px !important;
-  }
-
-  /* Cards - cleaner shadows */
-  .notebook-card,
-  .task-item,
-  .link-card,
-  .subscription-card {
-    border-radius: 16px !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06) !important;
-    border: 1px solid var(--border-color) !important;
-    transition: box-shadow 0.2s ease, transform 0.2s ease !important;
-  }
-  .notebook-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 12px 32px rgba(99,102,241,0.12) !important;
-    transform: translateY(-3px) !important;
-  }
-
-  /* Navbar items - pill style */
-  .navbar-item {
-    border-radius: 10px !important;
-    font-size: 0.9rem !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.01em !important;
-    padding: 8px 14px !important;
-  }
-  .navbar-item.active {
-    background: rgba(255,255,255,0.22) !important;
-    font-weight: 600 !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.2) inset !important;
-  }
-
-  /* Buttons - sharper, more modern */
-  .btn--primary {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
-    box-shadow: 0 2px 8px rgba(99,102,241,0.3) !important;
-    letter-spacing: 0.01em !important;
-  }
-  .btn--primary:hover {
-    box-shadow: 0 4px 16px rgba(99,102,241,0.4) !important;
-    transform: translateY(-1px) !important;
-  }
-
-  /* Page title - stronger typography */
-  .page-title {
-    font-weight: 800 !important;
-    letter-spacing: -0.5px !important;
-  }
-
-  /* Inputs - cleaner focus ring */
-  input:focus,
-  textarea:focus,
-  select:focus {
-    outline: none !important;
-    border-color: var(--primary-color) !important;
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.15) !important;
-  }
-
-  /* Modals - larger radius */
-  .modal-container,
-  .modal-content,
-  .settings-modal {
-    border-radius: 20px !important;
-  }
-
-  /* Scrollbar - subtle and modern */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 99px; }
-  ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
-
-  /* Toast / notification - rounder */
-  .toast-notification {
-    border-radius: 14px !important;
-    font-weight: 500 !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
-  }
-
-  /* Logout button - more refined */
-  .logout-btn {
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-    font-size: 0.8rem !important;
-  }
-
-  /* Brand - slightly bolder */
-  .navbar-brand {
-    font-weight: 800 !important;
-    letter-spacing: -0.3px !important;
-    font-size: 1.4rem !important;
-  }
-
-
-  /* ===== DARK MODE ===== */
-  [data-theme="dark"] {
-    --primary-color: #818cf8;
-    --primary-dark: #6366f1;
-    --secondary-color: #a78bfa;
-    --accent-color: #22d3ee;
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --background-main: #0f172a;
-    --background-card: #1e293b;
-    --border-color: #334155;
-    --shadow-light: rgba(0,0,0,0.3);
-    --shadow-medium: rgba(0,0,0,0.5);
-    --success-color: #34d399;
-    --warning-color: #fbbf24;
-    --danger-color: #f87171;
-    --line-color: #334155;
-    --line-dark: #475569;
-    --margin-line: #fb7185;
-  }
-  [data-theme="dark"] body {
-    background: var(--background-main);
-    color: var(--text-primary);
-  }
-  [data-theme="dark"] .navbar {
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.5) !important;
-  }
-  [data-theme="dark"] .background-card,
-  [data-theme="dark"] .modal-container,
-  [data-theme="dark"] .modal-content,
-  [data-theme="dark"] .notebook-card,
-  [data-theme="dark"] .task-item,
-  [data-theme="dark"] .subscription-card,
-  [data-theme="dark"] .settings-modal {
-    background: var(--background-card) !important;
-    border-color: var(--border-color) !important;
-    color: var(--text-primary) !important;
-  }
-  [data-theme="dark"] input,
-  [data-theme="dark"] textarea,
-  [data-theme="dark"] select {
-    background: #1e293b !important;
-    border-color: #334155 !important;
-    color: var(--text-primary) !important;
-  }
-  [data-theme="dark"] .welcome-section {
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
-  }
-  [data-theme="dark"] .sidebar-card {
-    background: #1e293b !important;
-    border-color: #334155 !important;
-  }
-  [data-theme="dark"] .sidebar-card-header {
-    border-color: #334155 !important;
-    color: #94a3b8 !important;
-  }
-  [data-theme="dark"] .quick-stat-row {
-    border-color: #334155 !important;
-    color: #e2e8f0 !important;
-  }
-  [data-theme="dark"] .quick-stat-row .qs-label { color: #94a3b8 !important; }
-  [data-theme="dark"] .tool-card {
-    background: #1e293b !important;
-    border-color: #334155 !important;
-  }
-  [data-theme="dark"] .tool-card:hover {
-    border-color: var(--card-accent, #818cf8) !important;
-  }
-  [data-theme="dark"] .tool-title { color: #f1f5f9 !important; }
-  [data-theme="dark"] .tool-description { color: #94a3b8 !important; }
-  [data-theme="dark"] .section-heading { color: #64748b !important; }
-
-  /* Responsive homepage layout */
-  @media (max-width: 1100px) {
-    .homepage-layout {
-      grid-template-columns: 1fr;
-    }
-    .homepage-sidebar {
-      position: static;
-      flex-direction: row;
-      flex-wrap: wrap;
-    }
-    .sidebar-card { flex: 1; min-width: 220px; }
-  }
-  @media (max-width: 720px) {
-    .homepage-sidebar { flex-direction: column; }
-    .tools-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  }
-  @media (max-width: 480px) {
-    .tools-grid { grid-template-columns: 1fr; }
-  }
-
-  /* Dark mode toggle button */
-  .dark-mode-toggle {
-    background: rgba(255,255,255,0.15);
-    border: none;
-    border-radius: 50%;
-    width: 36px; height: 36px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    color: white;
-    font-size: 1.1rem;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-  }
-  .dark-mode-toggle:hover {
-    background: rgba(255,255,255,0.25);
-    transform: scale(1.1);
-  }
-
   </style>
 </head>
 <body>
-
-  <!-- ===== SPLASH SCREEN ===== -->
-  <div id="splashScreen" style="
-    position: fixed; inset: 0; z-index: 99999;
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 20px;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
-  ">
-    <div style="
-      width: 90px; height: 90px; border-radius: 24px;
-      background: rgba(255,255,255,0.15);
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-      animation: splashPop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
-    ">
-      <img src="https://brickyeda.github.io/TIKit/logo.png" style="width:60px;height:60px;object-fit:contain;" alt="TIKit">
-    </div>
-    <div style="text-align:center; color:white; animation: splashFade 0.5s 0.3s ease both;">
-      <div style="font-family:Inter,sans-serif; font-size:2rem; font-weight:800; letter-spacing:-1px;">TIKit</div>
-      <div style="font-family:Inter,sans-serif; font-size:0.95rem; opacity:0.8; margin-top:4px;">הכלי החכם שלך ללמידה</div>
-    </div>
-    <div style="
-      margin-top: 16px;
-      width: 48px; height: 4px; border-radius: 99px;
-      background: rgba(255,255,255,0.25);
-      overflow: hidden;
-      animation: splashFade 0.5s 0.4s ease both;
-    ">
-      <div style="
-        height: 100%; background: white; border-radius: 99px;
-        animation: splashBar 1.2s 0.5s ease forwards;
-        width: 0%;
-      " id="splashBar"></div>
-    </div>
-  </div>
-
-  <style>
-    @keyframes splashPop {
-      from { transform: scale(0.5); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-    @keyframes splashFade {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes splashBar {
-      from { width: 0%; }
-      to { width: 100%; }
-    }
-    #splashScreen.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-  </style>
-
   <!-- Navigation Bar -->
   <nav class="navbar">
     <div class="navbar-content">
@@ -7235,10 +6488,6 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           <i data-lucide="layout-grid" class="lucide-icon"></i>
           <span>מערכת</span>
         </li>
-        <li class="navbar-item" onclick="app.showPage('templates-page')" data-page="templates-page">
-          <span>📋</span>
-          תבניות
-        </li>
         <li class="navbar-item" onclick="app.showPage('mylinks')" data-page="mylinks">
           <i data-lucide="link" class="lucide-icon"></i>
           <span>קישורים</span>
@@ -7259,7 +6508,6 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
         </div>
         <button id="premiumInfoBtn" onclick="app.openUpgradeModal('שדרוג לפרימיום')" title="שדרוג לפרימיום" class="premium-star-btn">⭐</button>
         <button class="logout-btn" id="logoutBtn" onclick="app.logout()" style="display: none;">התנתק</button>
-        <button class="dark-mode-toggle" id="darkModeBtn" onclick="app.toggleDarkMode()" title="מצב לילה">🌙</button>
         <div class="fullscreen-icon" id="fullscreenBtn" onclick="app.toggleFullscreen()" title="מסך מלא">⛶</div>
 
 <div class="settings-icon" style="display: none;" onclick="app.openSettings()">⚙️</div>
@@ -7272,14 +6520,15 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     
     <!-- Homepage -->
     <div id="homepage" class="page active">
-
-      <!-- Welcome Banner -->
       <div class="welcome-section">
         <div class="welcome-content">
           <div class="welcome-text">
             <h1 id="welcomeGreeting">שלום!</h1>
-            <div class="subtitle" id="welcomeSubtitle">מיקוד שמוביל להצלחה</div>
-            <div class="institution" id="welcomeInstitution">הכלי החכם שלך</div>
+<div class="subtitle" id="welcomeSubtitle">מיקוד שמוביל להצלחה</div>
+            <div class="institution" id="welcomeInstitution">הילקוד החכם שלך</div>
+            <button onclick="logout()" style="margin-top: 15px; padding: 10px 20px; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; border-radius: 8px; font-size: 0.95rem; cursor: pointer; transition: transform 0.2s;">
+              🚪 התנתק
+            </button>
           </div>
           <div class="welcome-stats">
             <div class="stat-item" onclick="app.showPage('tasks')">
@@ -7291,7 +6540,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
               <div class="stat-label">התראות</div>
             </div>
             <div class="stat-item" onclick="app.showPage('notebooks')">
-              <div class="stat-number" id="activeNotebooks">0</div>
+              <div class="stat-number" id="activeNotebooks">6</div>
               <div class="stat-label">מחברות פעילות</div>
             </div>
             <div class="stat-item" onclick="app.showPage('calendar')">
@@ -7306,179 +6555,73 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
         </div>
       </div>
 
-      <!-- Main layout: tools + sidebar -->
-      <div class="homepage-layout">
-
-        <!-- Left: tools grid -->
-        <div class="homepage-main">
-          <p class="section-heading">הכלים שלי</p>
-          <div class="tools-grid">
-
-            <div class="tool-card" style="--card-accent:#6366f1" onclick="app.showPage('notebooks')">
-              <div class="tool-card-top">
-                <span class="tool-icon">📚</span>
-                <span class="tool-arrow">←</span>
-              </div>
-              <div class="tool-title">מחברות</div>
-              <div class="tool-description">כתיבה, ציור, נוסחאות ו-PDF — הכל בתוך מחברות לפי מקצוע</div>
-              <span class="tool-status" id="notebookStatusHome">טוען...</span>
-            </div>
-
-            <div class="tool-card" style="--card-accent:#10b981" onclick="app.showPage('tasks')">
-              <div class="tool-card-top">
-                <span class="tool-icon">✅</span>
-                <span class="tool-arrow">←</span>
-              </div>
-              <div class="tool-title">משימות</div>
-              <div class="tool-description">מטלות עם עדיפויות, תאריכי יעד ומעקב ביצועים</div>
-              <span class="tool-status" id="taskStatusHome">טוען...</span>
-            </div>
-
-            <div class="tool-card" style="--card-accent:#f59e0b" onclick="app.showPage('calendar')">
-              <div class="tool-card-top">
-                <span class="tool-icon">📅</span>
-                <span class="tool-arrow">←</span>
-              </div>
-              <div class="tool-title">יומן</div>
-              <div class="tool-description">בחינות, אירועים ותכנון יומי ושבועי</div>
-              <span class="tool-status" id="calendarStatusHome">טוען...</span>
-            </div>
-
-            <div class="tool-card" style="--card-accent:#8b5cf6" onclick="app.showPage('schedule')">
-              <div class="tool-card-top">
-                <span class="tool-icon">🗓️</span>
-                <span class="tool-arrow">←</span>
-              </div>
-              <div class="tool-title">מערכת שעות</div>
-              <div class="tool-description">בנה את לוח השיעורים השבועי שלך</div>
-              <span class="tool-status ready" id="scheduleStatusHome">0 שיעורים</span>
-            </div>
-
-            <div class="tool-card" style="--card-accent:#06b6d4" onclick="app.showPage('calculator')">
-              <div class="tool-card-top">
-                <span class="tool-icon">🧮</span>
-                <span class="tool-arrow">←</span>
-              </div>
-              <div class="tool-title">מחשבון מדעי</div>
-              <div class="tool-description">טריגונומטריה, לוגריתמים, זיכרון והיסטוריה מלאה</div>
-              <span class="tool-status ready">מוכן לשימוש</span>
-            </div>
-
-            <div class="tool-card" style="--card-accent:#ec4899" onclick="app.showPage('timer')">
-              <div class="tool-card-top">
-                <span class="tool-icon">⏱️</span>
-                <span class="tool-arrow">←</span>
-              </div>
-              <div class="tool-title">טיימר ושעון עצר</div>
-              <div class="tool-description">מדידת זמן לבחינות ולמידה ממוקדת</div>
-              <span class="tool-status ready">מוכן לשימוש</span>
-            </div>
-
-            <div class="tool-card" style="--card-accent:#64748b" onclick="app.showPage('mylinks')">
-              <div class="tool-card-top">
-                <span class="tool-icon">🔗</span>
-                <span class="tool-arrow">←</span>
-              </div>
-              <div class="tool-title">הקישורים שלי</div>
-              <div class="tool-description">קישורים שימושיים בהישג יד</div>
-              <span class="tool-status" id="linksStatusHome">0 קישורים</span>
-            </div>
-
-            <div class="tool-card" style="--card-accent:#f97316; opacity: 0.75;" onclick="alert('תכונה זו תתווסף בקרוב! 🔧')">
-              <div class="tool-card-top">
-                <span class="tool-icon">🏆</span>
-                <span class="tool-arrow">←</span>
-              </div>
-              <div class="tool-title">ההישגים שלי</div>
-              <div class="tool-description">אתגרים יומיים ונקודות זכות על פעילות</div>
-              <span class="tool-status wip">בפיתוח</span>
-            </div>
-
-          </div>
+      <div class="tools-grid">
+        <div class="tool-card" onclick="app.showPage('notebooks')">
+          <span class="tool-icon">📚</span>
+          <div class="tool-title">מחברות לפי מקצועות</div>
+          <div class="tool-description">כל המחברות שלי מסודרות לפי מקצועות עם דפים, רישומים וכלי כתיבה מתקדמים</div>
+          <span class="tool-status">6 מחברות פעילות</span>
         </div>
 
-        <!-- Right: sidebar -->
-        <aside class="homepage-sidebar">
+        <div class="tool-card" onclick="app.showPage('tasks')">
+          <span class="tool-icon">✅</span>
+          <div class="tool-title">מנהל משימות חכם</div>
+          <div class="tool-description">רשימת מטלות מתקדמת עם מעקב ביצועים, תזכורות ולוחות זמנים</div>
+          <span class="tool-status" id="taskStatusHome">טוען...</span>
+        </div>
 
-          <!-- Quick stats -->
-          <div class="sidebar-card">
-            <div class="sidebar-card-header">סיכום מהיר</div>
-            <div class="sidebar-card-body" style="padding-top:8px;padding-bottom:8px;">
-              <div class="quick-stat-row" onclick="app.showPage('tasks')">
-                <span class="qs-label">⚡ משימות להיום</span>
-                <span class="qs-value" id="sidebarTodayTasks">0</span>
-              </div>
-              <div class="quick-stat-row" onclick="app.showPage('tasks')">
-                <span class="qs-label">📋 משימות פתוחות</span>
-                <span class="qs-value" id="sidebarOpenTasks">0</span>
-              </div>
-              <div class="quick-stat-row" onclick="app.showPage('notebooks')">
-                <span class="qs-label">📚 מחברות פעילות</span>
-                <span class="qs-value" id="sidebarNotebooks">6</span>
-              </div>
-              <div class="quick-stat-row" onclick="app.showPage('calendar')">
-                <span class="qs-label">🕐 השיעור הבא</span>
-                <span class="qs-value" id="sidebarNextClass">14:30</span>
-              </div>
-            </div>
-          </div>
+        <div class="tool-card" onclick="app.showPage('calendar')">
+          <span class="tool-icon">📅</span>
+          <div class="tool-title">יומן ולוח שנה</div>
+          <div class="tool-description">מערכת שעות, מועדי בחינות, אירועים חשובים ותכנון יומי ושבועי</div>
+          <span class="tool-status" id="calendarStatusHome">טוען...</span>
+        </div>
 
-          <!-- Quick actions -->
-          <div class="sidebar-card">
-            <div class="sidebar-card-header">פעולות מהירות</div>
-            <div class="sidebar-card-body" style="display:flex;flex-direction:column;gap:8px;">
-              <button onclick="app.showPage('notebooks'); setTimeout(()=>app.openNotebookCreator(),300)"
-                style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border-color);background:var(--background-main);color:var(--text-primary);font-size:0.88rem;font-weight:600;cursor:pointer;text-align:right;transition:all 0.2s;font-family:inherit;"
-                onmouseover="this.style.borderColor='#6366f1';this.style.color='#6366f1'"
-                onmouseout="this.style.borderColor='var(--border-color)';this.style.color='var(--text-primary)'">
-                ➕ מחברת חדשה
-              </button>
-              <button onclick="app.showPage('tasks'); setTimeout(()=>document.getElementById('newTaskInput')?.focus(),300)"
-                style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border-color);background:var(--background-main);color:var(--text-primary);font-size:0.88rem;font-weight:600;cursor:pointer;text-align:right;transition:all 0.2s;font-family:inherit;"
-                onmouseover="this.style.borderColor='#10b981';this.style.color='#10b981'"
-                onmouseout="this.style.borderColor='var(--border-color)';this.style.color='var(--text-primary)'">
-                ✅ משימה חדשה
-              </button>
-              <button onclick="app.showPage('calendar')"
-                style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border-color);background:var(--background-main);color:var(--text-primary);font-size:0.88rem;font-weight:600;cursor:pointer;text-align:right;transition:all 0.2s;font-family:inherit;"
-                onmouseover="this.style.borderColor='#f59e0b';this.style.color='#f59e0b'"
-                onmouseout="this.style.borderColor='var(--border-color)';this.style.color='var(--text-primary)'">
-                📅 פתח יומן
-              </button>
-              <button onclick="app.showPage('timer')"
-                style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border-color);background:var(--background-main);color:var(--text-primary);font-size:0.88rem;font-weight:600;cursor:pointer;text-align:right;transition:all 0.2s;font-family:inherit;"
-                onmouseover="this.style.borderColor='#ec4899';this.style.color='#ec4899'"
-                onmouseout="this.style.borderColor='var(--border-color)';this.style.color='var(--text-primary)'">
-                ⏱️ התחל טיימר
-              </button>
-            </div>
-          </div>
+        <div class="tool-card" onclick="app.showPage('calculator')">
+          <span class="tool-icon">🧮</span>
+          <div class="tool-title">מחשבון מדעי מתקדם</div>
+          <div class="tool-description">מחשבון מדעי מלא עם פונקציות טריגונומטריות, לוגריתמים, זיכרון והיסטוריה מלאה</div>
+          <span class="tool-status">מוכן לשימוש!</span>
+        </div>
 
-          <!-- About / logout -->
-          <div class="sidebar-card">
-            <div class="sidebar-card-body" style="display:flex;gap:8px;">
-              <button onclick="openAboutModal()"
-                style="flex:1;padding:9px;border-radius:10px;border:1px solid var(--border-color);background:transparent;color:var(--text-secondary);font-size:0.82rem;cursor:pointer;font-family:inherit;transition:all 0.2s;"
-                onmouseover="this.style.background='var(--background-main)'"
-                onmouseout="this.style.background='transparent'">
-                ℹ️ אודות
-              </button>
-              <button onclick="app.logout()"
-                style="flex:1;padding:9px;border-radius:10px;border:1px solid #fecaca;background:transparent;color:#ef4444;font-size:0.82rem;cursor:pointer;font-family:inherit;transition:all 0.2s;"
-                onmouseover="this.style.background='#fef2f2'"
-                onmouseout="this.style.background='transparent'">
-                🚪 התנתק
-              </button>
-            </div>
-          </div>
 
-        </aside>
+        <div class="tool-card" onclick="app.showPage('timer')">
+          <span class="tool-icon">⏱️</span>
+          <div class="tool-title">שעון עצר וטיימר</div>
+          <div class="tool-description">שעון עצר לבחינות, טיימר ומעקב זמן למידה יעיל</div>
+          <span class="tool-status">מוכן לשימוש!</span>
+        </div>
+
+        <div class="tool-card" onclick="app.showPage('schedule')">
+          <span class="tool-icon">🗓️</span>
+          <div class="tool-title">מערכת שעות שבועית</div>
+          <div class="tool-description">בנה את מערכת השיעורים שלך והיא תסתנכרן אוטומטית ליומן</div>
+          <span class="tool-status" id="scheduleStatusHome">0 שיעורים</span>
+        </div>
+
+        <div class="tool-card" onclick="app.showPage('mylinks')">
+          <span class="tool-icon">🔗</span>
+          <div class="tool-title">הקישורים שלי</div>
+          <div class="tool-description">שמור קישורים לאתרים שימושיים וגש אליהם בקלות בכל עת</div>
+          <span class="tool-status" id="linksStatusHome">0 קישורים</span>
+        </div>
+
+<div class="tool-card" onclick="alert('תכונה זו תתווסף בקרוב! 🔧')">
+          <span class="tool-icon">🏆</span>
+          <div class="tool-title">ההישגים שלי</div>
+          <div class="tool-description">עקוב אחרי ההישגים שלך, אתגרים יומיים ונקודות זכות על פעילות במערכת</div>
+          <span class="tool-status">בפיתוח</span>
+        </div>
       </div>
 
       <!-- Footer -->
       <footer class="app-footer">
         <div class="footer-content">
           <span class="footer-copyright">© 2026 TIKit | פותח ע"י שחר ברגיג</span>
+          <button class="footer-about-btn" onclick="openAboutModal()">
+            <span>ℹ️</span>
+            אודות
+          </button>
         </div>
       </footer>
     </div>
@@ -7499,21 +6642,6 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
             <span>←</span>
             חזור לדף הבית
           </button>
-        </div>
-      </div>
-
-      <!-- Usage Meter (Feature 13) -->
-      <div class="usage-meter-bar" id="usageMeterBar" style="display:none;">
-        <div class="usage-meter-top">
-          <span class="usage-meter-label">📚 מחברות בשימוש</span>
-          <span class="usage-meter-count" id="usageMeterCount">0/5</span>
-        </div>
-        <div class="usage-meter-track">
-          <div class="usage-meter-fill" id="usageMeterFill" style="width:0%"></div>
-        </div>
-        <div class="usage-meter-hint">
-          <span id="usageMeterHint">שדרג לפרימיום לעוד מחברות</span>
-          <a class="usage-upgrade-link" onclick="app.openUpgradeModal('שדרוג מהמד')">שדרג עכשיו ⭐</a>
         </div>
       </div>
 
@@ -7615,142 +6743,6 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 <!-- Drawing Toolbar - Vertical Sidebar -->
       <!-- Formatting Toolbar - בתוך הדף עצמו -->
 <div class="global-formatting-toolbar" id="inPageToolbar" style="position: sticky !important; top: 80px !important; z-index: 999 !important; background: #f8f9fa !important; margin-bottom: 20px;">
-
-  <!-- ===== TABLET COLLAPSED ICON BAR ===== -->
-  <!-- Visible only on tablet (tablet CSS shows this, hides .toolbar-group) -->
-  <div class="tablet-toolbar-bar" style="display:none; align-items:center; gap:6px; width:100%;">
-
-    <!-- 1. Font & Size -->
-    <div style="position:relative;">
-      <button class="tb-icon-btn" id="tbFontBtn" onclick="tbToggle('tbFontPanel','tbFontBtn')" title="פונט וגודל">
-        <span>Aa</span><span class="tb-label">פונט</span>
-      </button>
-      <div class="tb-panel" id="tbFontPanel">
-        <span class="tb-panel-label">פונט וגודל</span>
-        <select class="toolbar-select" id="inPageFontFamily2" onchange="app.changeGlobalFontFamily(this.value);document.getElementById('inPageFontFamily').value=this.value;">
-          <option value="Arial">Arial</option>
-          <option value="Georgia">Georgia</option>
-          <option value="Times New Roman">Times New Roman</option>
-          <option value="Helvetica">Helvetica</option>
-          <option value="Courier New">Courier New</option>
-          <option value="David">David</option>
-          <option value="Miriam">Miriam</option>
-        </select>
-        <select class="toolbar-select" id="inPageFontSize2" onchange="app.changeGlobalFontSize(this.value);document.getElementById('inPageFontSize').value=this.value;">
-          <option value="12">12px</option><option value="14">14px</option>
-          <option value="16">16px</option><option value="18">18px</option>
-          <option value="20">20px</option><option value="24">24px</option>
-          <option value="28" selected>28px</option><option value="32">32px</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="tb-divider"></div>
-
-    <!-- 2. Text Formatting -->
-    <div style="position:relative;">
-      <button class="tb-icon-btn" id="tbFormatBtn" onclick="tbToggle('tbFormatPanel','tbFormatBtn')" title="עיצוב טקסט">
-        <span><strong>B</strong></span><span class="tb-label">עיצוב</span>
-      </button>
-      <div class="tb-panel" id="tbFormatPanel">
-        <span class="tb-panel-label">עיצוב טקסט</span>
-        <button class="toolbar-btn" id="inPageBold2" onclick="app.toolbarBold()" title="מודגש"><strong>B</strong></button>
-        <button class="toolbar-btn" id="inPageItalic2" onclick="app.toolbarItalic()" title="נטוי"><em>I</em></button>
-        <button class="toolbar-btn" id="inPageUnderline2" onclick="app.toolbarUnderline()" title="קו תחתון"><u>U</u></button>
-        <button class="toolbar-btn" id="inPageStrike2" onclick="app.toolbarStrikethrough()" title="קו חוצה"><s>S</s></button>
-        <button class="toolbar-btn" onclick="app.toolbarHighlight()" title="סימון">🖍️</button>
-        <button class="toolbar-btn" onclick="app.toolbarInsertLink()" title="קישור">🔗</button>
-        <button class="toolbar-btn" onclick="app.toolbarInsertImage()" title="תמונה">🖼️</button>
-        <button class="toolbar-btn" onclick="app.toolbarInsertPDF()" title="PDF">📄</button>
-        <div style="position:relative; display:flex; align-items:center;">
-          <button class="toolbar-btn toolbar-color-btn text-color-btn" onclick="app.toggleGlobalColorPicker('text')" title="צבע טקסט" style="font-weight:700;">A</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="tb-divider"></div>
-
-    <!-- 3. Alignment & Lists -->
-    <div style="position:relative;">
-      <button class="tb-icon-btn" id="tbAlignBtn" onclick="tbToggle('tbAlignPanel','tbAlignBtn')" title="יישור ורשימות">
-        <span>≡</span><span class="tb-label">יישור</span>
-      </button>
-      <div class="tb-panel" id="tbAlignPanel">
-        <span class="tb-panel-label">יישור</span>
-        <button class="toolbar-btn" onclick="app.setGlobalAlignment('right')" title="ימין">⇤</button>
-        <button class="toolbar-btn" onclick="app.setGlobalAlignment('center')" title="מרכז">⇕</button>
-        <button class="toolbar-btn" onclick="app.setGlobalAlignment('left')" title="שמאל">⇥</button>
-        <button class="toolbar-btn" onclick="app.setGlobalAlignment('justify')" title="דו-צדדי">⇿</button>
-        <span class="tb-panel-label" style="margin-top:6px;">רשימות וסמלים</span>
-        <button class="toolbar-btn" id="bulletListBtn2" onclick="app.insertGlobalList('bullet')" title="תבליטים">• ◦</button>
-        <button class="toolbar-btn" id="numberedListBtn2" onclick="app.insertGlobalList('numbered')" title="ממוספרת">1. 2.</button>
-        <button class="toolbar-btn" onclick="app.insertGlobalSymbol('★')" title="כוכב">★</button>
-        <button class="toolbar-btn" onclick="app.insertGlobalSymbol('✓')" title="וי">✓</button>
-        <button class="toolbar-btn" onclick="app.insertGlobalSymbol('→')" title="חץ">→</button>
-      </div>
-    </div>
-
-    <div class="tb-divider"></div>
-
-    <!-- 4. Drawing -->
-    <div style="position:relative;">
-      <button class="tb-icon-btn" id="tbDrawBtn" onclick="tbToggle('tbDrawPanel','tbDrawBtn')" title="כלי ציור">
-        <span>🎨</span><span class="tb-label">ציור</span>
-      </button>
-      <div class="tb-panel" id="tbDrawPanel" style="min-width:320px;">
-        <span class="tb-panel-label">כלי ציור</span>
-        <button class="toolbar-btn" id="drawingModeBtn2" onclick="app.drawing.toggleDrawingMode()" title="הפעל ציור" style="background:#27ae60;color:white;border-color:#27ae60;">🎨</button>
-        <button class="toolbar-btn" id="pencilBtn2" onclick="app.drawing.selectTool('pencil')" title="עיפרון">✏️</button>
-        <button class="toolbar-btn" id="eraserBtn2" onclick="app.drawing.selectTool('eraser')" title="מחק">🧹</button>
-        <select class="toolbar-select" id="shapeSelect2" onchange="app.drawing.selectShape(this.value);document.getElementById('shapeSelect').value=this.value;" style="height:44px;">
-          <option value="">צורות</option>
-          <option value="circle">⭕ עיגול</option>
-          <option value="square">⬜ ריבוע</option>
-          <option value="rectangle">▬ מלבן</option>
-          <option value="triangle">🔺 משולש</option>
-          <option value="line">➖ קו</option>
-          <option value="arrow">➡️ חץ</option>
-          <option value="star">⭐ כוכב</option>
-        </select>
-        <select class="toolbar-select" id="pencilType2" onchange="app.drawing.changePencilType(this.value);document.getElementById('pencilType').value=this.value;" style="height:44px;">
-          <option value="solid">רגיל</option>
-          <option value="marker">טוש</option>
-          <option value="chalk">גיר</option>
-          <option value="spray">ספריי</option>
-        </select>
-        <input type="color" id="drawingColor2" value="#000000" onchange="app.drawing.changeColor(this.value);document.getElementById('drawingColor').value=this.value;" title="צבע">
-        <input type="range" id="thicknessSlider2" min="1" max="20" value="3" oninput="app.drawing.changeThickness(this.value);document.getElementById('thicknessSlider').value=this.value;" title="עובי">
-        <button class="toolbar-btn" onclick="document.querySelectorAll('.page-canvas.drawing-active').forEach(c=>{if(c._undo)c._undo();})" title="ביטול">↶</button>
-        <button class="toolbar-btn" onclick="if(confirm('למחוק הכל?')){document.querySelectorAll('.page-canvas').forEach(c=>c.getContext('2d').clearRect(0,0,c.width,c.height));}" title="נקה" style="background:#ef4444;color:white;border-color:#ef4444;">🗑️</button>
-      </div>
-    </div>
-
-    <div class="tb-divider"></div>
-
-    <!-- 5. Formulas shortcut -->
-    <div style="position:relative;">
-      <button class="tb-icon-btn" id="tbFormulaBtn" onclick="tbToggle('tbFormulaPanel','tbFormulaBtn')" title="נוסחאות">
-        <span>∑</span><span class="tb-label">נוסחאות</span>
-      </button>
-      <div class="tb-panel" id="tbFormulaPanel" style="min-width:300px; max-height:300px; overflow-y:auto; flex-direction:column;">
-        <span class="tb-panel-label">נוסחאות — לחץ להוספה</span>
-        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
-          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('ax² + bx + c = 0')">ax²+bx+c=0</button>
-          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('x = (-b ± √(b²-4ac)) / 2a')">נוסחת השורשים</button>
-          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('a² + b² = c²')">a²+b²=c²</button>
-          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('A = πr²')">A=πr²</button>
-          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('P = 2πr')">P=2πr</button>
-          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('V = 4/3 × πr³')">V=4/3πr³</button>
-          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('F = ma')">F=ma</button>
-          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('E = mc²')">E=mc²</button>
-          <button class="toolbar-btn" style="font-family:serif;font-size:0.85rem;" onclick="app.insertFormulaText('v = s/t')">v=s/t</button>
-        </div>
-        <a href="nuschon_math.pdf" target="_blank" style="display:block;margin-top:10px;padding:10px;background:#f59e0b;color:white;border-radius:8px;text-align:center;font-weight:600;text-decoration:none;">📄 נוסחאון מלא</a>
-      </div>
-    </div>
-
-  </div>
-  <!-- ===== END TABLET ICON BAR ===== -->
         <!-- Font Group -->
         <div class="toolbar-group">
           <select class="toolbar-select" id="inPageFontFamily" onchange="app.changeGlobalFontFamily(this.value)">
@@ -7935,10 +6927,6 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
         </div>
       </div>
     </div>
-    <button class="add-page-btn" onclick="app.openShareModal()" style="background: linear-gradient(135deg,#06b6d4,#0284c7);" title="שתף דף">
-      <span>📤</span>
-      שתף דף
-    </button>
     <button id="galleryViewBtn" class="add-page-btn" onclick="app.toggleGalleryView()" style="background: linear-gradient(135deg, #667eea, #764ba2);">
       <span>📱</span>
       תצוגת גלריה
@@ -9218,7 +8206,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
       <div class="about-contact">
         <div class="about-contact-label">📧 לשאלות, הצעות ומשוב</div>
         <div class="about-contact-email">
-          <a href="/cdn-cgi/l/email-protection#4426362d272f3d212025042329252d286a272b29"><span class="__cf_email__" data-cfemail="2a4858434941534f4e4b6a4d474b434604494547">[email&#160;protected]</span></a>
+          <a href="mailto:brickyeda@gmail.com">brickyeda@gmail.com</a>
         </div>
       </div>
       
@@ -9265,7 +8253,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     </div>
   </div>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // ========== About Modal Functions ==========
     function openAboutModal() {
       document.getElementById('aboutModal').classList.add('active');
@@ -10563,10 +9551,6 @@ this.showPage('homepage');
         if (activeNotebooksElement) {
           activeNotebooksElement.textContent = notebooksCount;
         }
-        const notebookStatusEl = document.getElementById('notebookStatusHome');
-        if (notebookStatusEl) {
-          notebookStatusEl.textContent = notebooksCount + ' מחברות פעילות';
-        }
 
         // עדכון משימות היום
         const today = new Date().toISOString().split('T')[0];
@@ -10623,17 +9607,6 @@ this.showPage('homepage');
         if (scheduleStatusElement && typeof scheduleApp !== 'undefined') {
           const lessonsCount = Object.keys(scheduleApp.schedule).length;
           scheduleStatusElement.textContent = `${lessonsCount} שיעורים`;
-        }
-
-        // sync sidebar stats
-        const sb = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-        sb('sidebarTodayTasks', todayTasks);
-        sb('sidebarOpenTasks', pendingCount);
-        sb('sidebarNotebooks', notebooksCount);
-        if (nextClass) {
-          sb('sidebarNextClass', nextClass.date === today ? nextClass.startTime : 'מחר');
-        } else {
-          sb('sidebarNextClass', '--:--');
         }
 
         // עדכון התראות
@@ -10929,28 +9902,6 @@ this.showPage('homepage');
 
       // מעבר בין דפים
       showPage(pageId) {
-        // Re-apply tablet toolbar whenever we navigate
-        if (pageId === 'notebooks' || pageId === 'notebookView') {
-          setTimeout(() => {
-            if (typeof applyTabletToolbar === 'function') applyTabletToolbar();
-            // applyTabletToolbar is defined in DOMContentLoaded scope,
-            // so we call the window-scoped version
-            const bar = document.querySelector('.tablet-toolbar-bar');
-            const groups = document.querySelectorAll('#inPageToolbar .toolbar-group');
-            const mathBar = document.getElementById('mathFormulasToolbar');
-            const isTab = window.matchMedia('(pointer: coarse)').matches;
-            if (bar) {
-              if (isTab) {
-                bar.style.display = 'flex';
-                groups.forEach(g => g.style.setProperty('display','none','important'));
-                // mathBar visibility controlled by page-type logic
-              } else {
-                bar.style.display = 'none';
-                groups.forEach(g => g.style.removeProperty('display'));
-              }
-            }
-          }, 100);
-        }
         console.log('עובר לדף:', pageId);
        
         // Close gallery if leaving notebookView
@@ -11050,8 +10001,6 @@ if (this.currentNotebook && pageId !== 'notebookView') {
 
       // רינדור מחברות
       renderNotebooks() {
-        setTimeout(updateUsageMeter, 100);
-
         const container = document.getElementById('subjectsGrid');
         if (!container) return;
         
@@ -11133,16 +10082,6 @@ openNotebook(notebookKey) {
       mathToolbar.style.display = 'flex';
     } else {
       mathToolbar.style.display = 'none';
-    }
-  }
-  // Hide/show formula button in tablet toolbar based on page type
-  const tbFormulaBtn = document.getElementById('tbFormulaBtn');
-  const tbFormulaDivider = tbFormulaBtn ? tbFormulaBtn.closest('div[style]')?.previousElementSibling : null;
-  if (tbFormulaBtn) {
-    const showFormula = notebook.pageType === 'grid';
-    tbFormulaBtn.parentElement.style.display = showFormula ? '' : 'none';
-    if (tbFormulaDivider && tbFormulaDivider.classList.contains('tb-divider')) {
-      tbFormulaDivider.style.display = showFormula ? '' : 'none';
     }
   }
   this.showPage('notebookView');
@@ -17449,139 +16388,6 @@ subtitleElement.textContent = 'מיקוד שמוביל להצלחה';
       },
 
       // מעבר למסך מלא או יציאה ממנו
-      // Insert formula text into active notebook page
-      insertFormulaText(text) {
-        const activeArea = document.querySelector('.notebook-page.active-page [contenteditable="true"]');
-        if (activeArea) {
-          activeArea.focus();
-          document.execCommand('insertText', false, ' ' + text + ' ');
-        } else {
-          // fallback: try any visible contenteditable
-          const area = document.querySelector('[contenteditable="true"]');
-          if (area) { area.focus(); document.execCommand('insertText', false, ' ' + text + ' '); }
-        }
-        // close panel after insertion
-        document.querySelectorAll('.tb-panel.open').forEach(p => p.classList.remove('open'));
-        document.querySelectorAll('.tb-icon-btn.open').forEach(b => b.classList.remove('open'));
-      },
-
-
-      // ===== Feature 10: Open Share Modal =====
-      openShareModal() {
-        const overlay = document.getElementById('shareModalOverlay');
-        if (!overlay) return;
-        overlay.classList.remove('hidden');
-
-        const img = document.getElementById('sharePreviewImg');
-        const loading = document.getElementById('sharePreviewLoading');
-        if (img) img.style.display = 'none';
-        if (loading) loading.style.display = '';
-        _shareImgDataUrl = null;
-
-        // Capture current notebook page
-        setTimeout(() => {
-          const activePage = document.querySelector('.notebook-page.active-page') ||
-                             document.querySelector('.notebook-page');
-          if (!activePage) {
-            if (loading) loading.textContent = 'לא נמצא דף פתוח';
-            return;
-          }
-
-          // Use html2canvas if available, otherwise fallback to basic canvas
-          const doCapture = () => {
-            if (typeof html2canvas !== 'undefined') {
-              html2canvas(activePage, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' })
-                .then(canvas => {
-                  // Add watermark
-                  const ctx = canvas.getContext('2d');
-                  ctx.save();
-                  ctx.font = 'bold 18px Arial';
-                  ctx.fillStyle = 'rgba(99,102,241,0.85)';
-                  ctx.textAlign = 'right';
-                  ctx.fillText('✏️ TIKit — הכלי החכם שלי', canvas.width - 12, canvas.height - 12);
-                  ctx.restore();
-                  _shareImgDataUrl = canvas.toDataURL('image/png');
-                  if (img) { img.src = _shareImgDataUrl; img.style.display = ''; }
-                  if (loading) loading.style.display = 'none';
-                })
-                .catch(() => {
-                  if (loading) loading.textContent = 'שגיאה ביצירת תמונה';
-                });
-            } else {
-              // html2canvas not loaded — load it dynamically
-              const s = document.createElement('script');
-              s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-              s.onload = doCapture;
-              s.onerror = () => { if (loading) loading.textContent = 'לא ניתן לטעון את הכלי לצילום'; };
-              document.head.appendChild(s);
-            }
-          };
-          doCapture();
-        }, 100);
-      },
-
-      // ===== Feature 11: Create from Template =====
-      createFromTemplate(templateId) {
-        if (!this.isPro && templateId === 'lab_report') {
-          this.openUpgradeModal('תבניות Pro');
-          return;
-        }
-
-        const templates = {
-          bagrut_math:  { title: 'בגרות מתמטיקה', icon: '📐', color: '#8b5cf6', type: 'grid',  pages: ['עמוד 1 — שאלה א', 'עמוד 2 — שאלה ב', 'עמוד 3 — שאלה ג'] },
-          summary:      { title: 'סיכום לבחינה',   icon: '📝', color: '#6366f1', type: 'lined', pages: ['מושגים מרכזיים', 'נוסחאות חשובות', 'שאלות תרגול'] },
-          project:      { title: 'פרויקט',          icon: '🗂️', color: '#10b981', type: 'lined', pages: ['תכנון ויעדים', 'מחקר ורקע', 'ביצוע', 'סיכום ומסקנות'] },
-          weekly_plan:  { title: 'תכנון שבועי',     icon: '🗓️', color: '#f59e0b', type: 'lined', pages: ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'] },
-          lab_report:   { title: 'דוח מעבדה',       icon: '🔬', color: '#0ea5e9', type: 'lined', pages: ['השערה ומטרה', 'חומרים ושיטה', 'תוצאות', 'מסקנות'] },
-          vocab:        { title: 'אוצר מילים',      icon: '🌍', color: '#ec4899', type: 'lined', pages: ['יחידה 1', 'יחידה 2', 'יחידה 3'] },
-        };
-
-        const tmpl = templates[templateId];
-        if (!tmpl) return;
-
-        if (!this.checkNotebookLimit(tmpl.type)) return;
-
-        const key = templateId + '_' + Date.now();
-        const pages = tmpl.pages.map((title, i) => ({
-          id: Date.now() + i,
-          title: title,
-          content: '',
-          drawing: null,
-          createdAt: new Date().toISOString()
-        }));
-
-        this.subjects[key] = {
-          title: tmpl.title,
-          icon: tmpl.icon,
-          color: tmpl.color,
-          description: 'נוצר מתבנית',
-          pageType: tmpl.type,
-          pages: pages
-        };
-
-        if (typeof this.saveData === 'function') this.saveData();
-        if (typeof this.renderSubjectsList === 'function') this.renderSubjectsList();
-        this.showPage('notebooks');
-        setTimeout(() => {
-          if (typeof app !== 'undefined') app.openNotebook(key);
-        }, 300);
-      },
-
-      toggleDarkMode() {
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        if (isDark) {
-          document.documentElement.removeAttribute('data-theme');
-          document.getElementById('darkModeBtn').textContent = '🌙';
-          document.getElementById('darkModeBtn').title = 'מצב לילה';
-          localStorage.setItem('tikit-theme', 'light');
-        } else {
-          document.documentElement.setAttribute('data-theme', 'dark');
-          document.getElementById('darkModeBtn').textContent = '☀️';
-          document.getElementById('darkModeBtn').title = 'מצב יום';
-          localStorage.setItem('tikit-theme', 'dark');
-        }
-      },
-
       toggleFullscreen() {
         if (!document.fullscreenElement) {
           // כניסה למסך מלא
@@ -17838,12 +16644,9 @@ saveState();
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    // Support touch events
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     return {
-      x: (clientX - rect.left) * scaleX,
-      y: (clientY - rect.top) * scaleY
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
     };
   };
  
@@ -17914,52 +16717,6 @@ canvas.onmouseup = () => {
       ctx.beginPath();
     }
   };
-
-  // ===== Touch support for tablet/mobile drawing =====
-  canvas.addEventListener('touchstart', (e) => {
-    e.preventDefault(); // prevent scroll while drawing
-    isDrawing = true;
-    const pos = getMousePos(e);
-    startX = pos.x;
-    startY = pos.y;
-    if (this.currentTool !== 'shape') {
-      ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
-    }
-    if (this.currentTool === 'shape') {
-      tempCanvas = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    }
-  }, { passive: false });
-
-  canvas.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    if (!isDrawing) return;
-    const pos = getMousePos(e);
-    if (this.currentTool === 'eraser') {
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.lineWidth = this.currentThickness * 3;
-      ctx.lineCap = 'round';
-      ctx.lineTo(pos.x, pos.y);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
-      ctx.globalCompositeOperation = 'source-over';
-    } else if (this.currentTool === 'pencil') {
-      this.drawWithPencil(ctx, pos.x, pos.y);
-    } else if (this.currentTool === 'shape' && tempCanvas) {
-      ctx.putImageData(tempCanvas, 0, 0);
-      this.drawShapeOnCanvas(ctx, startX, startY, pos.x, pos.y);
-    }
-  }, { passive: false });
-
-  canvas.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    if (isDrawing) {
-      isDrawing = false;
-      ctx.beginPath();
-      saveState();
-    }
-  }, { passive: false });
 },
 
 drawWithPencil(ctx, x, y) {
@@ -19726,51 +18483,7 @@ calculateBitwise(first, second, operation) {
 
     // הפעלת האפליקציה כשהדף נטען
     document.addEventListener('DOMContentLoaded', function() {
-      // ===== TABLET TOOLBAR LOGIC =====
-      // Detect tablet: touch device with screen >= 769px
-      const isTablet = () => (
-        window.matchMedia('(pointer: coarse)').matches
-      );
-
-      // Show/hide tablet icon bar based on device
-      const applyTabletToolbar = () => {
-        const bar = document.querySelector('.tablet-toolbar-bar');
-        const groups = document.querySelectorAll('#inPageToolbar .toolbar-group');
-        if (!bar) return;
-        if (isTablet()) {
-          bar.style.display = 'flex';
-          groups.forEach(g => g.style.setProperty('display','none','important'));
-          // mathBar visibility is controlled by page-type logic — don't touch it here
-        } else {
-          bar.style.display = 'none';
-          groups.forEach(g => g.style.removeProperty('display'));
-        }
-      };
-
-      window.addEventListener('resize', applyTabletToolbar);
-      setTimeout(applyTabletToolbar, 200);
-
-      // Restore saved theme
-      const savedTheme = localStorage.getItem('tikit-theme');
-      if (savedTheme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        const btn = document.getElementById('darkModeBtn');
-        if (btn) { btn.textContent = '☀️'; btn.title = 'מצב יום'; }
-      }
-
-      // Hide splash screen after app loads
-      setTimeout(() => {
-        const splash = document.getElementById('splashScreen');
-        if (splash) splash.classList.add('hidden');
-      }, 1500);
-
       app.init();
-
-      // Feature 9: Check onboarding on first load
-      setTimeout(checkAndShowOnboarding, 2000);
-
-      // Feature 13: Show usage meter
-      setTimeout(updateUsageMeter, 2500);
       
       // הפעלת מערכת Auto Logout
       setTimeout(() => {
@@ -20921,194 +19634,6 @@ calculateBitwise(first, second, operation) {
       // אתחול מערכת טוטוריאל
       TutorialSystem.init();
     });
-
-
-// ========== Feature 9: Onboarding ==========
-let _obUserType = null;
-let _obNbType = 'lined';
-
-function obSelectType(btn) {
-  document.querySelectorAll('.onboarding-type-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  _obUserType = btn.dataset.type;
-  const next = document.getElementById('obNext1');
-  if (next) { next.disabled = false; next.style.opacity = '1'; next.style.cursor = 'pointer'; }
-  const titles = { highschool:'באיזה תיכון?', student:'באיזה קמפוס/אוניברסיטה?', teacher:'באיזה מוסד אתה מלמד?', other:'באיזה מוסד לימודים?' };
-  const t = document.getElementById('obInstitutionTitle');
-  if (t) t.textContent = titles[_obUserType] || 'באיזה מוסד לימודים?';
-}
-
-function obSelectNb(btn) {
-  document.querySelectorAll('.onboarding-nb-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  _obNbType = btn.dataset.nbtype;
-}
-
-function obStep(step) {
-  [1,2,3].forEach(s => {
-    const el = document.getElementById('onboardStep'+s);
-    if (el) el.style.display = s === step ? '' : 'none';
-    const dot = document.getElementById('odot'+s);
-    if (dot) {
-      dot.classList.remove('active','done');
-      if (s < step) dot.classList.add('done');
-      if (s === step) dot.classList.add('active');
-    }
-  });
-  const pct = { 1:33, 2:66, 3:100 };
-  const fill = document.getElementById('onboardingProgress');
-  if (fill) fill.style.width = pct[step] + '%';
-}
-
-function obSkip() {
-  localStorage.setItem('tikit_onboarding_done', '1');
-  const overlay = document.getElementById('onboardingOverlay');
-  if (overlay) overlay.classList.add('hidden');
-}
-
-function obFinish() {
-  const institution = (document.getElementById('obInstitutionInput') || {}).value || '';
-  const nbName = (document.getElementById('obNotebookName') || {}).value || 'המחברת שלי';
-
-  // Save institution to settings
-  if (institution) {
-    const settings = JSON.parse(localStorage.getItem('appSettings') || '{}');
-    settings.userSchool = institution;
-    if (_obUserType) settings.userType = _obUserType;
-    localStorage.setItem('appSettings', JSON.stringify(settings));
-    const instEl = document.getElementById('welcomeInstitution');
-    if (instEl) instEl.textContent = institution;
-  }
-
-  // Create first notebook
-  if (typeof app !== 'undefined' && app.subjects) {
-    const key = 'ob_' + Date.now();
-    app.subjects[key] = {
-      title: nbName,
-      icon: _obNbType === 'grid' ? '📐' : _obNbType === 'blank' ? '📄' : '📝',
-      color: '#6366f1',
-      description: 'נוצרה בהגדרה ראשונית',
-      pageType: _obNbType,
-      pages: []
-    };
-    if (typeof app.saveData === 'function') app.saveData();
-    if (typeof app.renderSubjectsList === 'function') app.renderSubjectsList();
-  }
-
-  localStorage.setItem('tikit_onboarding_done', '1');
-  const overlay = document.getElementById('onboardingOverlay');
-  if (overlay) overlay.classList.add('hidden');
-  // Navigate to notebooks
-  if (typeof app !== 'undefined') setTimeout(() => app.showPage('notebooks'), 300);
-}
-
-function checkAndShowOnboarding() {
-  if (localStorage.getItem('tikit_onboarding_done')) return;
-  // Show only if user is logged in
-  setTimeout(() => {
-    const overlay = document.getElementById('onboardingOverlay');
-    if (overlay) overlay.classList.remove('hidden');
-  }, 1800); // after splash screen
-}
-
-// ========== Feature 10: Share Page ==========
-let _shareImgDataUrl = null;
-
-function closeShareModal() {
-  const overlay = document.getElementById('shareModalOverlay');
-  if (overlay) overlay.classList.add('hidden');
-}
-
-function shareDownload() {
-  if (!_shareImgDataUrl) return;
-  const a = document.createElement('a');
-  a.href = _shareImgDataUrl;
-  a.download = 'tikit-page.png';
-  a.click();
-}
-
-function shareWhatsapp() {
-  if (!_shareImgDataUrl) return;
-  // On mobile, share via Web Share API; on desktop, open WhatsApp web
-  if (navigator.share && navigator.canShare) {
-    fetch(_shareImgDataUrl)
-      .then(r => r.blob())
-      .then(blob => {
-        const file = new File([blob], 'tikit-page.png', { type: 'image/png' });
-        if (navigator.canShare({ files: [file] })) {
-          navigator.share({ files: [file], title: 'הדף שלי מ-TIKit' });
-          return;
-        }
-        window.open('https://wa.me/?text=' + encodeURIComponent('הדף שלי מ-TIKit &#128218;'), '_blank');
-      });
-  } else {
-    window.open('https://wa.me/?text=' + encodeURIComponent('הדף שלי מ-TIKit &#128218;'), '_blank');
-  }
-}
-
-// ========== Feature 11: Template creation ==========
-// (Logic is in app object below — createFromTemplate)
-
-// ========== Feature 13: Usage Meter ==========
-function updateUsageMeter() {
-  const bar = document.getElementById('usageMeterBar');
-  if (!bar || typeof app === 'undefined') return;
-  if (app.isPro) { bar.style.display = 'none'; return; }
-
-  const FREE_MAX = 5; // matches FREE_LIMITS.maxNotebooks
-  const used = Object.keys(app.subjects || {}).length;
-  const pct = Math.min(100, Math.round((used / FREE_MAX) * 100));
-
-  document.getElementById('usageMeterCount').textContent = used + '/' + FREE_MAX;
-  document.getElementById('usageMeterFill').style.width = pct + '%';
-
-  const remaining = FREE_MAX - used;
-  const hint = document.getElementById('usageMeterHint');
-  if (hint) {
-    if (remaining <= 0) hint.textContent = 'הגעת למגבלה — שדרג לפרימיום לעוד מחברות ✨';
-    else if (remaining === 1) hint.textContent = 'נותרה מחברת 1 בלבד — שקול שדרוג ✨';
-    else hint.textContent = 'נותרות ' + remaining + ' מחברות חינמיות';
-  }
-
-  bar.style.display = '';
-  bar.className = 'usage-meter-bar' + (pct >= 100 ? ' danger' : pct >= 80 ? ' warning' : '');
-}
-
-// ========== tbToggle (Tablet) ==========
-// ========== Tablet Toolbar Toggle ==========
-function tbToggle(panelId, btnId) {
-  const panel = document.getElementById(panelId);
-  const btn = document.getElementById(btnId);
-  if (!panel) return;
-
-  // Close all other panels first
-  document.querySelectorAll('.tb-panel.open').forEach(p => {
-    if (p.id !== panelId) {
-      p.classList.remove('open');
-    }
-  });
-  document.querySelectorAll('.tb-icon-btn.open').forEach(b => {
-    if (b.id !== btnId) b.classList.remove('open');
-  });
-
-  const isOpen = panel.classList.contains('open');
-  panel.classList.toggle('open', !isOpen);
-  if (btn) btn.classList.toggle('open', !isOpen);
-
-  // Close on outside click
-  if (!isOpen) {
-    setTimeout(() => {
-      const handler = (e) => {
-        if (!panel.contains(e.target) && !btn.contains(e.target)) {
-          panel.classList.remove('open');
-          if (btn) btn.classList.remove('open');
-          document.removeEventListener('click', handler, true);
-        }
-      };
-      document.addEventListener('click', handler, true);
-    }, 50);
-  }
-}
 
 // ========== מערכת טוטוריאל - TIKit ==========
 const TutorialSystem = {
@@ -22900,375 +21425,19 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .cancel-modal-overlay {
-  positi
-  /* ============================================
-     USAGE METER (Paywall - Feature 13)
-     ============================================ */
-  .usage-meter-bar {
-    margin: 0 0 20px 0;
-    background: var(--background-card);
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    padding: 14px 18px;
-    direction: rtl;
-  }
-  .usage-meter-bar.warning { border-color: #fbbf24; background: #fffbeb; }
-  .usage-meter-bar.danger  { border-color: #ef4444; background: #fef2f2; }
-  [data-theme="dark"] .usage-meter-bar.warning { background: #1c1907; }
-  [data-theme="dark"] .usage-meter-bar.danger  { background: #1a0606; }
-  .usage-meter-top {
-    display: flex; align-items: center;
-    justify-content: space-between; margin-bottom: 8px;
-  }
-  .usage-meter-label { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
-  .usage-meter-count { font-size: 0.85rem; font-weight: 800; color: #6366f1; }
-  .usage-meter-bar.warning .usage-meter-count { color: #d97706; }
-  .usage-meter-bar.danger  .usage-meter-count { color: #ef4444; }
-  .usage-meter-track {
-    height: 8px; background: #e2e8f0;
-    border-radius: 99px; overflow: hidden; margin-bottom: 8px;
-  }
-  [data-theme="dark"] .usage-meter-track { background: #334155; }
-  .usage-meter-fill {
-    height: 100%; border-radius: 99px;
-    background: linear-gradient(90deg, #6366f1, #8b5cf6);
-    transition: width 0.6s ease;
-  }
-  .usage-meter-bar.warning .usage-meter-fill { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-  .usage-meter-bar.danger  .usage-meter-fill { background: linear-gradient(90deg, #ef4444, #f97316); }
-  .usage-meter-hint {
-    font-size: 0.78rem; color: var(--text-secondary);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .usage-upgrade-link { font-weight: 700; color: #6366f1; cursor: pointer; }
-  .usage-meter-bar.warning .usage-upgrade-link { color: #d97706; }
-  .usage-meter-bar.danger  .usage-upgrade-link { color: #ef4444; }
-  .usage-upgrade-link:hover { text-decoration: underline; }
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
 
-  /* ============================================
-     ONBOARDING FLOW (Feature 9)
-     ============================================ */
-  .onboarding-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.65);
-    backdrop-filter: blur(6px);
-    z-index: 99999;
-    display: flex; align-items: center; justify-content: center;
-    animation: fadeIn 0.3s ease;
-  }
-  .onboarding-overlay.hidden { display: none !important; }
-  .onboarding-modal {
-    background: white; border-radius: 24px; padding: 36px 32px;
-    max-width: 460px; width: 92%;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.25);
-    text-align: center; direction: rtl; position: relative;
-  }
-  [data-theme="dark"] .onboarding-modal { background: #1e293b; color: #f1f5f9; }
-  .onboarding-progress-bar {
-    height: 4px; background: #e2e8f0; border-radius: 99px;
-    margin-bottom: 24px; overflow: hidden;
-  }
-  [data-theme="dark"] .onboarding-progress-bar { background: #334155; }
-  .onboarding-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #6366f1, #8b5cf6);
-    border-radius: 99px; transition: width 0.4s ease;
-  }
-  .onboarding-steps {
-    display: flex; justify-content: center; gap: 8px; margin-bottom: 24px;
-  }
-  .onboarding-step-dot {
-    width: 10px; height: 10px; border-radius: 50%; background: #e2e8f0; transition: all 0.3s;
-  }
-  .onboarding-step-dot.active { background: #6366f1; transform: scale(1.3); }
-  .onboarding-step-dot.done   { background: #10b981; }
-  .onboarding-emoji { font-size: 3.2rem; margin-bottom: 12px; }
-  .onboarding-title {
-    font-size: 1.4rem; font-weight: 800; color: #1e293b;
-    margin-bottom: 8px; letter-spacing: -0.3px;
-  }
-  [data-theme="dark"] .onboarding-title { color: #f1f5f9; }
-  .onboarding-sub { font-size: 0.9rem; color: #64748b; margin-bottom: 24px; line-height: 1.5; }
-  .onboarding-types {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px;
-  }
-  .onboarding-type-btn {
-    border: 2px solid #e2e8f0; border-radius: 14px;
-    padding: 14px 10px; cursor: pointer;
-    font-size: 0.88rem; font-weight: 600;
-    background: white; color: #1e293b;
-    transition: all 0.2s; font-family: inherit;
-  }
-  [data-theme="dark"] .onboarding-type-btn { background: #334155; border-color: #475569; color: #f1f5f9; }
-  .onboarding-type-btn:hover, .onboarding-type-btn.selected {
-    border-color: #6366f1; color: #6366f1; background: #eef2ff;
-  }
-  [data-theme="dark"] .onboarding-type-btn.selected { background: #312e81; border-color: #818cf8; color: #818cf8; }
-  .onboarding-type-icon { font-size: 1.6rem; display: block; margin-bottom: 5px; }
-  .onboarding-input {
-    width: 100%; padding: 12px 14px;
-    border: 2px solid #e2e8f0; border-radius: 12px;
-    font-size: 0.95rem; font-family: inherit;
-    text-align: right; direction: rtl;
-    background: white; color: #1e293b;
-    box-sizing: border-box; margin-bottom: 24px;
-    transition: border-color 0.2s;
-  }
-  [data-theme="dark"] .onboarding-input { background: #334155; border-color: #475569; color: #f1f5f9; }
-  .onboarding-input:focus { outline: none; border-color: #6366f1; }
-  .onboarding-nb-types {
-    display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px;
-  }
-  .onboarding-nb-btn {
-    border: 2px solid #e2e8f0; border-radius: 12px;
-    padding: 12px 8px; cursor: pointer;
-    font-size: 0.8rem; font-weight: 600;
-    background: white; color: #1e293b;
-    transition: all 0.2s; font-family: inherit;
-  }
-  [data-theme="dark"] .onboarding-nb-btn { background: #334155; border-color: #475569; color: #f1f5f9; }
-  .onboarding-nb-btn.selected { border-color: #6366f1; background: #eef2ff; color: #6366f1; }
-  .onboarding-nb-icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
-  .onboarding-btn-row { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
-  .onboarding-next-btn {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white; border: none; border-radius: 12px;
-    padding: 13px 28px; font-size: 0.95rem; font-weight: 700;
-    cursor: pointer; font-family: inherit; transition: all 0.2s; flex: 1;
-  }
-  .onboarding-next-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,0.4); }
-  .onboarding-next-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-  .onboarding-skip-btn {
-    background: transparent; color: #94a3b8; border: none;
-    padding: 13px 14px; font-size: 0.88rem;
-    cursor: pointer; font-family: inherit; border-radius: 12px; transition: color 0.2s;
-  }
-  .onboarding-skip-btn:hover { color: #64748b; }
-
-  /* ============================================
-     SHARE PAGE MODAL (Feature 10)
-     ============================================ */
-  .share-modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(4px);
-    z-index: 9999;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .share-modal-overlay.hidden { display: none !important; }
-  .share-modal {
-    background: white; border-radius: 20px; padding: 26px;
-    max-width: 400px; width: 92%;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.2);
-    direction: rtl; text-align: center;
-  }
-  [data-theme="dark"] .share-modal { background: #1e293b; color: #f1f5f9; }
-  .share-modal h3 { font-size: 1.2rem; font-weight: 800; margin: 0 0 4px 0; color: #1e293b; }
-  [data-theme="dark"] .share-modal h3 { color: #f1f5f9; }
-  .share-modal p { font-size: 0.85rem; color: #64748b; margin: 0 0 16px 0; }
-  .share-preview-wrap {
-    border-radius: 12px; overflow: hidden; margin-bottom: 16px;
-    border: 1px solid #e2e8f0; background: #f8fafc;
-    min-height: 160px; display: flex; align-items: center; justify-content: center;
-  }
-  [data-theme="dark"] .share-preview-wrap { border-color: #334155; background: #0f172a; }
-  .share-preview-img { max-width: 100%; max-height: 260px; border-radius: 8px; }
-  .share-preview-loading { color: #94a3b8; font-size: 0.88rem; padding: 40px; }
-  .share-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-  .share-action-btn {
-    padding: 11px; border-radius: 10px; border: none;
-    cursor: pointer; font-size: 0.88rem; font-weight: 700;
-    font-family: inherit; transition: all 0.2s;
-    display: flex; align-items: center; justify-content: center; gap: 5px;
-  }
-  .share-download-btn { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; }
-  .share-whatsapp-btn { background: #25d366; color: white; }
-  .share-action-btn:hover { transform: translateY(-2px); opacity: 0.9; }
-  .share-close-btn {
-    background: none; border: none; color: #94a3b8;
-    font-size: 0.85rem; cursor: pointer; font-family: inherit; padding: 8px; width: 100%;
-  }
-  #shareCanvas { display: none; }
-
-  /* ============================================
-     TEMPLATES PAGE (Feature 11)
-     ============================================ */
-  #templates-page .page-header { margin-bottom: 24px; }
-
-  .templates-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
-    gap: 16px;
-    margin-top: 8px;
-  }
-
-  .template-card {
-    border: 2px dashed #c7d2fe;
-    border-radius: 16px; padding: 22px 16px;
-    cursor: pointer; background: #fafafe;
-    transition: all 0.2s; text-align: right; direction: rtl;
-    position: relative;
-  }
-  [data-theme="dark"] .template-card { background: #1e293b; border-color: #4338ca; }
-  .template-card:hover {
-    border-color: #6366f1; background: #eef2ff;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(99,102,241,0.15);
-  }
-  [data-theme="dark"] .template-card:hover { background: #312e81; }
-  .template-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
-  .template-name { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 5px; }
-  .template-desc { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; }
-  .template-badge {
-    position: absolute; top: 10px; left: 10px;
-    font-size: 0.65rem; font-weight: 700;
-    background: #6366f1; color: white;
-    padding: 2px 8px; border-radius: 99px;
-  }
-  .template-badge.free { background: #10b981; }
-
-</style>
-
-  <!-- ===== TEMPLATES PAGE (Feature 11) ===== -->
-  <div id="templates-page" class="page">
-    <div class="page-header">
-      <h1 class="page-title"><span>📋</span> תבניות מוכנות</h1>
-      <button class="back-btn" onclick="app.showPage('homepage')"><span>←</span> דף הבית</button>
-    </div>
-    <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:24px;direction:rtl;">
-      בחר תבנית ותיצור מחברת מוכנה עם מבנה מוגדר מראש
-    </p>
-    <div class="templates-grid">
-
-      <div class="template-card" onclick="app.createFromTemplate('bagrut_math')">
-        <span class="template-badge free">חינם</span>
-        <span class="template-icon">📐</span>
-        <div class="template-name">לוח בגרות — מתמטיקה</div>
-        <div class="template-desc">דף משובץ עם מקום לנוסחאות, פתרונות ואזור ציור</div>
-      </div>
-
-      <div class="template-card" onclick="app.createFromTemplate('summary')">
-        <span class="template-badge free">חינם</span>
-        <span class="template-icon">📝</span>
-        <div class="template-name">מחברת סיכום לבחינה</div>
-        <div class="template-desc">מבנה מוכן: מושגים מרכזיים, נוסחאות, שאלות תרגול</div>
-      </div>
-
-      <div class="template-card" onclick="app.createFromTemplate('project')">
-        <span class="template-badge free">חינם</span>
-        <span class="template-icon">🗂️</span>
-        <div class="template-name">מחברת פרויקט</div>
-        <div class="template-desc">כולל דפי תכנון, מחקר, ביצוע וסיכום</div>
-      </div>
-
-      <div class="template-card" onclick="app.createFromTemplate('weekly_plan')">
-        <span class="template-badge free">חינם</span>
-        <span class="template-icon">🗓️</span>
-        <div class="template-name">תכנון שבועי</div>
-        <div class="template-desc">7 דפים — יום לכל עמוד, עם שורות ומשימות</div>
-      </div>
-
-      <div class="template-card" onclick="app.createFromTemplate('lab_report')">
-        <span class="template-badge">Pro</span>
-        <span class="template-icon">🔬</span>
-        <div class="template-name">דוח מעבדה</div>
-        <div class="template-desc">מבנה מלא: השערה, שיטה, תוצאות, מסקנות</div>
-      </div>
-
-      <div class="template-card" onclick="app.createFromTemplate('vocab')">
-        <span class="template-badge free">חינם</span>
-        <span class="template-icon">🌍</span>
-        <div class="template-name">אוצר מילים — שפה</div>
-        <div class="template-desc">טבלאות מוכנות לשינון מילים, פועלים ומשפטים</div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ===== ONBOARDING MODAL (Feature 9) ===== -->
-  <div class="onboarding-overlay hidden" id="onboardingOverlay">
-    <div class="onboarding-modal">
-      <div class="onboarding-progress-bar">
-        <div class="onboarding-progress-fill" id="onboardingProgress" style="width:33%"></div>
-      </div>
-      <div class="onboarding-steps">
-        <div class="onboarding-step-dot active" id="odot1"></div>
-        <div class="onboarding-step-dot" id="odot2"></div>
-        <div class="onboarding-step-dot" id="odot3"></div>
-      </div>
-      <!-- Step 1: מה אתה? -->
-      <div id="onboardStep1">
-        <div class="onboarding-emoji">&#128075;</div>
-        <div class="onboarding-title">ברוכים הבאים ל-TIKit!</div>
-        <div class="onboarding-sub">נגדיר הכל תוך 30 שניות — קודם מי אתה?</div>
-        <div class="onboarding-types">
-          <button class="onboarding-type-btn" data-type="highschool" onclick="obSelectType(this)">
-            <span class="onboarding-type-icon">&#127979;</span>תיכונאי/ת
-          </button>
-          <button class="onboarding-type-btn" data-type="student" onclick="obSelectType(this)">
-            <span class="onboarding-type-icon">&#127891;</span>סטודנט/ית
-          </button>
-          <button class="onboarding-type-btn" data-type="teacher" onclick="obSelectType(this)">
-            <span class="onboarding-type-icon">&#128104;&#8205;&#127979;</span>מורה
-          </button>
-          <button class="onboarding-type-btn" data-type="other" onclick="obSelectType(this)">
-            <span class="onboarding-type-icon">&#10024;</span>אחר
-          </button>
-        </div>
-        <div class="onboarding-btn-row">
-          <button class="onboarding-next-btn" onclick="obStep(2)" id="obNext1" disabled>המשך &#8594;</button>
-          <button class="onboarding-skip-btn" onclick="obSkip()">דלג</button>
-        </div>
-      </div>
-      <!-- Step 2: מוסד -->
-      <div id="onboardStep2" style="display:none;">
-        <div class="onboarding-emoji">&#127963;</div>
-        <div class="onboarding-title" id="obInstitutionTitle">באיזה מוסד לימודים?</div>
-        <div class="onboarding-sub">יופיע בדף הבית שלך (אפשר לשנות מאוחר יותר)</div>
-        <input class="onboarding-input" type="text" id="obInstitutionInput" placeholder="שם המוסד" dir="rtl">
-        <div class="onboarding-btn-row">
-          <button class="onboarding-next-btn" onclick="obStep(3)">המשך &#8594;</button>
-          <button class="onboarding-skip-btn" onclick="obStep(3)">דלג</button>
-        </div>
-      </div>
-      <!-- Step 3: מחברת ראשונה -->
-      <div id="onboardStep3" style="display:none;">
-        <div class="onboarding-emoji">&#128218;</div>
-        <div class="onboarding-title">צור את המחברת הראשונה שלך</div>
-        <div class="onboarding-sub">בחר סוג דף</div>
-        <div class="onboarding-nb-types">
-          <button class="onboarding-nb-btn selected" data-nbtype="lined" onclick="obSelectNb(this)">
-            <span class="onboarding-nb-icon">&#128221;</span>שורות
-          </button>
-          <button class="onboarding-nb-btn" data-nbtype="grid" onclick="obSelectNb(this)">
-            <span class="onboarding-nb-icon">&#128208;</span>משובץ
-          </button>
-          <button class="onboarding-nb-btn" data-nbtype="blank" onclick="obSelectNb(this)">
-            <span class="onboarding-nb-icon">&#128196;</span>חלק
-          </button>
-        </div>
-        <input class="onboarding-input" type="text" id="obNotebookName" placeholder="שם המחברת (למשל: מתמטיקה)" dir="rtl" style="margin-top:14px;">
-        <div class="onboarding-btn-row" style="margin-top:0;">
-          <button class="onboarding-next-btn" onclick="obFinish()">&#128640; בואו נתחיל!</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== SHARE MODAL (Feature 10) ===== -->
-  <div class="share-modal-overlay hidden" id="shareModalOverlay">
-    <div class="share-modal">
-      <h3>&#128228; שתף דף מהמחברת</h3>
-      <p>תמונה מוכנה לשיתוף — כולל לוגו TIKit</p>
-      <div class="share-preview-wrap" id="sharePreviewWrap">
-        <div class="share-preview-loading" id="sharePreviewLoading">&#9203; יוצר תמונה...</div>
-        <img id="sharePreviewImg" class="share-preview-img" style="display:none;">
-      </div>
-      <div class="share-btn-row">
-        <button class="share-action-btn share-download-btn" onclick="shareDownload()">&#11015;&#65039; הורד</button>
-        <button class="share-action-btn share-whatsapp-btn" onclick="shareWhatsapp()">&#128172; וואטסאפ</button>
-      </div>
-      <button class="share-close-btn" onclick="closeShareModal()">סגור</button>
-    </div>
-  </div>
-  <canvas id="shareCanvas"></canvas>
+.cancel-modal-content {
+  position: relative;
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 400px;
+  width: 90%;
+  te
