@@ -40,6 +40,10 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://brickyeda.github.io/TIKit/logo.png">
   <link rel="apple-touch-icon" href="https://brickyeda.github.io/TIKit/logo.png">
+  <!-- Inter Font - Modern & Professional -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -47,27 +51,42 @@
       box-sizing: border-box;
     }
     :root {
-      /* Colors */
-      --primary-color: #667eea;
-      --secondary-color: #764ba2;
-      --accent-color: #4ecdc4;
-      --text-primary: #2c3e50;
-      --text-secondary: #7f8c8d;
-      --background-main: #f8f9fa;
+      /* Colors — Modern 2025 Palette */
+      --primary-color: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary-color: #8b5cf6;
+      --accent-color: #06b6d4;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --background-main: #f5f5f7;
       --background-card: #ffffff;
-      --border-color: #e9ecef;
-      --shadow-light: rgba(0,0,0,0.1);
-      --shadow-medium: rgba(0,0,0,0.15);
-      --success-color: #27ae60;
-      --warning-color: #f39c12;
-      --danger-color: #e74c3c;
-      --line-color: #d3d3d3;
-      --line-dark: #b8b8b8;
-      --margin-line: #ff6b6b;
-      --task-high: #e74c3c;
-      --task-medium: #f39c12;
-      --task-low: #27ae60;
-      --completed-task: #95a5a6;
+      --border-color: #e5e7eb;
+      --shadow-light: rgba(0,0,0,0.06);
+      --shadow-medium: rgba(0,0,0,0.12);
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --line-color: #d1d5db;
+      --line-dark: #9ca3af;
+      --margin-line: #f87171;
+      --task-high: #ef4444;
+      --task-medium: #f59e0b;
+      --task-low: #10b981;
+      --completed-task: #9ca3af;
+      /* Typography scale */
+      --font-size-xs: 0.75rem;
+      --font-size-sm: 0.875rem;
+      --font-size-base: 1rem;
+      --font-size-lg: 1.125rem;
+      --font-size-xl: 1.25rem;
+      --font-size-2xl: 1.5rem;
+      --font-size-3xl: 1.875rem;
+      /* Border radius scale */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
       
       /* Z-Index Scale */
       --z-base: 1;
@@ -94,7 +113,7 @@
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: var(--background-main);
       color: var(--text-primary);
       line-height: 1.6;
@@ -262,14 +281,14 @@
     .navbar {
       background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
       color: white;
-      padding: 0 20px;
-      box-shadow: 0 4px 20px var(--shadow-medium);
+      padding: 0 24px;
+      box-shadow: 0 2px 20px rgba(99,102,241,0.25), 0 1px 0 rgba(255,255,255,0.1) inset;
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: var(--z-fixed);
-      height: 70px;
+      height: 64px;
     }
 
     .navbar-content {
@@ -418,8 +437,8 @@
 
     /* Page Container */
     .page-container {
-      margin-top: 70px;
-      min-height: calc(100vh - 70px);
+      margin-top: 64px;
+      min-height: calc(100vh - 64px);
     }
 
     .page {
@@ -3130,7 +3149,7 @@ padding: 0px 10px 10px 10px;
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 10px;
-      box-shadow: 0 4px 20px var(--shadow-medium);
+      box-shadow: 0 2px 20px rgba(99,102,241,0.25), 0 1px 0 rgba(255,255,255,0.1) inset;
       z-index: 1000;
       display: none;
       grid-template-columns: repeat(8, 1fr);
@@ -4488,8 +4507,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
   z-index: var(--z-tooltip);
   display: flex;
   flex-direction: column;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  resize: both;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow: auto;
 }
 
@@ -4976,7 +4994,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
   color: #667eea;
   background: white;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
@@ -6448,9 +6466,252 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 
 .interactive-shape.selected .shape-rotate-line { display: block; }
 
+  /* ===== MODERN DESIGN UPGRADES 2025 ===== */
+
+  /* Smoother welcome section */
+  .welcome-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 8px 32px rgba(99,102,241,0.2) !important;
+  }
+
+  /* Better stat cards */
+  .stat-item {
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    border-radius: 16px !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+  }
+  .stat-item:hover {
+    background: rgba(255,255,255,0.28) !important;
+    transform: translateY(-4px) scale(1.02) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+  }
+  .stat-number {
+    font-size: 2.2rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.5px !important;
+  }
+
+  /* Cards - cleaner shadows */
+  .notebook-card,
+  .task-item,
+  .link-card,
+  .subscription-card {
+    border-radius: 16px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06) !important;
+    border: 1px solid var(--border-color) !important;
+    transition: box-shadow 0.2s ease, transform 0.2s ease !important;
+  }
+  .notebook-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 12px 32px rgba(99,102,241,0.12) !important;
+    transform: translateY(-3px) !important;
+  }
+
+  /* Navbar items - pill style */
+  .navbar-item {
+    border-radius: 10px !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.01em !important;
+    padding: 8px 14px !important;
+  }
+  .navbar-item.active {
+    background: rgba(255,255,255,0.22) !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.2) inset !important;
+  }
+
+  /* Buttons - sharper, more modern */
+  .btn--primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    box-shadow: 0 2px 8px rgba(99,102,241,0.3) !important;
+    letter-spacing: 0.01em !important;
+  }
+  .btn--primary:hover {
+    box-shadow: 0 4px 16px rgba(99,102,241,0.4) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  /* Page title - stronger typography */
+  .page-title {
+    font-weight: 800 !important;
+    letter-spacing: -0.5px !important;
+  }
+
+  /* Inputs - cleaner focus ring */
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15) !important;
+  }
+
+  /* Modals - larger radius */
+  .modal-container,
+  .modal-content,
+  .settings-modal {
+    border-radius: 20px !important;
+  }
+
+  /* Scrollbar - subtle and modern */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+  /* Toast / notification - rounder */
+  .toast-notification {
+    border-radius: 14px !important;
+    font-weight: 500 !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+  }
+
+  /* Logout button - more refined */
+  .logout-btn {
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* Brand - slightly bolder */
+  .navbar-brand {
+    font-weight: 800 !important;
+    letter-spacing: -0.3px !important;
+    font-size: 1.4rem !important;
+  }
+
+
+  /* ===== DARK MODE ===== */
+  [data-theme="dark"] {
+    --primary-color: #818cf8;
+    --primary-dark: #6366f1;
+    --secondary-color: #a78bfa;
+    --accent-color: #22d3ee;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --background-main: #0f172a;
+    --background-card: #1e293b;
+    --border-color: #334155;
+    --shadow-light: rgba(0,0,0,0.3);
+    --shadow-medium: rgba(0,0,0,0.5);
+    --success-color: #34d399;
+    --warning-color: #fbbf24;
+    --danger-color: #f87171;
+    --line-color: #334155;
+    --line-dark: #475569;
+    --margin-line: #fb7185;
+  }
+  [data-theme="dark"] body {
+    background: var(--background-main);
+    color: var(--text-primary);
+  }
+  [data-theme="dark"] .navbar {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.5) !important;
+  }
+  [data-theme="dark"] .background-card,
+  [data-theme="dark"] .modal-container,
+  [data-theme="dark"] .modal-content,
+  [data-theme="dark"] .notebook-card,
+  [data-theme="dark"] .task-item,
+  [data-theme="dark"] .subscription-card,
+  [data-theme="dark"] .settings-modal {
+    background: var(--background-card) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+  }
+  [data-theme="dark"] input,
+  [data-theme="dark"] textarea,
+  [data-theme="dark"] select {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: var(--text-primary) !important;
+  }
+  [data-theme="dark"] .welcome-section {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+  }
+
+  /* Dark mode toggle button */
+  .dark-mode-toggle {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    border-radius: 50%;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: white;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+  .dark-mode-toggle:hover {
+    background: rgba(255,255,255,0.25);
+    transform: scale(1.1);
+  }
+
   </style>
 </head>
 <body>
+
+  <!-- ===== SPLASH SCREEN ===== -->
+  <div id="splashScreen" style="
+    position: fixed; inset: 0; z-index: 99999;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 20px;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+  ">
+    <div style="
+      width: 90px; height: 90px; border-radius: 24px;
+      background: rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      animation: splashPop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    ">
+      <img src="https://brickyeda.github.io/TIKit/logo.png" style="width:60px;height:60px;object-fit:contain;" alt="TIKit">
+    </div>
+    <div style="text-align:center; color:white; animation: splashFade 0.5s 0.3s ease both;">
+      <div style="font-family:Inter,sans-serif; font-size:2rem; font-weight:800; letter-spacing:-1px;">TIKit</div>
+      <div style="font-family:Inter,sans-serif; font-size:0.95rem; opacity:0.8; margin-top:4px;">הכלי החכם שלך ללמידה</div>
+    </div>
+    <div style="
+      margin-top: 16px;
+      width: 48px; height: 4px; border-radius: 99px;
+      background: rgba(255,255,255,0.25);
+      overflow: hidden;
+      animation: splashFade 0.5s 0.4s ease both;
+    ">
+      <div style="
+        height: 100%; background: white; border-radius: 99px;
+        animation: splashBar 1.2s 0.5s ease forwards;
+        width: 0%;
+      " id="splashBar"></div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes splashPop {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    @keyframes splashFade {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes splashBar {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+    #splashScreen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+  </style>
+
   <!-- Navigation Bar -->
   <nav class="navbar">
     <div class="navbar-content">
@@ -6508,6 +6769,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
         </div>
         <button id="premiumInfoBtn" onclick="app.openUpgradeModal('שדרוג לפרימיום')" title="שדרוג לפרימיום" class="premium-star-btn">⭐</button>
         <button class="logout-btn" id="logoutBtn" onclick="app.logout()" style="display: none;">התנתק</button>
+        <button class="dark-mode-toggle" id="darkModeBtn" onclick="app.toggleDarkMode()" title="מצב לילה">🌙</button>
         <div class="fullscreen-icon" id="fullscreenBtn" onclick="app.toggleFullscreen()" title="מסך מלא">⛶</div>
 
 <div class="settings-icon" style="display: none;" onclick="app.openSettings()">⚙️</div>
@@ -8206,7 +8468,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
       <div class="about-contact">
         <div class="about-contact-label">📧 לשאלות, הצעות ומשוב</div>
         <div class="about-contact-email">
-          <a href="mailto:brickyeda@gmail.com">brickyeda@gmail.com</a>
+          <a href="/cdn-cgi/l/email-protection#4426362d272f3d212025042329252d286a272b29"><span class="__cf_email__" data-cfemail="2a4858434941534f4e4b6a4d474b434604494547">[email&#160;protected]</span></a>
         </div>
       </div>
       
@@ -8253,7 +8515,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     </div>
   </div>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // ========== About Modal Functions ==========
     function openAboutModal() {
       document.getElementById('aboutModal').classList.add('active');
@@ -16388,6 +16650,21 @@ subtitleElement.textContent = 'מיקוד שמוביל להצלחה';
       },
 
       // מעבר למסך מלא או יציאה ממנו
+      toggleDarkMode() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+          document.documentElement.removeAttribute('data-theme');
+          document.getElementById('darkModeBtn').textContent = '🌙';
+          document.getElementById('darkModeBtn').title = 'מצב לילה';
+          localStorage.setItem('tikit-theme', 'light');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          document.getElementById('darkModeBtn').textContent = '☀️';
+          document.getElementById('darkModeBtn').title = 'מצב יום';
+          localStorage.setItem('tikit-theme', 'dark');
+        }
+      },
+
       toggleFullscreen() {
         if (!document.fullscreenElement) {
           // כניסה למסך מלא
@@ -18483,6 +18760,20 @@ calculateBitwise(first, second, operation) {
 
     // הפעלת האפליקציה כשהדף נטען
     document.addEventListener('DOMContentLoaded', function() {
+      // Restore saved theme
+      const savedTheme = localStorage.getItem('tikit-theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        const btn = document.getElementById('darkModeBtn');
+        if (btn) { btn.textContent = '☀️'; btn.title = 'מצב יום'; }
+      }
+
+      // Hide splash screen after app loads
+      setTimeout(() => {
+        const splash = document.getElementById('splashScreen');
+        if (splash) splash.classList.add('hidden');
+      }, 1500);
+
       app.init();
       
       // הפעלת מערכת Auto Logout
@@ -21425,19 +21716,4 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .cancel-modal-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.cancel-modal-content {
-  position: relative;
-  background: white;
-  border-radius: 16px;
-  padding: 30px;
-  max-width: 400px;
-  width: 90%;
-  te
+  positi
