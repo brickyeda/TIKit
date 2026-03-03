@@ -921,73 +921,165 @@
       font-size: 0.95rem;
     }
 
+    /* ===== Homepage layout ===== */
+    .homepage-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .homepage-main { min-width: 0; }
+
+    .homepage-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: sticky;
+      top: 80px;
+    }
+
+    .sidebar-card {
+      background: var(--background-card);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 1px 3px var(--shadow-light);
+      overflow: hidden;
+    }
+
+    .sidebar-card-header {
+      padding: 16px 20px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-card-body { padding: 16px 20px; }
+
+    .quick-stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .quick-stat-row:last-child { border-bottom: none; }
+    .quick-stat-row:hover { color: var(--primary-color); }
+    .quick-stat-row .qs-label { color: var(--text-secondary); font-size: 0.88rem; }
+    .quick-stat-row .qs-value { font-weight: 700; font-size: 1rem; }
+
+    /* Section label above tools grid */
+    .section-heading {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin: 0 0 14px 0;
+    }
+
+    /* ===== Tool cards — new design ===== */
     .tools-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 25px;
-      margin-bottom: 40px;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 32px;
     }
 
     .tool-card {
       background: var(--background-card);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 8px 25px var(--shadow-light);
+      border-radius: 16px;
+      padding: 22px 20px 18px;
       border: 1px solid var(--border-color);
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
       position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .tool-card::before {
+    /* Colored left accent bar per card */
+    .tool-card::after {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-      transform: scaleX(0);
-      transform-origin: right;
-      transition: transform 0.3s ease;
-    }
-
-    .tool-card:hover::before {
-      transform: scaleX(1);
-      transform-origin: left;
+      top: 0; right: 0;
+      width: 4px; height: 100%;
+      background: var(--card-accent, var(--primary-color));
+      border-radius: 0 16px 16px 0;
+      opacity: 0;
+      transition: opacity 0.2s ease;
     }
 
     .tool-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 15px 35px var(--shadow-medium);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      border-color: var(--card-accent, var(--primary-color));
+    }
+
+    .tool-card:hover::after { opacity: 1; }
+
+    .tool-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .tool-icon {
-      font-size: 3rem;
-      margin-bottom: 20px;
+      font-size: 2rem;
+      line-height: 1;
       display: block;
     }
 
+    .tool-arrow {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      opacity: 0;
+      transform: translateX(4px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .tool-card:hover .tool-arrow { opacity: 1; transform: translateX(0); }
+
     .tool-title {
-      font-size: 1.4rem;
-      font-weight: 600;
-      margin-bottom: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.3;
     }
 
     .tool-description {
       color: var(--text-secondary);
-      margin-bottom: 15px;
+      font-size: 0.82rem;
       line-height: 1.5;
+      flex: 1;
     }
 
     .tool-status {
-      font-size: 0.85rem;
-      padding: 6px 12px;
-      border-radius: 20px;
-      background: var(--accent-color);
-      color: white;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 99px;
+      background: rgba(99,102,241,0.1);
+      color: var(--primary-color);
       display: inline-block;
+      width: fit-content;
+    }
+
+    .tool-status.ready {
+      background: rgba(16,185,129,0.1);
+      color: var(--success-color);
+    }
+
+    .tool-status.wip {
+      background: rgba(245,158,11,0.1);
+      color: var(--warning-color);
     }
 
     /* Page Headers */
@@ -6632,6 +6724,49 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
   [data-theme="dark"] .welcome-section {
     background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
   }
+  [data-theme="dark"] .sidebar-card {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+  }
+  [data-theme="dark"] .sidebar-card-header {
+    border-color: #334155 !important;
+    color: #94a3b8 !important;
+  }
+  [data-theme="dark"] .quick-stat-row {
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+  }
+  [data-theme="dark"] .quick-stat-row .qs-label { color: #94a3b8 !important; }
+  [data-theme="dark"] .tool-card {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+  }
+  [data-theme="dark"] .tool-card:hover {
+    border-color: var(--card-accent, #818cf8) !important;
+  }
+  [data-theme="dark"] .tool-title { color: #f1f5f9 !important; }
+  [data-theme="dark"] .tool-description { color: #94a3b8 !important; }
+  [data-theme="dark"] .section-heading { color: #64748b !important; }
+
+  /* Responsive homepage layout */
+  @media (max-width: 1100px) {
+    .homepage-layout {
+      grid-template-columns: 1fr;
+    }
+    .homepage-sidebar {
+      position: static;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .sidebar-card { flex: 1; min-width: 220px; }
+  }
+  @media (max-width: 720px) {
+    .homepage-sidebar { flex-direction: column; }
+    .tools-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  }
+  @media (max-width: 480px) {
+    .tools-grid { grid-template-columns: 1fr; }
+  }
 
   /* Dark mode toggle button */
   .dark-mode-toggle {
@@ -6782,15 +6917,14 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     
     <!-- Homepage -->
     <div id="homepage" class="page active">
+
+      <!-- Welcome Banner -->
       <div class="welcome-section">
         <div class="welcome-content">
           <div class="welcome-text">
             <h1 id="welcomeGreeting">שלום!</h1>
-<div class="subtitle" id="welcomeSubtitle">מיקוד שמוביל להצלחה</div>
-            <div class="institution" id="welcomeInstitution">הילקוד החכם שלך</div>
-            <button onclick="logout()" style="margin-top: 15px; padding: 10px 20px; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; border-radius: 8px; font-size: 0.95rem; cursor: pointer; transition: transform 0.2s;">
-              🚪 התנתק
-            </button>
+            <div class="subtitle" id="welcomeSubtitle">מיקוד שמוביל להצלחה</div>
+            <div class="institution" id="welcomeInstitution">הכלי החכם שלך</div>
           </div>
           <div class="welcome-stats">
             <div class="stat-item" onclick="app.showPage('tasks')">
@@ -6817,73 +6951,179 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
         </div>
       </div>
 
-      <div class="tools-grid">
-        <div class="tool-card" onclick="app.showPage('notebooks')">
-          <span class="tool-icon">📚</span>
-          <div class="tool-title">מחברות לפי מקצועות</div>
-          <div class="tool-description">כל המחברות שלי מסודרות לפי מקצועות עם דפים, רישומים וכלי כתיבה מתקדמים</div>
-          <span class="tool-status">6 מחברות פעילות</span>
+      <!-- Main layout: tools + sidebar -->
+      <div class="homepage-layout">
+
+        <!-- Left: tools grid -->
+        <div class="homepage-main">
+          <p class="section-heading">הכלים שלי</p>
+          <div class="tools-grid">
+
+            <div class="tool-card" style="--card-accent:#6366f1" onclick="app.showPage('notebooks')">
+              <div class="tool-card-top">
+                <span class="tool-icon">📚</span>
+                <span class="tool-arrow">←</span>
+              </div>
+              <div class="tool-title">מחברות</div>
+              <div class="tool-description">כתיבה, ציור, נוסחאות ו-PDF — הכל בתוך מחברות לפי מקצוע</div>
+              <span class="tool-status" id="notebookStatusHome">6 מחברות פעילות</span>
+            </div>
+
+            <div class="tool-card" style="--card-accent:#10b981" onclick="app.showPage('tasks')">
+              <div class="tool-card-top">
+                <span class="tool-icon">✅</span>
+                <span class="tool-arrow">←</span>
+              </div>
+              <div class="tool-title">משימות</div>
+              <div class="tool-description">מטלות עם עדיפויות, תאריכי יעד ומעקב ביצועים</div>
+              <span class="tool-status" id="taskStatusHome">טוען...</span>
+            </div>
+
+            <div class="tool-card" style="--card-accent:#f59e0b" onclick="app.showPage('calendar')">
+              <div class="tool-card-top">
+                <span class="tool-icon">📅</span>
+                <span class="tool-arrow">←</span>
+              </div>
+              <div class="tool-title">יומן</div>
+              <div class="tool-description">בחינות, אירועים ותכנון יומי ושבועי</div>
+              <span class="tool-status" id="calendarStatusHome">טוען...</span>
+            </div>
+
+            <div class="tool-card" style="--card-accent:#8b5cf6" onclick="app.showPage('schedule')">
+              <div class="tool-card-top">
+                <span class="tool-icon">🗓️</span>
+                <span class="tool-arrow">←</span>
+              </div>
+              <div class="tool-title">מערכת שעות</div>
+              <div class="tool-description">בנה את לוח השיעורים השבועי שלך</div>
+              <span class="tool-status ready" id="scheduleStatusHome">0 שיעורים</span>
+            </div>
+
+            <div class="tool-card" style="--card-accent:#06b6d4" onclick="app.showPage('calculator')">
+              <div class="tool-card-top">
+                <span class="tool-icon">🧮</span>
+                <span class="tool-arrow">←</span>
+              </div>
+              <div class="tool-title">מחשבון מדעי</div>
+              <div class="tool-description">טריגונומטריה, לוגריתמים, זיכרון והיסטוריה מלאה</div>
+              <span class="tool-status ready">מוכן לשימוש</span>
+            </div>
+
+            <div class="tool-card" style="--card-accent:#ec4899" onclick="app.showPage('timer')">
+              <div class="tool-card-top">
+                <span class="tool-icon">⏱️</span>
+                <span class="tool-arrow">←</span>
+              </div>
+              <div class="tool-title">טיימר ושעון עצר</div>
+              <div class="tool-description">מדידת זמן לבחינות ולמידה ממוקדת</div>
+              <span class="tool-status ready">מוכן לשימוש</span>
+            </div>
+
+            <div class="tool-card" style="--card-accent:#64748b" onclick="app.showPage('mylinks')">
+              <div class="tool-card-top">
+                <span class="tool-icon">🔗</span>
+                <span class="tool-arrow">←</span>
+              </div>
+              <div class="tool-title">הקישורים שלי</div>
+              <div class="tool-description">קישורים שימושיים בהישג יד</div>
+              <span class="tool-status" id="linksStatusHome">0 קישורים</span>
+            </div>
+
+            <div class="tool-card" style="--card-accent:#f97316; opacity: 0.75;" onclick="alert('תכונה זו תתווסף בקרוב! 🔧')">
+              <div class="tool-card-top">
+                <span class="tool-icon">🏆</span>
+                <span class="tool-arrow">←</span>
+              </div>
+              <div class="tool-title">ההישגים שלי</div>
+              <div class="tool-description">אתגרים יומיים ונקודות זכות על פעילות</div>
+              <span class="tool-status wip">בפיתוח</span>
+            </div>
+
+          </div>
         </div>
 
-        <div class="tool-card" onclick="app.showPage('tasks')">
-          <span class="tool-icon">✅</span>
-          <div class="tool-title">מנהל משימות חכם</div>
-          <div class="tool-description">רשימת מטלות מתקדמת עם מעקב ביצועים, תזכורות ולוחות זמנים</div>
-          <span class="tool-status" id="taskStatusHome">טוען...</span>
-        </div>
+        <!-- Right: sidebar -->
+        <aside class="homepage-sidebar">
 
-        <div class="tool-card" onclick="app.showPage('calendar')">
-          <span class="tool-icon">📅</span>
-          <div class="tool-title">יומן ולוח שנה</div>
-          <div class="tool-description">מערכת שעות, מועדי בחינות, אירועים חשובים ותכנון יומי ושבועי</div>
-          <span class="tool-status" id="calendarStatusHome">טוען...</span>
-        </div>
+          <!-- Quick stats -->
+          <div class="sidebar-card">
+            <div class="sidebar-card-header">סיכום מהיר</div>
+            <div class="sidebar-card-body" style="padding-top:8px;padding-bottom:8px;">
+              <div class="quick-stat-row" onclick="app.showPage('tasks')">
+                <span class="qs-label">⚡ משימות להיום</span>
+                <span class="qs-value" id="sidebarTodayTasks">0</span>
+              </div>
+              <div class="quick-stat-row" onclick="app.showPage('tasks')">
+                <span class="qs-label">📋 משימות פתוחות</span>
+                <span class="qs-value" id="sidebarOpenTasks">0</span>
+              </div>
+              <div class="quick-stat-row" onclick="app.showPage('notebooks')">
+                <span class="qs-label">📚 מחברות פעילות</span>
+                <span class="qs-value" id="sidebarNotebooks">6</span>
+              </div>
+              <div class="quick-stat-row" onclick="app.showPage('calendar')">
+                <span class="qs-label">🕐 השיעור הבא</span>
+                <span class="qs-value" id="sidebarNextClass">14:30</span>
+              </div>
+            </div>
+          </div>
 
-        <div class="tool-card" onclick="app.showPage('calculator')">
-          <span class="tool-icon">🧮</span>
-          <div class="tool-title">מחשבון מדעי מתקדם</div>
-          <div class="tool-description">מחשבון מדעי מלא עם פונקציות טריגונומטריות, לוגריתמים, זיכרון והיסטוריה מלאה</div>
-          <span class="tool-status">מוכן לשימוש!</span>
-        </div>
+          <!-- Quick actions -->
+          <div class="sidebar-card">
+            <div class="sidebar-card-header">פעולות מהירות</div>
+            <div class="sidebar-card-body" style="display:flex;flex-direction:column;gap:8px;">
+              <button onclick="app.showPage('notebooks'); setTimeout(()=>app.openNotebookCreator(),300)"
+                style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border-color);background:var(--background-main);color:var(--text-primary);font-size:0.88rem;font-weight:600;cursor:pointer;text-align:right;transition:all 0.2s;font-family:inherit;"
+                onmouseover="this.style.borderColor='#6366f1';this.style.color='#6366f1'"
+                onmouseout="this.style.borderColor='var(--border-color)';this.style.color='var(--text-primary)'">
+                ➕ מחברת חדשה
+              </button>
+              <button onclick="app.showPage('tasks'); setTimeout(()=>document.getElementById('newTaskInput')?.focus(),300)"
+                style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border-color);background:var(--background-main);color:var(--text-primary);font-size:0.88rem;font-weight:600;cursor:pointer;text-align:right;transition:all 0.2s;font-family:inherit;"
+                onmouseover="this.style.borderColor='#10b981';this.style.color='#10b981'"
+                onmouseout="this.style.borderColor='var(--border-color)';this.style.color='var(--text-primary)'">
+                ✅ משימה חדשה
+              </button>
+              <button onclick="app.showPage('calendar')"
+                style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border-color);background:var(--background-main);color:var(--text-primary);font-size:0.88rem;font-weight:600;cursor:pointer;text-align:right;transition:all 0.2s;font-family:inherit;"
+                onmouseover="this.style.borderColor='#f59e0b';this.style.color='#f59e0b'"
+                onmouseout="this.style.borderColor='var(--border-color)';this.style.color='var(--text-primary)'">
+                📅 פתח יומן
+              </button>
+              <button onclick="app.showPage('timer')"
+                style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border-color);background:var(--background-main);color:var(--text-primary);font-size:0.88rem;font-weight:600;cursor:pointer;text-align:right;transition:all 0.2s;font-family:inherit;"
+                onmouseover="this.style.borderColor='#ec4899';this.style.color='#ec4899'"
+                onmouseout="this.style.borderColor='var(--border-color)';this.style.color='var(--text-primary)'">
+                ⏱️ התחל טיימר
+              </button>
+            </div>
+          </div>
 
+          <!-- About / logout -->
+          <div class="sidebar-card">
+            <div class="sidebar-card-body" style="display:flex;gap:8px;">
+              <button onclick="openAboutModal()"
+                style="flex:1;padding:9px;border-radius:10px;border:1px solid var(--border-color);background:transparent;color:var(--text-secondary);font-size:0.82rem;cursor:pointer;font-family:inherit;transition:all 0.2s;"
+                onmouseover="this.style.background='var(--background-main)'"
+                onmouseout="this.style.background='transparent'">
+                ℹ️ אודות
+              </button>
+              <button onclick="app.logout()"
+                style="flex:1;padding:9px;border-radius:10px;border:1px solid #fecaca;background:transparent;color:#ef4444;font-size:0.82rem;cursor:pointer;font-family:inherit;transition:all 0.2s;"
+                onmouseover="this.style.background='#fef2f2'"
+                onmouseout="this.style.background='transparent'">
+                🚪 התנתק
+              </button>
+            </div>
+          </div>
 
-        <div class="tool-card" onclick="app.showPage('timer')">
-          <span class="tool-icon">⏱️</span>
-          <div class="tool-title">שעון עצר וטיימר</div>
-          <div class="tool-description">שעון עצר לבחינות, טיימר ומעקב זמן למידה יעיל</div>
-          <span class="tool-status">מוכן לשימוש!</span>
-        </div>
-
-        <div class="tool-card" onclick="app.showPage('schedule')">
-          <span class="tool-icon">🗓️</span>
-          <div class="tool-title">מערכת שעות שבועית</div>
-          <div class="tool-description">בנה את מערכת השיעורים שלך והיא תסתנכרן אוטומטית ליומן</div>
-          <span class="tool-status" id="scheduleStatusHome">0 שיעורים</span>
-        </div>
-
-        <div class="tool-card" onclick="app.showPage('mylinks')">
-          <span class="tool-icon">🔗</span>
-          <div class="tool-title">הקישורים שלי</div>
-          <div class="tool-description">שמור קישורים לאתרים שימושיים וגש אליהם בקלות בכל עת</div>
-          <span class="tool-status" id="linksStatusHome">0 קישורים</span>
-        </div>
-
-<div class="tool-card" onclick="alert('תכונה זו תתווסף בקרוב! 🔧')">
-          <span class="tool-icon">🏆</span>
-          <div class="tool-title">ההישגים שלי</div>
-          <div class="tool-description">עקוב אחרי ההישגים שלך, אתגרים יומיים ונקודות זכות על פעילות במערכת</div>
-          <span class="tool-status">בפיתוח</span>
-        </div>
+        </aside>
       </div>
 
       <!-- Footer -->
       <footer class="app-footer">
         <div class="footer-content">
           <span class="footer-copyright">© 2026 TIKit | פותח ע"י שחר ברגיג</span>
-          <button class="footer-about-btn" onclick="openAboutModal()">
-            <span>ℹ️</span>
-            אודות
-          </button>
         </div>
       </footer>
     </div>
@@ -9869,6 +10109,17 @@ this.showPage('homepage');
         if (scheduleStatusElement && typeof scheduleApp !== 'undefined') {
           const lessonsCount = Object.keys(scheduleApp.schedule).length;
           scheduleStatusElement.textContent = `${lessonsCount} שיעורים`;
+        }
+
+        // sync sidebar stats
+        const sb = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        sb('sidebarTodayTasks', todayTasks);
+        sb('sidebarOpenTasks', pendingCount);
+        sb('sidebarNotebooks', notebooksCount);
+        if (nextClass) {
+          sb('sidebarNextClass', nextClass.date === today ? nextClass.startTime : 'מחר');
+        } else {
+          sb('sidebarNextClass', '--:--');
         }
 
         // עדכון התראות
