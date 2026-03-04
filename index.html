@@ -7856,16 +7856,10 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           <span>⭐</span>
           ניהול מנוי
         </h1>
-        <div style="display:flex; gap:10px; align-items:center;">
-          <button class="btn btn--primary btn--sm" onclick="app.openProfileEditModal()" style="gap:6px;">
-            <svg class="lucide-icon lucide-icon--sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            עריכת פרופיל
-          </button>
-          <button class="back-btn" onclick="app.showPage('homepage')">
+        <button class="back-btn" onclick="app.showPage('homepage')">
             <span>←</span>
             חזור לדף הבית
           </button>
-        </div>
       </div>
 
       <div class="subscription-container">
@@ -8309,7 +8303,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
       <div class="about-contact">
         <div class="about-contact-label">📧 לשאלות, הצעות ומשוב</div>
         <div class="about-contact-email">
-          <a href="mailto:brickyeda@gmail.com">brickyeda@gmail.com</a>
+          <a href="/cdn-cgi/l/email-protection#3351415a50584a56575273545e525a5f1d505c5e"><span class="__cf_email__" data-cfemail="c3a1b1aaa0a8baa6a7a283a4aea2aaafeda0acae">[email&#160;protected]</span></a>
         </div>
       </div>
       
@@ -9392,6 +9386,16 @@ this.showPage('homepage');
                 <span>${userEmail}</span>
               </div>
             </div>
+            <button onclick="app.openProfileEditModal()" style="
+  margin-top:12px;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 16px;border:none;border-radius:8px;
+  background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));
+  color:white;font-size:0.875rem;font-weight:600;
+  cursor:pointer;transition:all 0.2s ease;font-family:inherit;">
+  <svg style="width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+  עריכת פרופיל
+</button>
             <div class="status-details">
               <div class="status-detail">
                 <span class="status-detail-label">סוג מנוי:</span>
@@ -9440,6 +9444,16 @@ this.showPage('homepage');
                 <span>${userEmail}</span>
               </div>
             </div>
+            <button onclick="app.openProfileEditModal()" style="
+  margin-top:12px;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 16px;border:none;border-radius:8px;
+  background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));
+  color:white;font-size:0.875rem;font-weight:600;
+  cursor:pointer;transition:all 0.2s ease;font-family:inherit;">
+  <svg style="width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+  עריכת פרופיל
+</button>
             <div class="status-details">
               <div class="status-detail">
                 <span class="status-detail-label">${isCancelled ? 'פעיל עד:' : 'תוקף עד:'}</span>
@@ -9492,6 +9506,7 @@ this.showPage('homepage');
                 <span>${userEmail}</span>
               </div>
             </div>
+            <button onclick="app.openProfileEditModal()" style="margin-top:12px;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:white;font-size:0.875rem;font-weight:600;cursor:pointer;font-family:inherit;"><svg style="width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>עריכת פרופיל</button>
             <p style="color: #6b7280; margin-top: 10px;">הגרסה החינמית מאפשרת שימוש מלא עם מגבלות.</p>
           `;
           
@@ -9528,6 +9543,7 @@ this.showPage('homepage');
                 <span>${userEmail}</span>
               </div>
             </div>
+            <button onclick="app.openProfileEditModal()" style="margin-top:12px;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:white;font-size:0.875rem;font-weight:600;cursor:pointer;font-family:inherit;"><svg style="width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>עריכת פרופיל</button>
             <p style="color: #6b7280; margin-top: 10px;">הגרסה החינמית מאפשרת שימוש מלא עם מגבלות.</p>
           `;
           
