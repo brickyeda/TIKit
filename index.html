@@ -7856,10 +7856,16 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           <span>⭐</span>
           ניהול מנוי
         </h1>
-        <button class="back-btn" onclick="app.showPage('homepage')">
-          <span>←</span>
-          חזור לדף הבית
-        </button>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button class="btn btn--primary btn--sm" onclick="app.openProfileEditModal()" style="gap:6px;">
+            <svg class="lucide-icon lucide-icon--sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            עריכת פרופיל
+          </button>
+          <button class="back-btn" onclick="app.showPage('homepage')">
+            <span>←</span>
+            חזור לדף הבית
+          </button>
+        </div>
       </div>
 
       <div class="subscription-container">
@@ -7924,6 +7930,103 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 
 </div>
 <!-- End of Page Container -->
+
+  <!-- Profile Edit Modal -->
+  <div class="modal-overlay" id="profileEditModal">
+    <div class="modal-content" style="max-width:520px;">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <span>👤</span>
+          עריכת פרופיל
+        </h2>
+        <button class="close-btn" onclick="app.closeProfileEditModal()">✕</button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Email (readonly) -->
+        <div class="form-group">
+          <label class="form-label" style="display:flex;align-items:center;gap:6px;">
+            <span>📧</span> כתובת מייל
+            <span style="font-size:0.78rem;color:#9ca3af;font-weight:400;">(לא ניתן לשינוי)</span>
+          </label>
+          <input type="email" id="profileEmail" class="form-input" readonly
+            style="background:#f3f4f6;color:#6b7280;cursor:not-allowed;">
+        </div>
+
+        <!-- Profile picture -->
+        <div class="form-group" style="display:flex;align-items:center;gap:16px;">
+          <div id="profileAvatarPreview" style="
+            width:72px;height:72px;border-radius:50%;
+            background:linear-gradient(135deg,#667eea,#764ba2);
+            display:flex;align-items:center;justify-content:center;
+            font-size:2rem;color:white;flex-shrink:0;
+            overflow:hidden;border:3px solid #e5e7eb;">
+            <span id="profileAvatarInitial">👤</span>
+          </div>
+          <div style="flex:1;">
+            <label class="form-label">תמונת פרופיל</label>
+            <label for="profileAvatarInput" class="btn btn--secondary btn--sm" style="cursor:pointer;display:inline-flex;">
+              📷 בחר תמונה
+            </label>
+            <input type="file" id="profileAvatarInput" accept="image/*" style="display:none" onchange="app.previewProfileAvatar(event)">
+            <p style="font-size:0.8rem;color:#9ca3af;margin-top:4px;">JPG, PNG עד 2MB</p>
+          </div>
+        </div>
+
+        <!-- Display name -->
+        <div class="form-group">
+          <label class="form-label">שם מלא / כינוי</label>
+          <input type="text" id="profileDisplayName" class="form-input" placeholder="לדוגמה: יובל כהן" maxlength="60">
+        </div>
+
+        <!-- Age + Gender row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label class="form-label">גיל</label>
+            <input type="number" id="profileAge" class="form-input" min="5" max="120" placeholder="לדוגמה: 16">
+          </div>
+          <div class="form-group">
+            <label class="form-label">מגדר</label>
+            <select id="profileGender" class="form-select">
+              <option value="">לא צוין</option>
+              <option value="male">זכר</option>
+              <option value="female">נקבה</option>
+              <option value="other">אחר</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- School / Institution -->
+        <div class="form-group">
+          <label class="form-label">בית ספר / מוסד לימודים</label>
+          <input type="text" id="profileSchool" class="form-input" placeholder="לדוגמה: תיכון אורט רמת גן" maxlength="80">
+        </div>
+
+        <!-- Grade / Class -->
+        <div class="form-group">
+          <label class="form-label">כיתה / שנה</label>
+          <input type="text" id="profileGrade" class="form-input" placeholder="לדוגמה: י׳2 / שנה ב׳" maxlength="30">
+        </div>
+
+        <!-- City -->
+        <div class="form-group">
+          <label class="form-label">עיר מגורים</label>
+          <input type="text" id="profileCity" class="form-input" placeholder="לדוגמה: תל אביב" maxlength="50">
+        </div>
+
+        <!-- Bio -->
+        <div class="form-group">
+          <label class="form-label">על עצמי (ביו קצרה)</label>
+          <textarea id="profileBio" class="form-textarea" rows="2" maxlength="200" placeholder="כמה מילים על עצמך..."></textarea>
+        </div>
+
+      </div>
+      <div class="modal-footer" style="display:flex;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--border-color);">
+        <button class="btn btn--secondary btn--sm" onclick="app.closeProfileEditModal()">ביטול</button>
+        <button class="btn btn--primary btn--sm" onclick="app.saveProfile()">💾 שמור פרופיל</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Task Edit Modal -->
   <div class="modal-overlay" id="taskEditModal">
@@ -8206,7 +8309,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
       <div class="about-contact">
         <div class="about-contact-label">📧 לשאלות, הצעות ומשוב</div>
         <div class="about-contact-email">
-          <a href="mailto:brickyeda@gmail.com">brickyeda@gmail.com</a>
+          <a href="/cdn-cgi/l/email-protection#3351415a50584a56575273545e525a5f1d505c5e"><span class="__cf_email__" data-cfemail="c3a1b1aaa0a8baa6a7a283a4aea2aaafeda0acae">[email&#160;protected]</span></a>
         </div>
       </div>
       
@@ -8253,7 +8356,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     </div>
   </div>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // ========== About Modal Functions ==========
     function openAboutModal() {
       document.getElementById('aboutModal').classList.add('active');
@@ -8910,12 +9013,15 @@ this.showPage('homepage');
           // טעינת display_name מ-profiles בכל מקרה
           const { data: profileData } = await supabaseClient
             .from('profiles')
-            .select('display_name')
+            .select('display_name, age, gender, school, grade, city, bio, avatar_url')
             .eq('id', userId)
             .single();
           
           if (profileData) {
             this.displayName = profileData.display_name || '';
+            this.profileData = profileData;
+          } else {
+            this.profileData = {};
           }
 
         } catch (e) {
@@ -8986,6 +9092,143 @@ this.showPage('homepage');
         } catch (e) {
           console.error('שגיאה בשמירת שם:', e);
           alert('שגיאה בשמירת השם');
+        }
+      },
+
+      // ===== פונקציות עריכת פרופיל =====
+
+      openProfileEditModal() {
+        const modal = document.getElementById('profileEditModal');
+        if (!modal) return;
+
+        // fill email (readonly)
+        const emailEl = document.getElementById('profileEmail');
+        if (emailEl) emailEl.value = currentUser ? currentUser.email : '';
+
+        // fill saved profile fields
+        const p = this.profileData || {};
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+        setVal('profileDisplayName', p.display_name || this.displayName || '');
+        setVal('profileAge', p.age || '');
+        setVal('profileGender', p.gender || '');
+        setVal('profileSchool', p.school || '');
+        setVal('profileGrade', p.grade || '');
+        setVal('profileCity', p.city || '');
+        setVal('profileBio', p.bio || '');
+
+        // avatar preview
+        this._updateAvatarPreview(p.avatar_url || null, p.display_name || this.displayName || '');
+
+        modal.classList.add('show');
+      },
+
+      closeProfileEditModal() {
+        const modal = document.getElementById('profileEditModal');
+        if (modal) modal.classList.remove('show');
+      },
+
+      _updateAvatarPreview(url, name) {
+        const preview = document.getElementById('profileAvatarPreview');
+        const initial = document.getElementById('profileAvatarInitial');
+        if (!preview) return;
+        if (url) {
+          preview.style.background = 'transparent';
+          preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+        } else {
+          preview.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+          const letter = (name || '').trim().charAt(0).toUpperCase() || '👤';
+          preview.innerHTML = `<span style="font-size:2rem;color:white;">${letter}</span>`;
+        }
+      },
+
+      previewProfileAvatar(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) {
+          alert('הקובץ גדול מדי. אנא בחר תמונה עד 2MB.');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this._pendingAvatarDataUrl = e.target.result;
+          const preview = document.getElementById('profileAvatarPreview');
+          if (preview) {
+            preview.style.background = 'transparent';
+            preview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+          }
+        };
+        reader.readAsDataURL(file);
+      },
+
+      async saveProfile() {
+        if (!currentUser) {
+          alert('יש להתחבר כדי לשמור פרופיל');
+          return;
+        }
+
+        const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+
+        const displayName = getVal('profileDisplayName');
+        const age = getVal('profileAge');
+        const gender = getVal('profileGender');
+        const school = getVal('profileSchool');
+        const grade = getVal('profileGrade');
+        const city = getVal('profileCity');
+        const bio = getVal('profileBio');
+
+        // אם יש תמונה חדשה, נשמור כ-data URL (לא מועלית לסטורג' אלא לטבלה ישירות)
+        let avatarUrl = (this.profileData && this.profileData.avatar_url) || null;
+        if (this._pendingAvatarDataUrl) {
+          avatarUrl = this._pendingAvatarDataUrl;
+          this._pendingAvatarDataUrl = null;
+        }
+
+        try {
+          const { error } = await supabaseClient
+            .from('profiles')
+            .upsert({
+              id: currentUser.id,
+              display_name: displayName,
+              age: age ? parseInt(age) : null,
+              gender: gender || null,
+              school: school || null,
+              grade: grade || null,
+              city: city || null,
+              bio: bio || null,
+              avatar_url: avatarUrl,
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'id' });
+
+          if (error) throw error;
+
+          // עדכון מקומי
+          this.displayName = displayName;
+          this.profileData = { display_name: displayName, age, gender, school, grade, city, bio, avatar_url: avatarUrl };
+
+          // עדכון ברכה בדף הבית
+          const welcomeGreeting = document.getElementById('welcomeGreeting');
+          if (welcomeGreeting && displayName) {
+            welcomeGreeting.textContent = `שלום ${displayName}!`;
+          }
+
+          // עדכון כרטיס מנוי
+          this.updateSubscriptionPage();
+
+          this.closeProfileEditModal();
+
+          // Flash success
+          const saveBtn = document.querySelector('#profileEditModal .btn--primary');
+          if (saveBtn) {
+            const orig = saveBtn.innerHTML;
+            saveBtn.innerHTML = '✅ נשמר!';
+            saveBtn.style.background = '#22c55e';
+            setTimeout(() => { saveBtn.innerHTML = orig; saveBtn.style.background = ''; }, 1800);
+          }
+
+          console.log('✅ פרופיל נשמר בהצלחה');
+        } catch (e) {
+          console.error('שגיאה בשמירת פרופיל:', e);
+          alert('שגיאה בשמירת הפרופיל: ' + (e.message || e));
         }
       },
 
@@ -21425,19 +21668,4 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .cancel-modal-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.cancel-modal-content {
-  position: relative;
-  background: white;
-  border-radius: 16px;
-  padding: 30px;
-  max-width: 400px;
-  width: 90%;
-  te
+  positi
