@@ -6523,7 +6523,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
       <div class="welcome-section">
         <div class="welcome-content">
           <div class="welcome-text">
-            <h1 id="welcomeGreeting">שלום!</h1>
+            <div style="display:flex;align-items:center;gap:16px;margin-bottom:0;"><h1 id="welcomeGreeting" style="margin-bottom:0;">שלום!</h1><div id="welcomeAvatar" onclick="app.showPage('subscription')" title="עריכת פרופיל" style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.25);border:3px solid rgba(255,255,255,0.6);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:white;overflow:hidden;flex-shrink:0;box-shadow:0 4px 15px rgba(0,0,0,0.2);transition:transform 0.2s ease;cursor:pointer;"><span id="welcomeAvatarContent">👤</span></div></div>
 <div class="subtitle" id="welcomeSubtitle">מיקוד שמוביל להצלחה</div>
             <div class="institution" id="welcomeInstitution">הילקוד החכם שלך</div>
             <button onclick="logout()" style="margin-top: 15px; padding: 10px 20px; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; border-radius: 8px; font-size: 0.95rem; cursor: pointer; transition: transform 0.2s;">
@@ -8857,6 +8857,24 @@ this.showPage('homepage');
         }
       },
 
+      // עדכון אווטר בדף הבית
+      updateWelcomeAvatar() {
+        const avatarEl = document.getElementById('welcomeAvatar');
+        const contentEl = document.getElementById('welcomeAvatarContent');
+        if (!avatarEl || !contentEl) return;
+        const p = this.profileData || {};
+        if (p.avatar_url) {
+          avatarEl.style.background = 'transparent';
+          contentEl.outerHTML = `<img id="welcomeAvatarContent" src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+        } else {
+          avatarEl.style.background = 'rgba(255,255,255,0.25)';
+          const name = p.display_name || this.displayName || '';
+          const letter = name.trim().charAt(0).toUpperCase();
+          const el = document.getElementById('welcomeAvatarContent');
+          if (el) el.textContent = letter || '👤';
+        }
+      },
+
       // הצגת שם המשתמש בברכה
       displayUserEmail() {
         const greetingElement = document.getElementById('welcomeGreeting');
@@ -8866,6 +8884,7 @@ this.showPage('homepage');
           // קודם כל בודק אם יש displayName שנשמר ב-DB
           if (this.displayName && this.displayName.trim() !== '') {
             greetingElement.textContent = `${greeting} ${this.displayName}!`;
+            this.updateWelcomeAvatar();
             return;
           }
           
@@ -8884,6 +8903,7 @@ this.showPage('homepage');
             const usernameFromEmail = currentUser.email.split('@')[0];
             greetingElement.textContent = `${greeting} ${usernameFromEmail}!`;
           }
+          this.updateWelcomeAvatar();
         }
       },
 
@@ -9213,6 +9233,7 @@ this.showPage('homepage');
 
           // עדכון כרטיס מנוי
           this.updateSubscriptionPage();
+          this.updateWelcomeAvatar();
 
           this.closeProfileEditModal();
 
