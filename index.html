@@ -6452,13 +6452,6 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 </head>
 <body>
   <!-- Navigation Bar -->
-  <!-- באנר מצב אורח -->
-  <div id="guestBanner" style="display:none; background: linear-gradient(135deg, #f39c12, #e67e22); color: white; text-align: center; padding: 8px 16px; font-size: 13px; font-weight: 600; position: sticky; top: 0; z-index: 9999;">
-    👤 מצב אורח — הנתונים נשמרים בדפדפן בלבד ולא בענן
-    &nbsp;|&nbsp;
-    <a href="login.html" style="color:white; text-decoration: underline;">להרשמה / כניסה ←</a>
-  </div>
-
   <nav class="navbar">
     <div class="navbar-content">
       <div class="navbar-brand" onclick="app.showPage('homepage')">
@@ -8508,18 +8501,6 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     let supabaseClient = null;
     let currentUser = null;
     
-    // זיהוי מצב אורח
-    const isGuestMode = new URLSearchParams(window.location.search).get('guest') === 'true';
-    if (isGuestMode) {
-      // יצירת משתמש אורח מדומה
-      currentUser = {
-        id: 'guest_' + Date.now(),
-        email: 'guest@tikit.local',
-        user_metadata: { username: 'אורח' }
-      };
-      console.log('👤 מצב אורח - נתונים נשמרים ב-localStorage בלבד');
-    }
-    
     // אתחול Supabase
     function initSupabase() {
       if (typeof window.supabase !== 'undefined') {
@@ -8532,7 +8513,6 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     
     // בדיקת משתמש מחובר
     async function checkAuth() {
-      if (isGuestMode) return true; // אורח - תמיד מאושר
       if (!supabaseClient) return false;
       
       try {
@@ -8553,12 +8533,6 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     
     // התנתקות
     async function logout() {
-      if (isGuestMode) {
-        if (confirm('לצאת ממצב אורח? הנתונים שנשמרו בדפדפן יישארו.')) {
-          window.location.href = 'login.html';
-        }
-        return;
-      }
       if (confirm('האם אתה בטוח שברצונך להתנתק?')) {
         try {
           // התנתק מ-Supabase קודם
@@ -8595,7 +8569,6 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     
     // שמירת נתונים ל-Supabase
     async function saveToSupabase(table, data) {
-      if (isGuestMode) return { success: false }; // אורח - שמירה ב-localStorage בלבד
       if (!supabaseClient || !currentUser) {
         console.log('⚠️ Supabase לא זמין, שומר רק ב-localStorage');
         return { success: false };
@@ -8621,7 +8594,6 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     
     // טעינת נתונים מ-Supabase
     async function loadFromSupabase(table) {
-      if (isGuestMode) return null; // אורח - טען מ-localStorage בלבד
       if (!supabaseClient || !currentUser) {
         console.log('⚠️ Supabase לא זמין, טוען מ-localStorage');
         return null;
@@ -8794,29 +8766,22 @@ autoSaveInterval: null,
         
         console.log('✅ משתמש מחובר:', currentUser.email);
         
-        // הצג באנר אורח אם רלוונטי
-        if (isGuestMode) {
-          const banner = document.getElementById('guestBanner');
-          if (banner) banner.style.display = 'block';
+        // בדיקה אם זה משתמש חדש/אחר
+        const lastUserId = localStorage.getItem('lastUserId');
+        if (!lastUserId || lastUserId !== currentUser.id) {
+          console.log('🔄 מנקה נתונים מקומיים (משתמש אחר או כניסה ראשונה)');
+          
+          // נקה את כל הנתונים - בכוח!
+          const keysToRemove = ['notebookData', 'taskData', 'calendarData', 'userData', 'appSettings'];
+          keysToRemove.forEach(key => {
+            localStorage.removeItem(key);
+            console.log(`  ✅ נמחק: ${key}`);
+          });
         }
         
-        // בדיקה אם זה משתמש חדש/אחר (לא רלוונטי לאורח)
-        if (!isGuestMode) {
-          const lastUserId = localStorage.getItem('lastUserId');
-          if (!lastUserId || lastUserId !== currentUser.id) {
-            console.log('🔄 מנקה נתונים מקומיים (משתמש אחר או כניסה ראשונה)');
-            
-            // נקה את כל הנתונים - בכוח!
-            const keysToRemove = ['notebookData', 'taskData', 'calendarData', 'userData', 'appSettings'];
-            keysToRemove.forEach(key => {
-              localStorage.removeItem(key);
-              console.log(`  ✅ נמחק: ${key}`);
-            });
-          }
-          // שמור את ה-ID של המשתמש הנוכחי
-          localStorage.setItem('lastUserId', currentUser.id);
-          localStorage.setItem('isLoggedIn', 'true');
-        }
+        // שמור את ה-ID של המשתמש הנוכחי
+        localStorage.setItem('lastUserId', currentUser.id);
+        localStorage.setItem('isLoggedIn', 'true');
         
         // הצג את האימייל של המשתמש (זמני עד שטוענים את השם מה-DB)
         this.displayUserEmail();
@@ -8910,13 +8875,6 @@ this.showPage('homepage');
         if (greetingElement && currentUser) {
           const greeting = this.getGreetingByTime();
           
-          // מצב אורח
-          if (isGuestMode) {
-            greetingElement.textContent = `${greeting} אורח!`;
-            this.updateWelcomeAvatar();
-            return;
-          }
-          
           // קודם כל בודק אם יש displayName שנשמר ב-DB
           if (this.displayName && this.displayName.trim() !== '') {
             greetingElement.textContent = `${greeting} ${this.displayName}!`;
@@ -8992,11 +8950,6 @@ this.showPage('homepage');
 
       // טעינת סטטוס פרימיום של המשתמש
       async loadUserPlan(userId) {
-        if (isGuestMode) {
-          this.isPro = false;
-          console.log('👤 אורח - גרסה חינמית');
-          return;
-        }
         try {
           // קודם בודק בטבלת subscriptions החדשה
           // כולל מנויים מבוטלים שעדיין לא פגו
