@@ -6492,7 +6492,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           <i data-lucide="link" class="lucide-icon"></i>
           <span>קישורים</span>
         </li>
-        <li class="navbar-item" onclick="app.showPage('achievements'); achEngine.render();" data-page="achievements">
+        <li class="navbar-item" onclick="app.showPage('achievements'); achEngine.renderWhenReady();" data-page="achievements">
           <i data-lucide="trophy" class="lucide-icon"></i>
           <span>הישגים</span>
         </li>
@@ -6610,7 +6610,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           <span class="tool-status" id="linksStatusHome">0 קישורים</span>
         </div>
 
-<div class="tool-card" onclick="app.showPage('achievements'); achEngine.render();">
+<div class="tool-card" onclick="app.showPage('achievements'); achEngine.renderWhenReady();">
           <span class="tool-icon">🏆</span>
           <div class="tool-title">ההישגים שלי</div>
           <div class="tool-description">סטטיסטיקות, עיטורים ומעקב פעילות</div>
@@ -7937,7 +7937,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     <div class="ach-stat-card">
       <div class="ach-stat-icon">✅</div>
       <div class="ach-stat-num" id="ach-tasks-done">0</div>
-      <div class="ach-stat-label">משימות הושלמו</div>
+      <div class="ach-stat-label" id="ach-tasks-label">משימות הושלמו</div>
     </div>
     <div class="ach-stat-card">
       <div class="ach-stat-icon">📓</div>
@@ -9007,6 +9007,7 @@ this.showPage('homepage');
         setInterval(() => this.checkAndSendNotifications(), 60000);
         
         console.log('✅ אפליקציה הופעלה בהצלחה!');
+        document.dispatchEvent(new Event('tikit-app-ready'));
       },
       
       // קבלת ברכה לפי שעה
@@ -20770,19 +20771,26 @@ const achEngine = (function() {
     return (tasksDone * 10) + (notebooks * 20) + (streak * 15) + (sessions * 5);
   }
 
-  // Define badges
-  function getBadges(tasksDone, notebooks, streak, sessions) {
+  // Define badges - gradual progression
+  function getBadges(tasksDone, notebooks, streak, sessions, points) {
+    const tasksTotal = (typeof app !== 'undefined' && app.tasks) ? app.tasks.length : 0;
+    const pct = tasksTotal > 0 ? Math.round((tasksDone / tasksTotal) * 100) : 0;
     return [
-      { icon: '🎯', name: 'משימה ראשונה', unlocked: tasksDone >= 1 },
-      { icon: '⚡', name: '10 משימות', unlocked: tasksDone >= 10 },
-      { icon: '💪', name: '50 משימות', unlocked: tasksDone >= 50 },
-      { icon: '📓', name: 'מחברת ראשונה', unlocked: notebooks >= 1 },
-      { icon: '📚', name: '5 מחברות', unlocked: notebooks >= 5 },
-      { icon: '🔥', name: 'רצף 3 ימים', unlocked: streak >= 3 },
-      { icon: '🌟', name: 'רצף שבוע', unlocked: streak >= 7 },
-      { icon: '👑', name: 'רצף חודש', unlocked: streak >= 30 },
-      { icon: '🚀', name: 'נאמן השבוע', unlocked: sessions >= 5 },
-      { icon: '🏆', name: 'מצטיין', unlocked: tasksDone >= 20 && streak >= 7 },
+      { icon: '🎯', name: 'צעד ראשון',   desc: 'השלם משימה אחת',       unlocked: tasksDone >= 1 },
+      { icon: '⚡', name: 'מתחיל',        desc: '5 משימות הושלמו',       unlocked: tasksDone >= 5 },
+      { icon: '💪', name: 'עקבי',         desc: '15 משימות',             unlocked: tasksDone >= 15 },
+      { icon: '🦁', name: 'אריה',         desc: '30 משימות',             unlocked: tasksDone >= 30 },
+      { icon: '📓', name: 'סטודנט',       desc: 'פתח מחברת ראשונה',     unlocked: notebooks >= 1 },
+      { icon: '📚', name: 'ארגנייזר',     desc: '3 מחברות פעילות',      unlocked: notebooks >= 3 },
+      { icon: '🎒', name: 'מאורגן',       desc: '5 מחברות פעילות',      unlocked: notebooks >= 5 },
+      { icon: '🔥', name: 'רצף',          desc: '3 ימים ברצף',           unlocked: streak >= 3 },
+      { icon: '🌟', name: 'שבוע שלם',     desc: '7 ימים ברצף',           unlocked: streak >= 7 },
+      { icon: '👑', name: 'אלוף',         desc: '14 ימים ברצף',          unlocked: streak >= 14 },
+      { icon: '🏅', name: 'מקצוען',       desc: 'חודש שלם ברצף',         unlocked: streak >= 30 },
+      { icon: '🚀', name: 'נוכח',         desc: '3 ימים פעיל השבוע',     unlocked: sessions >= 3 },
+      { icon: '💎', name: 'מסור',         desc: '5 ימים פעיל השבוע',     unlocked: sessions >= 5 },
+      { icon: '🏆', name: 'מצטיין',       desc: '200 נקודות זכות',       unlocked: points >= 200 },
+      { icon: '🌈', name: 'מושלם',        desc: '90% השלמת משימות',      unlocked: pct >= 90 && tasksTotal >= 5 },
     ];
   }
 
@@ -20790,14 +20798,17 @@ const achEngine = (function() {
     // Collect data from app
     const tasks = (typeof app !== 'undefined' && app.tasks) ? app.tasks : [];
     const tasksDone = tasks.filter(t => t.completed).length;
-    const notebooks = (typeof app !== 'undefined' && app.subjects) ? app.subjects.length : 0;
-    const events = (typeof app !== 'undefined' && app.events) ? app.events.length : 0;
+    const notebooks = (typeof app !== 'undefined' && app.subjects) ? Object.keys(app.subjects).length : 0;
+    const events = (typeof app !== 'undefined' && app.events && Array.isArray(app.events)) ? app.events.length : 0;
     const sessionsThisWeek = recordSession();
     const streak = calcStreak();
     const points = calcPoints(tasksDone, notebooks, streak, sessionsThisWeek);
 
     // Stats
     document.getElementById('ach-tasks-done').textContent = tasksDone;
+    const tasksTotal = tasks.length;
+    const labelEl = document.getElementById('ach-tasks-label');
+    if (labelEl) labelEl.textContent = tasksTotal > 0 ? `הושלמו (מתוך ${tasksTotal})` : 'משימות הושלמו';
     document.getElementById('ach-notebooks-count').textContent = notebooks;
     document.getElementById('ach-streak').textContent = streak;
     document.getElementById('ach-sessions').textContent = sessionsThisWeek;
@@ -20844,13 +20855,16 @@ const achEngine = (function() {
     // Badges
     const badgesEl = document.getElementById('ach-badges');
     if (badgesEl) {
-      const badges = getBadges(tasksDone, notebooks, streak, sessionsThisWeek);
-      badgesEl.innerHTML = badges.map(b => `
-        <div class="ach-badge ${b.unlocked ? '' : 'locked'}" title="${b.name}">
-          <div class="ach-badge-icon">${b.icon}</div>
-          <div class="ach-badge-name">${b.name}</div>
-        </div>
-      `).join('');
+      const badges = getBadges(tasksDone, notebooks, streak, sessionsThisWeek, points);
+      const unlocked = badges.filter(b => b.unlocked).length;
+      badgesEl.innerHTML = `<div style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:10px;width:100%;">🏅 ${unlocked} מתוך ${badges.length} עיטורים פתוחים</div>` +
+        badges.map(b => `
+          <div class="ach-badge ${b.unlocked ? '' : 'locked'}" title="${b.desc}">
+            <div class="ach-badge-icon">${b.icon}</div>
+            <div class="ach-badge-name">${b.name}</div>
+            ${!b.unlocked ? `<div style="font-size:0.6rem;color:#a0aec0;text-align:center;margin-top:2px;">${b.desc}</div>` : ''}
+          </div>
+        `).join('');
     }
 
     // Activity log
@@ -20894,7 +20908,23 @@ const achEngine = (function() {
     recordSession();
   }
 
-  return { render, logActivity, recordSession };
+  function renderWhenReady() {
+    const ready = typeof app !== 'undefined' && app.tasks !== undefined && app.subjects !== undefined;
+    if (ready) {
+      render();
+    } else {
+      document.addEventListener('tikit-app-ready', function once() {
+        document.removeEventListener('tikit-app-ready', once);
+        render();
+      });
+    }
+  }
+
+  document.addEventListener('tikit-app-ready', function() {
+    recordSession();
+  });
+
+  return { render, renderWhenReady, logActivity, recordSession };
 })();
 
 // Auto-hook: patch app methods to fire events
