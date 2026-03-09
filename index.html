@@ -6492,7 +6492,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           <i data-lucide="link" class="lucide-icon"></i>
           <span>קישורים</span>
         </li>
-        <li class="navbar-item" onclick="app.showPage('achievements'); achEngine.render();" data-page="achievements">
+        <li class="navbar-item" onclick="app.showPage('achievements'); setTimeout(() => achEngine.render(), 300);" data-page="achievements">
           <i data-lucide="trophy" class="lucide-icon"></i>
           <span>הישגים</span>
         </li>
@@ -6610,7 +6610,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           <span class="tool-status" id="linksStatusHome">0 קישורים</span>
         </div>
 
-<div class="tool-card" onclick="app.showPage('achievements'); achEngine.render();">
+<div class="tool-card" onclick="app.showPage('achievements'); setTimeout(() => achEngine.render(), 300);">
           <span class="tool-icon">🏆</span>
           <div class="tool-title">ההישגים שלי</div>
           <div class="tool-description">סטטיסטיקות, עיטורים ומעקב פעילות</div>
@@ -20798,7 +20798,15 @@ const achEngine = (function() {
     ];
   }
 
-  function render() {
+  function render(attempt) {
+    attempt = attempt || 0;
+    // Wait for app data to be loaded - retry up to 10 times
+    const tasksReady = typeof app !== 'undefined' && app.tasks && app.tasks.length >= 0;
+    const notebooksReady = typeof app !== 'undefined' && app.subjects && Object.keys(app.subjects).length > 0;
+    if (!tasksReady && attempt < 10) {
+      setTimeout(() => render(attempt + 1), 400);
+      return;
+    }
     // Collect data from app
     const tasks = (typeof app !== 'undefined' && app.tasks) ? app.tasks : [];
     const tasksDone = tasks.filter(t => t.completed).length;
