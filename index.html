@@ -6492,7 +6492,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           <i data-lucide="link" class="lucide-icon"></i>
           <span>קישורים</span>
         </li>
-        <li class="navbar-item" onclick="app.showPage('achievements'); setTimeout(() => achEngine.render(), 300);" data-page="achievements">
+        <li class="navbar-item" onclick="app.showPage('achievements'); achEngine.renderWhenReady();" data-page="achievements">
           <i data-lucide="trophy" class="lucide-icon"></i>
           <span>הישגים</span>
         </li>
@@ -6610,7 +6610,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           <span class="tool-status" id="linksStatusHome">0 קישורים</span>
         </div>
 
-<div class="tool-card" onclick="app.showPage('achievements'); setTimeout(() => achEngine.render(), 300);">
+<div class="tool-card" onclick="app.showPage('achievements'); achEngine.renderWhenReady();">
           <span class="tool-icon">🏆</span>
           <div class="tool-title">ההישגים שלי</div>
           <div class="tool-description">סטטיסטיקות, עיטורים ומעקב פעילות</div>
@@ -9007,6 +9007,7 @@ this.showPage('homepage');
         setInterval(() => this.checkAndSendNotifications(), 60000);
         
         console.log('✅ אפליקציה הופעלה בהצלחה!');
+document.dispatchEvent(new Event('tikit-app-ready'));
       },
       
       // קבלת ברכה לפי שעה
@@ -20798,15 +20799,7 @@ const achEngine = (function() {
     ];
   }
 
-  function render(attempt) {
-    attempt = attempt || 0;
-    // Wait for app data to be loaded - retry up to 10 times
-    const tasksReady = typeof app !== 'undefined' && app.tasks && app.tasks.length >= 0;
-    const notebooksReady = typeof app !== 'undefined' && app.subjects && Object.keys(app.subjects).length > 0;
-    if (!tasksReady && attempt < 10) {
-      setTimeout(() => render(attempt + 1), 400);
-      return;
-    }
+  function render() {
     // Collect data from app
     const tasks = (typeof app !== 'undefined' && app.tasks) ? app.tasks : [];
     const tasksDone = tasks.filter(t => t.completed).length;
@@ -20921,7 +20914,23 @@ const achEngine = (function() {
     recordSession();
   }
 
-  return { render, logActivity, recordSession };
+  function renderWhenReady() {
+    if (typeof app !== 'undefined' && app.tasks !== undefined && app.subjects !== undefined) {
+      render();
+    } else {
+      document.addEventListener('tikit-app-ready', function handler() {
+        document.removeEventListener('tikit-app-ready', handler);
+        render();
+      });
+    }
+  }
+
+  // Listen for app ready on page load too
+  document.addEventListener('tikit-app-ready', function() {
+    achEngine.recordSession();
+  });
+
+  return { render, renderWhenReady, logActivity, recordSession };
 })();
 
 // Auto-hook: patch app methods to fire events
