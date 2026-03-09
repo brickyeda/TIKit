@@ -20243,6 +20243,631 @@ document.addEventListener('DOMContentLoaded', function() {
 
   </script>
 
+<!-- ===== ACCESSIBILITY WIDGET ===== -->
+<style>
+/* ---- Accessibility Button ---- */
+#a11y-toggle-btn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 99999;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  color: #667eea;
+}
+#a11y-toggle-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 14px rgba(102,126,234,0.2);
+  border-color: #667eea;
+}
+#a11y-toggle-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 24px rgba(102,126,234,0.6);
+}
+
+/* ---- Panel ---- */
+#a11y-panel {
+  position: fixed;
+  top: 66px;
+  right: 16px;
+  z-index: 99998;
+  width: 270px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  padding: 0;
+  overflow: hidden;
+  direction: rtl;
+  font-family: 'Segoe UI', sans-serif;
+  transform: translateY(-8px) scale(0.97);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.2s ease, opacity 0.15s ease;
+}
+#a11y-panel.open {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: all;
+}
+.a11y-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.a11y-header h3 {
+  color: #2c3e50;
+  font-size: 0.88rem;
+  margin: 0;
+  font-weight: 600;
+}
+.a11y-header-close {
+  background: #e2e8f0;
+  border: none;
+  color: #7f8c8d;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.75rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.a11y-header-close:hover { background: #cbd5e0; }
+
+.a11y-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+.a11y-section-label {
+  color: #a0aec0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 0 4px;
+  border-bottom: 1px solid #f0f2f5;
+}
+.a11y-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.a11y-label {
+  color: #4a5568;
+  font-size: 0.82rem;
+  flex: 1;
+}
+.a11y-label span.icon { margin-left: 6px; }
+
+/* Stepper */
+.a11y-stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f0f2f5;
+  border-radius: 8px;
+  padding: 2px 5px;
+}
+.a11y-stepper button {
+  background: none;
+  border: none;
+  color: #667eea;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+  font-weight: bold;
+}
+.a11y-stepper button:hover { background: rgba(102,126,234,0.2); }
+.a11y-stepper .val {
+  color: #2c3e50;
+  font-size: 0.78rem;
+  min-width: 28px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Toggle switch */
+.a11y-switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.a11y-switch input { display: none; }
+.a11y-switch-slider {
+  position: absolute;
+  inset: 0;
+  background: #cbd5e0;
+  border-radius: 11px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.a11y-switch-slider:before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  top: 3px;
+  right: 3px;
+  transition: transform 0.2s;
+}
+.a11y-switch input:checked + .a11y-switch-slider { background: #667eea; }
+.a11y-switch input:checked + .a11y-switch-slider:before { transform: translateX(-18px); }
+
+/* TTS bar */
+#a11y-tts-bar {
+  background: #f0f2f5;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+}
+#a11y-tts-bar.visible { display: flex; }
+#a11y-tts-status {
+  color: #718096;
+  font-size: 0.72rem;
+  text-align: center;
+}
+.a11y-tts-controls {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+.a11y-tts-btn {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #4a5568;
+  border-radius: 8px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  transition: background 0.15s;
+}
+.a11y-tts-btn:hover { background: #f0f2f5; }
+.a11y-tts-btn.active { background: #667eea; color: white; border-color: #667eea; }
+
+/* Reset button */
+.a11y-reset {
+  background: #fff5f5;
+  border: 1px solid #fed7d7;
+  color: #e53e3e;
+  border-radius: 8px;
+  padding: 7px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  text-align: center;
+  width: 100%;
+  transition: background 0.15s;
+  margin-top: 2px;
+}
+.a11y-reset:hover { background: #fed7d7; }
+
+/* ---- DARK MODE ---- */
+body.a11y-dark {
+  --background-main: #0f0f1a !important;
+  --background-card: #1a1a2e !important;
+  --text-primary: #e8e8f0 !important;
+  --text-secondary: #8892b0 !important;
+  --border-color: rgba(255,255,255,0.1) !important;
+}
+body.a11y-dark .navbar {
+  background: linear-gradient(135deg, #0d0d1f, #1a1040) !important;
+}
+body.a11y-dark .page,
+body.a11y-dark .welcome-section,
+body.a11y-dark .main-content {
+  background: #0f0f1a !important;
+}
+body.a11y-dark .stat-item,
+body.a11y-dark .card,
+body.a11y-dark .notebook-card,
+body.a11y-dark .task-item,
+body.a11y-dark .subject-card {
+  background: #1a1a2e !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #ccd6f6 !important;
+}
+body.a11y-dark .task-item-title,
+body.a11y-dark h1, body.a11y-dark h2, body.a11y-dark h3,
+body.a11y-dark p, body.a11y-dark span, body.a11y-dark label,
+body.a11y-dark .stat-label, body.a11y-dark .navbar-item span {
+  color: #ccd6f6 !important;
+}
+body.a11y-dark input, body.a11y-dark textarea, body.a11y-dark select {
+  background: #0d0d1f !important;
+  color: #ccd6f6 !important;
+  border-color: rgba(255,255,255,0.12) !important;
+}
+body.a11y-dark .sidebar, body.a11y-dark .modal-content {
+  background: #1a1a2e !important;
+  color: #ccd6f6 !important;
+}
+
+/* ---- HIGH CONTRAST ---- */
+body.a11y-contrast {
+  filter: contrast(1.5);
+}
+body.a11y-contrast * {
+  outline: none !important;
+}
+
+/* ---- BIG CURSOR ---- */
+body.a11y-big-cursor, body.a11y-big-cursor * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M5 3 L5 26 L11 20 L16 30 L19 29 L14 18 L22 18 Z' fill='black' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E") 0 0, auto !important;
+}
+
+/* ---- STOP ANIMATIONS ---- */
+body.a11y-no-anim *, body.a11y-no-anim *::before, body.a11y-no-anim *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* ---- HIGHLIGHT LINKS ---- */
+body.a11y-links a {
+  outline: 2px solid #f39c12 !important;
+  background: rgba(243,156,18,0.1) !important;
+  border-radius: 3px !important;
+}
+
+/* ---- LINE SPACING ---- */
+body.a11y-spacing-1 * { line-height: 1.6 !important; }
+body.a11y-spacing-2 * { line-height: 2.0 !important; }
+body.a11y-spacing-3 * { line-height: 2.5 !important; }
+
+/* Reading ruler */
+#a11y-ruler {
+  position: fixed;
+  left: 0; right: 0;
+  height: 36px;
+  background: rgba(102,126,234,0.18);
+  border-top: 2px solid rgba(102,126,234,0.5);
+  border-bottom: 2px solid rgba(102,126,234,0.5);
+  pointer-events: none;
+  z-index: 99990;
+  display: none;
+  top: 0;
+}
+body.a11y-ruler-on #a11y-ruler { display: block; }
+</style>
+
+<!-- Accessibility Toggle Button -->
+<button id="a11y-toggle-btn" title="נגישות" aria-label="פתח תפריט נגישות">
+  ♿
+</button>
+
+<!-- Reading Ruler -->
+<div id="a11y-ruler"></div>
+
+<!-- Accessibility Panel -->
+<div id="a11y-panel" role="dialog" aria-label="תפריט נגישות">
+  <div class="a11y-header">
+    <h3>♿ נגישות</h3>
+    <button class="a11y-header-close" onclick="a11y.close()" aria-label="סגור">✕</button>
+  </div>
+  <div class="a11y-body">
+
+    <!-- TEXT SIZE -->
+    <div class="a11y-section-label">📝 טקסט</div>
+    <div class="a11y-row">
+      <div class="a11y-label"><span class="icon">🔤</span> גודל טקסט</div>
+      <div class="a11y-stepper">
+        <button onclick="a11y.fontSize(-1)">−</button>
+        <span class="val" id="a11y-font-val">100%</span>
+        <button onclick="a11y.fontSize(+1)">+</button>
+      </div>
+    </div>
+    <div class="a11y-row">
+      <div class="a11y-label"><span class="icon">📏</span> מרווח שורות</div>
+      <div class="a11y-stepper">
+        <button onclick="a11y.spacing(-1)">−</button>
+        <span class="val" id="a11y-spacing-val">רגיל</span>
+        <button onclick="a11y.spacing(+1)">+</button>
+      </div>
+    </div>
+    <div class="a11y-row">
+      <div class="a11y-label"><span class="icon">🔠</span> סמן גדול</div>
+      <label class="a11y-switch">
+        <input type="checkbox" id="a11y-cursor-toggle" onchange="a11y.toggle('big-cursor', this.checked)">
+        <span class="a11y-switch-slider"></span>
+      </label>
+    </div>
+
+    <!-- DISPLAY -->
+    <div class="a11y-section-label">🎨 תצוגה</div>
+    <div class="a11y-row">
+      <div class="a11y-label"><span class="icon">🌙</span> מצב לילה</div>
+      <label class="a11y-switch">
+        <input type="checkbox" id="a11y-dark-toggle" onchange="a11y.toggle('dark', this.checked)">
+        <span class="a11y-switch-slider"></span>
+      </label>
+    </div>
+    <div class="a11y-row">
+      <div class="a11y-label"><span class="icon">⚡</span> ניגודיות גבוהה</div>
+      <label class="a11y-switch">
+        <input type="checkbox" id="a11y-contrast-toggle" onchange="a11y.toggle('contrast', this.checked)">
+        <span class="a11y-switch-slider"></span>
+      </label>
+    </div>
+    <div class="a11y-row">
+      <div class="a11y-label"><span class="icon">🔆</span> בהירות</div>
+      <div class="a11y-stepper">
+        <button onclick="a11y.brightness(-10)">−</button>
+        <span class="val" id="a11y-bright-val">100%</span>
+        <button onclick="a11y.brightness(+10)">+</button>
+      </div>
+    </div>
+    <div class="a11y-row">
+      <div class="a11y-label"><span class="icon">🚫</span> עצור אנימציות</div>
+      <label class="a11y-switch">
+        <input type="checkbox" id="a11y-anim-toggle" onchange="a11y.toggle('no-anim', this.checked)">
+        <span class="a11y-switch-slider"></span>
+      </label>
+    </div>
+
+    <!-- NAVIGATION -->
+    <div class="a11y-section-label">🔗 ניווט</div>
+    <div class="a11y-row">
+      <div class="a11y-label"><span class="icon">🔗</span> הדגש קישורים</div>
+      <label class="a11y-switch">
+        <input type="checkbox" id="a11y-links-toggle" onchange="a11y.toggle('links', this.checked)">
+        <span class="a11y-switch-slider"></span>
+      </label>
+    </div>
+    <div class="a11y-row">
+      <div class="a11y-label"><span class="icon">📐</span> סרגל קריאה</div>
+      <label class="a11y-switch">
+        <input type="checkbox" id="a11y-ruler-toggle" onchange="a11y.toggleRuler(this.checked)">
+        <span class="a11y-switch-slider"></span>
+      </label>
+    </div>
+
+    <!-- TTS -->
+    <div class="a11y-section-label">🔊 הקראה קולית</div>
+    <div class="a11y-row">
+      <div class="a11y-label"><span class="icon">🗣️</span> הקראה פעילה</div>
+      <label class="a11y-switch">
+        <input type="checkbox" id="a11y-tts-toggle" onchange="a11y.toggleTTS(this.checked)">
+        <span class="a11y-switch-slider"></span>
+      </label>
+    </div>
+    <div id="a11y-tts-bar">
+      <div id="a11y-tts-status">סמן עכבר על טקסט כדי להקריא</div>
+      <div class="a11y-tts-controls">
+        <button class="a11y-tts-btn" onclick="a11y.ttsStop()">⏹ עצור</button>
+        <button class="a11y-tts-btn" id="a11y-tts-read-selection" onclick="a11y.ttsReadSelection()">▶ קרא בחירה</button>
+      </div>
+      <div class="a11y-row" style="margin-top:4px;">
+        <div class="a11y-label" style="font-size:0.75rem;">קצב</div>
+        <div class="a11y-stepper">
+          <button onclick="a11y.ttsRate(-0.25)">−</button>
+          <span class="val" id="a11y-tts-rate-val">1×</span>
+          <button onclick="a11y.ttsRate(+0.25)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESET -->
+    <button class="a11y-reset" onclick="a11y.reset()">↺ איפוס הגדרות נגישות</button>
+  </div>
+</div>
+
+<script>
+// ===== ACCESSIBILITY WIDGET =====
+const a11y = (function() {
+  const STORAGE_KEY = 'tikit_a11y';
+  let state = {
+    fontSize: 100,
+    brightness: 100,
+    spacing: 0,
+    dark: false,
+    contrast: false,
+    'big-cursor': false,
+    'no-anim': false,
+    links: false,
+    ruler: false,
+    tts: false,
+    ttsRate: 1,
+    open: false
+  };
+
+  const spacingLabels = ['רגיל', 'רחב', 'רחב מאוד', 'מקסימום'];
+
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  }
+
+  function load() {
+    try {
+      const s = localStorage.getItem(STORAGE_KEY);
+      if (s) state = Object.assign(state, JSON.parse(s));
+    } catch(e) {}
+  }
+
+  function applyAll() {
+    const body = document.body;
+    // Font size
+    document.documentElement.style.fontSize = state.fontSize + '%';
+    document.getElementById('a11y-font-val').textContent = state.fontSize + '%';
+    // Brightness
+    body.style.filter = state.contrast
+      ? `contrast(1.5) brightness(${state.brightness}%)`
+      : `brightness(${state.brightness}%)`;
+    document.getElementById('a11y-bright-val').textContent = state.brightness + '%';
+    // Spacing
+    ['a11y-spacing-1','a11y-spacing-2','a11y-spacing-3'].forEach(c => body.classList.remove(c));
+    if (state.spacing > 0) body.classList.add('a11y-spacing-' + state.spacing);
+    document.getElementById('a11y-spacing-val').textContent = spacingLabels[state.spacing] || 'רגיל';
+    // Classes
+    ['dark','contrast','big-cursor','no-anim','links'].forEach(k => {
+      body.classList.toggle('a11y-' + k, !!state[k]);
+    });
+    // Ruler
+    body.classList.toggle('a11y-ruler-on', !!state.ruler);
+    // TTS ui
+    document.getElementById('a11y-tts-bar').classList.toggle('visible', !!state.tts);
+    // TTS rate
+    document.getElementById('a11y-tts-rate-val').textContent = state.ttsRate + '×';
+    // Sync checkboxes
+    ['dark','contrast','big-cursor','no-anim','links'].forEach(k => {
+      const el = document.getElementById('a11y-' + k.replace('big-cursor','cursor') + '-toggle')
+                 || document.getElementById('a11y-' + k + '-toggle');
+      if (el) el.checked = !!state[k];
+    });
+    document.getElementById('a11y-cursor-toggle').checked = !!state['big-cursor'];
+    document.getElementById('a11y-ruler-toggle').checked = !!state.ruler;
+    document.getElementById('a11y-tts-toggle').checked = !!state.tts;
+  }
+
+  function open() {
+    state.open = true;
+    document.getElementById('a11y-panel').classList.add('open');
+  }
+  function close() {
+    state.open = false;
+    document.getElementById('a11y-panel').classList.remove('open');
+  }
+  function togglePanel() {
+    state.open ? close() : open();
+  }
+
+  function fontSize(delta) {
+    state.fontSize = Math.min(200, Math.max(60, state.fontSize + delta * 10));
+    applyAll(); save();
+  }
+  function brightness(delta) {
+    state.brightness = Math.min(150, Math.max(30, state.brightness + delta));
+    applyAll(); save();
+  }
+  function spacing(delta) {
+    state.spacing = Math.min(3, Math.max(0, state.spacing + delta));
+    applyAll(); save();
+  }
+  function toggle(key, val) {
+    state[key] = val;
+    applyAll(); save();
+  }
+  function toggleRuler(val) {
+    state.ruler = val;
+    applyAll(); save();
+  }
+
+  // TTS
+  let ttsActive = false;
+  let ttsHoverTimer = null;
+  function toggleTTS(val) {
+    state.tts = val;
+    ttsActive = val;
+    applyAll(); save();
+    if (!val) ttsStop();
+  }
+  function ttsSpeak(text) {
+    if (!ttsActive || !text || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text.trim());
+    utt.lang = 'he-IL';
+    utt.rate = state.ttsRate;
+    document.getElementById('a11y-tts-status').textContent = '🔊 מקריא...';
+    utt.onend = () => { document.getElementById('a11y-tts-status').textContent = 'סמן עכבר על טקסט כדי להקריא'; };
+    window.speechSynthesis.speak(utt);
+  }
+  function ttsStop() {
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    const el = document.getElementById('a11y-tts-status');
+    if (el) el.textContent = 'סמן עכבר על טקסט כדי להקריא';
+  }
+  function ttsReadSelection() {
+    const sel = window.getSelection();
+    if (sel && sel.toString().trim()) {
+      ttsSpeak(sel.toString());
+    } else {
+      document.getElementById('a11y-tts-status').textContent = 'אין טקסט מסומן';
+    }
+  }
+  function ttsRate(delta) {
+    state.ttsRate = Math.round(Math.min(3, Math.max(0.25, state.ttsRate + delta)) * 4) / 4;
+    document.getElementById('a11y-tts-rate-val').textContent = state.ttsRate + '×';
+    save();
+  }
+
+  function reset() {
+    state = { fontSize:100, brightness:100, spacing:0, dark:false, contrast:false,
+      'big-cursor':false, 'no-anim':false, links:false, ruler:false, tts:false, ttsRate:1, open:true };
+    ttsStop(); ttsActive = false;
+    document.documentElement.style.fontSize = '';
+    applyAll(); save();
+  }
+
+  // Reading ruler mouse tracking
+  document.addEventListener('mousemove', function(e) {
+    if (state.ruler) {
+      const ruler = document.getElementById('a11y-ruler');
+      if (ruler) ruler.style.top = (e.clientY - 18) + 'px';
+    }
+    // TTS hover
+    if (ttsActive) {
+      clearTimeout(ttsHoverTimer);
+      ttsHoverTimer = setTimeout(() => {
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        if (el && el !== document.getElementById('a11y-panel') && !document.getElementById('a11y-panel').contains(el)) {
+          const text = el.innerText || el.textContent;
+          if (text && text.trim().length > 3 && text.trim().length < 500) {
+            ttsSpeak(text.trim());
+          }
+        }
+      }, 800);
+    }
+  });
+
+  // Init
+  document.addEventListener('DOMContentLoaded', function() {
+    load();
+    applyAll();
+    document.getElementById('a11y-toggle-btn').addEventListener('click', togglePanel);
+    // Close when clicking outside
+    document.addEventListener('click', function(e) {
+      if (state.open &&
+          !document.getElementById('a11y-panel').contains(e.target) &&
+          e.target !== document.getElementById('a11y-toggle-btn')) {
+        close();
+      }
+    });
+  });
+
+  return { open, close, togglePanel, fontSize, brightness, spacing, toggle,
+           toggleRuler, toggleTTS, ttsStop, ttsReadSelection, ttsRate, reset };
+})();
+</script>
+<!-- ===== END ACCESSIBILITY WIDGET ===== -->
+
+
+
 <!-- מודאל מידע פרימיום (השוואה) -->
 <div id="premiumInfoModal" class="premium-info-modal hidden">
   <div class="premium-info-overlay" onclick="app.closePremiumInfo()"></div>
