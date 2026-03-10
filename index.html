@@ -20716,34 +20716,44 @@ const achEngine = (function() {
     } catch(e) {}
   }
 
+  // LOCAL date string - avoids UTC timezone bugs (e.g. Israel UTC+2/+3)
+  function localDateStr(d) {
+    d = d || new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
   // Record today as an active day
   function recordSession() {
     try {
       const sessions = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]');
-      const today = new Date().toISOString().split('T')[0];
+      const today = localDateStr();
       if (!sessions.includes(today)) {
         sessions.push(today);
         localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
       }
-      // Count sessions this week
-      const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
-      return sessions.filter(d => new Date(d) >= weekAgo).length;
+      // Count sessions this week (last 7 days)
+      const result = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(); d.setDate(d.getDate() - i);
+        if (sessions.includes(localDateStr(d))) result.push(localDateStr(d));
+      }
+      return result.length;
     } catch(e) { return 0; }
   }
 
-  // Calculate streak (consecutive days)
+  // Calculate streak (consecutive days) using local dates
   function calcStreak() {
     try {
-      const sessions = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]').sort().reverse();
+      const sessions = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]');
       if (!sessions.length) return 0;
       let streak = 0;
-      let check = new Date();
-      check.setHours(0,0,0,0);
       for (let i = 0; i < 365; i++) {
-        const dateStr = check.toISOString().split('T')[0];
-        if (sessions.includes(dateStr)) {
+        const d = new Date(); d.setDate(d.getDate() - i);
+        if (sessions.includes(localDateStr(d))) {
           streak++;
-          check.setDate(check.getDate() - 1);
         } else {
           break;
         }
@@ -20752,16 +20762,17 @@ const achEngine = (function() {
     } catch(e) { return 0; }
   }
 
-  // Activity by weekday from sessions
+  // Activity by weekday from sessions (local parse to avoid UTC day shift)
   function getWeekdayActivity() {
     try {
       const sessions = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]');
       const counts = [0,0,0,0,0,0,0]; // Sun-Sat
-      sessions.forEach(d => {
-        const day = new Date(d).getDay();
-        counts[day]++;
+      sessions.forEach(str => {
+        // Parse as local date: 'YYYY-MM-DD' -> avoid UTC shift
+        const parts = str.split('-');
+        const d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+        counts[d.getDay()]++;
       });
-      // Reorder: Sun=0 -> display as א'=index 0
       return counts;
     } catch(e) { return [0,0,0,0,0,0,0]; }
   }
