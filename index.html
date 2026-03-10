@@ -9008,6 +9008,7 @@ this.showPage('homepage');
         
         console.log('✅ אפליקציה הופעלה בהצלחה!');
         document.dispatchEvent(new Event('tikit-app-ready'));
+        try { achEngine.logActivity('🔑', 'כניסה למערכת'); } catch(e) {}
       },
       
       // קבלת ברכה לפי שעה
@@ -12587,7 +12588,8 @@ savePageFormatting(index) {
         };
         
         this.subjects[notebookKey] = newNotebook;
-        this.saveNotebookData();
+        this.saveN
+        try { achEngine.logActivity('📓', 'נוצרה מחברת: ' + name); } catch(e) {}otebookData();
         this.renderNotebooks();
         this.loadWelcomeData();
         
@@ -15450,6 +15452,8 @@ insertImage() {
         if (!this.canAddTask()) {
           return;
         }
+        // Log activity
+        try { const t = document.getElementById('taskTitle')?.value || ''; achEngine.logActivity('📝', 'נוספה משימה' + (t ? ': ' + t : '')); } catch(e) {}
         
         const title = document.getElementById('taskTitle').value.trim();
         const description = document.getElementById('taskDescription').value.trim();
@@ -15518,6 +15522,8 @@ insertImage() {
         if (task) {
           task.completed = !task.completed;
           task.completedAt = task.completed ? new Date().toISOString() : null;
+          // Log activity
+          try { if (task.completed) achEngine.logActivity('✅', 'הושלמה משימה: ' + (task.title || '')); } catch(e) {}
           
           this.saveTaskData();
           this.renderTasks();
@@ -16259,6 +16265,7 @@ const dateString = `${currentDate.getFullYear()}-${String(currentDate.getMonth()
         };
         
         this.events.push(newEvent);
+        try { achEngine.logActivity('📅', 'נוסף אירוע: ' + (title || '')); } catch(e) {}
         
         // יצירת אירועים חוזרים
         if (isRepeat) {
@@ -20938,44 +20945,9 @@ const achEngine = (function() {
   return { render, renderWhenReady, logActivity, recordSession };
 })();
 
-// Auto-hook: patch app methods to fire events
-document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(() => {
-    if (typeof app === 'undefined') return;
-
-    // Patch task completion
-    const origToggle = app.toggleTaskComplete;
-    if (origToggle) {
-      app.toggleTaskComplete = function(id) {
-        const t = this.tasks.find(t => t.id == id);
-        origToggle.call(this, id);
-        if (t && !t.completed) {
-          document.dispatchEvent(new CustomEvent('tikit-task-complete', {detail: t.title}));
-        }
-      };
-    }
-
-    // Patch task creation
-    const origCreate = app.createTask;
-    if (origCreate) {
-      app.createTask = function() {
-        const title = document.getElementById('taskTitle')?.value || '';
-        origCreate.call(this);
-        document.dispatchEvent(new CustomEvent('tikit-task-create', {detail: title}));
-      };
-    }
-
-    // Patch notebook creation
-    const origCreateNb = app.createNotebook;
-    if (origCreateNb) {
-      app.createNotebook = function(...args) {
-        origCreateNb.apply(this, args);
-        document.dispatchEvent(new CustomEvent('tikit-notebook-create', {detail: args[0] || ''}));
-      };
-    }
-
-    achEngine.recordSession();
-  }, 1500);
+// Record session when app is ready
+document.addEventListener('tikit-app-ready', function() {
+  achEngine.recordSession();
 });
 </script>
 <!-- ===== END ACHIEVEMENTS ENGINE ===== -->
