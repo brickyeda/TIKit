@@ -282,7 +282,7 @@
         }
 
         .hero-title {
-            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-size: clamp(2.5rem, 3.5vw, 3.2rem);
             font-weight: 900;
             line-height: 1.15;
             margin-bottom: 24px;
@@ -296,6 +296,17 @@
             -webkit-text-fill-color: transparent;
             background-size: 200% 200%;
             animation: gradientShift 6s ease infinite;
+        }
+
+        .hero-title-logo {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% 200%;
+            animation: gradientShift 6s ease infinite;
+            font-style: italic;
+            display: inline-block;
+            padding-right: 6px;
         }
 
         @keyframes gradientShift {
@@ -1212,8 +1223,7 @@
 
         /* === SCROLL ANIMATIONS === */
         .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
             transition: all 0.7s ease;
         }
 
@@ -1230,6 +1240,7 @@
                 text-align: center;
             }
 
+            .hero-title { font-size: clamp(2rem, 5vw, 3rem); }
             .hero-desc { margin: 0 auto 40px; }
             .hero-actions { justify-content: center; }
             .hero-stats { justify-content: center; }
@@ -1243,6 +1254,7 @@
 
         @media (max-width: 768px) {
             nav { padding: 14px 20px; }
+            .hero-title { font-size: clamp(1.6rem, 6vw, 2.2rem); }
 
             .nav-links {
                 display: none;
@@ -1321,7 +1333,7 @@
                     גרסה חדשה זמינה
                 </div>
                 <h1 class="hero-title">
-                    הילקוט הדיגיטלי<br>
+                    <span class="hero-title-logo">TIKit</span> הילקוט הדיגיטלי<br>
                     <span class="hero-title-gradient">שהולך איתך לכל מקום</span>
                 </h1>
                 <p class="hero-desc">
@@ -1797,7 +1809,7 @@
                 <ul class="footer-links">
                     <li><a href="#faq">שאלות נפוצות</a></li>
                     <li><a href="#">צור קשר</a></li>
-<a href="mailto:brickyeda@gmail.com">brickyeda@gmail.com</a>
+<a href="/cdn-cgi/l/email-protection#ed8f9f848e869488898cad8a808c8481c38e8280"><span class="__cf_email__" data-cfemail="abc9d9c2c8c0d2cecfcaebccc6cac2c785c8c4c6">[email&#160;protected]</span></a>
                 </ul>
             </div>
             <div>
@@ -1815,7 +1827,7 @@
         </div>
     </footer>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Navbar scroll effect
         const navbar = document.getElementById('navbar');
         window.addEventListener('scroll', () => {
@@ -1883,10 +1895,15 @@
                     entry.target.classList.add('visible');
                 }
             });
-        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        }, { threshold: 0.05, rootMargin: '0px 0px 0px 0px' });
 
         document.querySelectorAll('.animate-on-scroll').forEach(el => {
             observer.observe(el);
+            // trigger immediately if already in viewport
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight) {
+                el.classList.add('visible');
+            }
         });
 
         // Stagger animations
@@ -1895,12 +1912,4 @@
         });
 
         document.querySelectorAll('.testimonials-grid .testimonial-card').forEach((card, i) => {
-                      card.style.transitionDelay = `${i * 0.1}s`;
-        });
-
-        document.querySelectorAll('.faq-container .faq-item').forEach((item, i) => {
-            item.style.transitionDelay = `${i * 0.06}s`;
-        });
-    </script>
-</body>
-</html>
+                    
