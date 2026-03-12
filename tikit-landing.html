@@ -1596,7 +1596,7 @@
                 <div class="pricing-name">פרימיום ⭐</div>
                 <div class="pricing-desc">הכל, ללא הגבלות</div>
                 <div class="pricing-price">
-                    <span class="pricing-amount" id="proPrice">8.90</span>
+                    <span class="pricing-amount" id="proPrice">10.90</span>
                     <span class="pricing-currency">₪</span>
                 </div>
                 <div class="pricing-period" id="proPeriod">לחודש, מתחדש אוטומטית</div>
@@ -1703,7 +1703,7 @@
                 </div>
                 <div class="faq-answer">
                     <div class="faq-answer-inner">
-                        מנוי חודשי עולה ₪8.90 לחודש. מנוי שנתי עולה ₪96 לשנה (₪8.00 לחודש בממוצע - חיסכון של 10%). ניתן לבטל את המנוי בכל עת.
+                        מנוי חודשי עולה ₪10.90 לחודש. מנוי שנתי עולה ₪119.90 לשנה (₪9.99 לחודש בממוצע - חיסכון של 17%). ניתן לבטל את המנוי בכל עת.
                     </div>
                 </div>
             </div>
@@ -1827,7 +1827,7 @@
         </div>
     </footer>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script>
         // Navbar scroll effect
         const navbar = document.getElementById('navbar');
         window.addEventListener('scroll', () => {
@@ -1857,20 +1857,22 @@
         const yearlyLabel = document.getElementById('yearlyLabel');
         let isYearly = false;
 
-        pricingToggle.addEventListener('click', () => {
-            isYearly = !isYearly;
-            pricingToggle.classList.toggle('active', isYearly);
-            monthlyLabel.classList.toggle('active', !isYearly);
-            yearlyLabel.classList.toggle('active', isYearly);
+        if (pricingToggle) {
+            pricingToggle.addEventListener('click', () => {
+                isYearly = !isYearly;
+                pricingToggle.classList.toggle('active', isYearly);
+                if (monthlyLabel) monthlyLabel.classList.toggle('active', !isYearly);
+                if (yearlyLabel) yearlyLabel.classList.toggle('active', isYearly);
 
-            if (isYearly) {
-                proPrice.textContent = '96';
-                proPeriod.textContent = 'לשנה (₪8.00 לחודש בממוצע)';
-            } else {
-                proPrice.textContent = '8.90';
-                proPeriod.textContent = 'לחודש, מתחדש אוטומטית';
-            }
-        });
+                if (isYearly) {
+                    if (proPrice) proPrice.textContent = '119.90';
+                    if (proPeriod) proPeriod.textContent = 'לשנה (₪9.99 לחודש בממוצע)';
+                } else {
+                    if (proPrice) proPrice.textContent = '10.90';
+                    if (proPeriod) proPeriod.textContent = 'לחודש, מתחדש אוטומטית';
+                }
+            });
+        }
 
         // FAQ toggle
         function toggleFaq(questionEl) {
@@ -1887,6 +1889,7 @@
                 faqItem.classList.add('active');
             }
         }
+        window.toggleFaq = toggleFaq;
 
         // Scroll animations
         const observer = new IntersectionObserver((entries) => {
@@ -1912,4 +1915,8 @@
         });
 
         document.querySelectorAll('.testimonials-grid .testimonial-card').forEach((card, i) => {
-                    
+            card.style.transitionDelay = `${i * 0.1}s`;
+        });
+    </script>
+</body>
+</html>
