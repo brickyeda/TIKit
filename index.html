@@ -21085,7 +21085,7 @@ app.voice = (function() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition = new SpeechRecognition();
     recognition.continuous = true;
-    recognition.interimResults = false;
+    recognition.interimResults = true;
     recognition.lang = 'he-IL'; // עברית בלבד
 
     // Save cursor position before starting
@@ -21100,6 +21100,10 @@ app.voice = (function() {
           }
         }
       }
+    };
+
+    recognition.onspeechend = function() {
+      // Keep alive — don't stop on silence
     };
 
     recognition.onerror = function(event) {
