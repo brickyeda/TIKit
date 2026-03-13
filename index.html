@@ -6885,6 +6885,16 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
             🗑️
           </button>
         </div>
+
+        <!-- Voice Recording Group -->
+        <div class="toolbar-group" id="voiceToolbarGroup" style="display: flex; align-items: center; gap: 8px;">
+          <button class="toolbar-btn" id="voiceRecordBtn" onclick="app.voice.toggle()" title="הקלטה קולית" style="background: #e74c3c; color: white; display: flex; align-items: center; gap: 4px; padding: 6px 12px;">
+            🎙️ <span id="voiceRecordLabel" style="font-size: 0.75rem;">הקלט</span>
+          </button>
+          <span id="voiceStatusDot" style="display:none; width:10px; height:10px; background:#e74c3c; border-radius:50%; animation: voicePulse 1s infinite;"></span>
+          <span id="voiceTimer" style="display:none; font-size:0.8rem; color:#e74c3c; font-weight:600; min-width:40px;">0:00</span>
+          <span id="voiceLangLabel" style="font-size:0.75rem; color:#666;">🇮🇱 עברית</span>
+        </div>
       </div>
 
 <div class="page-header" style="position: sticky; top: 150px; z-index: 100; background: var(--background-main); padding-top: 5px; padding-bottom: 5px;">
@@ -20949,6 +20959,193 @@ const achEngine = (function() {
 document.addEventListener('tikit-app-ready', function() {
   achEngine.recordSession();
 });
+</script>
+
+<style>
+@keyframes voicePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+}
+.voice-transcript-text {
+  color: #2563eb;
+  font-style: italic;
+  background: rgba(37, 99, 235, 0.07);
+  border-radius: 3px;
+  padding: 0 2px;
+}
+#voiceRecordBtn.recording {
+  background: #991b1b !important;
+  animation: voicePulse 1s infinite;
+}
+</style>
+
+<script>
+// ===== VOICE RECOGNITION MODULE =====
+app.voice = (function() {
+  let recognition = null;
+  let isRecording = false;
+  let timerInterval = null;
+  let seconds = 0;
+  let currentRange = null; // cursor position before recording
+
+  function isSupported() {
+    return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+  }
+
+  function formatTime(s) {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return m + ':' + String(sec).padStart(2, '0');
+  }
+
+  function saveCursorPosition() {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      currentRange = sel.getRangeAt(0).cloneRange();
+    }
+  }
+
+  function insertTranscriptAtCursor(text) {
+    // Find the active notebook page editor
+    const editor = document.querySelector('.page-content[contenteditable="true"]');
+    if (!editor) return;
+
+    editor.focus();
+
+    // Try to restore saved cursor, otherwise append
+    if (currentRange) {
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(currentRange);
+    }
+
+    // Wrap in styled span
+    const span = document.createElement('span');
+    span.className = 'voice-transcript-text';
+    span.textContent = text + ' ';
+
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      range.deleteContents();
+      range.insertNode(span);
+      // Move cursor after inserted text
+      range.setStartAfter(span);
+      range.setEndAfter(span);
+      sel.removeAllRanges();
+      sel.addRange(range);
+      currentRange = range.cloneRange();
+    } else {
+      editor.appendChild(span);
+    }
+
+    // Trigger save
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  function startTimer() {
+    seconds = 0;
+    const timerEl = document.getElementById('voiceTimer');
+    timerEl.textContent = formatTime(0);
+    timerEl.style.display = 'inline';
+    timerInterval = setInterval(() => {
+      seconds++;
+      timerEl.textContent = formatTime(seconds);
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+    document.getElementById('voiceTimer').style.display = 'none';
+  }
+
+  function setUIRecording(active) {
+    const btn = document.getElementById('voiceRecordBtn');
+    const dot = document.getElementById('voiceStatusDot');
+    const label = document.getElementById('voiceRecordLabel');
+    if (active) {
+      btn.classList.add('recording');
+      btn.title = 'עצור הקלטה';
+      label.textContent = 'עצור';
+      dot.style.display = 'inline-block';
+    } else {
+      btn.classList.remove('recording');
+      btn.title = 'הקלטה קולית';
+      label.textContent = 'הקלט';
+      dot.style.display = 'none';
+    }
+  }
+
+  function start() {
+    if (!isSupported()) {
+      alert('הדפדפן שלך לא תומך בזיהוי קולי. נסה Chrome.');
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.lang = 'he-IL'; // עברית בלבד
+
+    // Save cursor position before starting
+    saveCursorPosition();
+
+    recognition.onresult = function(event) {
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          const transcript = event.results[i][0].transcript.trim();
+          if (transcript) {
+            insertTranscriptAtCursor(transcript);
+          }
+        }
+      }
+    };
+
+    recognition.onerror = function(event) {
+      if (event.error !== 'aborted') {
+        console.error('Voice error:', event.error);
+        if (event.error === 'not-allowed') {
+          alert('אנא אשר גישה למיקרופון בדפדפן.');
+        }
+        stop();
+      }
+    };
+
+    recognition.onend = function() {
+      // Restart automatically if still recording
+      if (isRecording) {
+        recognition.start();
+      }
+    };
+
+    recognition.start();
+    isRecording = true;
+    setUIRecording(true);
+    startTimer();
+  }
+
+  function stop() {
+    isRecording = false;
+    if (recognition) {
+      recognition.stop();
+      recognition = null;
+    }
+    setUIRecording(false);
+    stopTimer();
+    currentRange = null;
+  }
+
+  function toggle() {
+    if (isRecording) {
+      stop();
+    } else {
+      start();
+    }
+  }
+
+  return { toggle, start, stop };
+})();
 </script>
 <!-- ===== END ACHIEVEMENTS ENGINE ===== -->
 
