@@ -7903,35 +7903,15 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           </div>
         </div>
 
-        <!-- Action Buttons (for Pro users) -->
-        <div class="subscription-card actions-card" id="subscriptionActionsCard" style="display: none;">
-          <h3>פעולות</h3>
-          <div class="subscription-actions">
-            <button class="sub-action-btn primary" onclick="app.openPaymentManagement()">
-              💳 ניהול תשלום
-            </button>
-            <button class="sub-action-btn secondary" id="upgradeToYearlyBtn" onclick="app.upgradeToYearly()" style="display: none;">
-              🔁 שדרוג למנוי שנתי (חודש חינם)
-            </button>
-          </div>
-          <div class="subscription-cancel">
-            <button class="sub-cancel-btn" onclick="app.openCancelSubscriptionModal()">
-              🚫 ביטול מנוי
-            </button>
-          </div>
-        </div>
+        <!-- Action Buttons (placeholder, hidden) -->
+        <div class="subscription-card actions-card" id="subscriptionActionsCard" style="display: none;"></div>
 
         <!-- Upgrade CTA (for Free users) -->
         <div class="subscription-card upgrade-cta-card" id="subscriptionUpgradeCard" style="display: none;">
-          <button class="sub-upgrade-btn" onclick="app.openUpgradeModal('שדרוג לפרימיום')">
-            ⭐ שדרוג לפרימיום
+          <button class="sub-upgrade-btn" onclick="app.openUpgradeModal('שדרוג ל-PRO')">
+            ✨ קבל גישת PRO בחינם
           </button>
-        </div>
-
-        <!-- Trust Note -->
-        <div class="subscription-trust-note">
-          <span>🔒</span>
-          <span>התשלומים מנוהלים בצורה מאובטחת דרך סאמיט. פרטי האשראי אינם נשמרים באפליקציה.</span>
+          <p style="text-align:center; margin-top:12px; color:var(--text-secondary); font-size:0.9rem;">ממלאים טופס קצר ומקבלים גישה מיידית 🎉</p>
         </div>
       </div>
     </div>
@@ -9136,80 +9116,36 @@ this.showPage('homepage');
       // טעינת סטטוס פרימיום של המשתמש
       async loadUserPlan(userId) {
         try {
-          // קודם בודק בטבלת subscriptions החדשה
-          // כולל מנויים מבוטלים שעדיין לא פגו
-          const { data: subData, error: subError } = await supabaseClient
-            .from('subscriptions')
+          // בדיקת בקשת PRO מאושרת בטבלת pro_requests
+          const { data: proData, error: proError } = await supabaseClient
+            .from('pro_requests')
             .select('*')
             .eq('user_id', userId)
-            .in('status', ['active', 'cancelled'])
-            .order('created_at', { ascending: false })
+            .eq('status', 'approved')
             .limit(1)
             .single();
 
-          if (subData && !subError) {
-            // יש מנוי בטבלת subscriptions
-            const isExpired = new Date(subData.expires_at) <= new Date();
-            const isCancelled = subData.status === 'cancelled';
-            
-            // המנוי פעיל אם לא פג תוקף (גם אם בוטל)
-            this.isPro = !isExpired;
-            this.subscriptionType = subData.plan_type || 'monthly';
-            this.subscriptionStatus = subData.status; // שומר את הסטטוס
-            this.isCancelled = isCancelled;
-            
-            if (subData.expires_at) {
-              const planDate = new Date(subData.expires_at);
-              this.planUntil = planDate.toLocaleDateString('he-IL');
-              this.planUntilDate = subData.expires_at;
-              // אם מבוטל, אין חיוב הבא
-              this.nextBilling = (this.subscriptionType === 'trial' || isCancelled) ? null : planDate.toLocaleDateString('he-IL');
-            }
-            
-            console.log('📊 סטטוס פרימיום (מ-subscriptions):', this.isPro ? 'Pro ✨' : 'Free', '| סוג:', this.subscriptionType, '| סטטוס:', subData.status);
-          } else {
-            // fallback לטבלת profiles הישנה
-            const { data, error } = await supabaseClient
-              .from('profiles')
-              .select('plan, plan_until, subscription_type, display_name')
-              .eq('id', userId)
-              .single();
-
-            if (error || !data) {
-              this.isPro = false;
-              this.planUntil = null;
-              this.planUntilDate = null;
-              this.nextBilling = null;
-              this.subscriptionType = null;
-              this.subscriptionStatus = null;
-              this.isCancelled = false;
-              this.displayName = '';
-              console.log('📊 סטטוס פרימיום: Free');
-              return;
-            }
-
-            this.isPro = data.plan === 'pro' && new Date(data.plan_until) > new Date();
-            this.subscriptionType = data.subscription_type || 'monthly';
+          if (proData && !proError) {
+            this.isPro = true;
+            this.subscriptionType = 'pro';
             this.subscriptionStatus = 'active';
             this.isCancelled = false;
-            this.displayName = data.display_name || '';
-            
-            // עיצוב התאריכים
-            if (data.plan_until) {
-              const planDate = new Date(data.plan_until);
-              this.planUntil = planDate.toLocaleDateString('he-IL');
-              this.planUntilDate = data.plan_until;
-              this.nextBilling = planDate.toLocaleDateString('he-IL');
-            } else {
-              this.planUntil = null;
-              this.planUntilDate = null;
-              this.nextBilling = null;
-            }
-            
-            console.log('📊 סטטוס פרימיום (מ-profiles):', this.isPro ? 'Pro ✨' : 'Free');
+            this.planUntil = null;
+            this.planUntilDate = null;
+            this.nextBilling = null;
+            console.log('📊 סטטוס: PRO ✨ (אושר דרך טופס)');
+          } else {
+            this.isPro = false;
+            this.subscriptionType = null;
+            this.subscriptionStatus = null;
+            this.isCancelled = false;
+            this.planUntil = null;
+            this.planUntilDate = null;
+            this.nextBilling = null;
+            console.log('📊 סטטוס: Free');
           }
 
-          // טעינת display_name מ-profiles בכל מקרה
+          // טעינת display_name מ-profiles
           const { data: profileData } = await supabaseClient
             .from('profiles')
             .select('display_name, age, gender, school, grade, city, bio, avatar_url')
@@ -9224,23 +9160,103 @@ this.showPage('homepage');
           }
 
         } catch (e) {
-          console.log('שגיאה בטעינת סטטוס פרימיום:', e);
+          console.log('שגיאה בטעינת סטטוס:', e);
           this.isPro = false;
         }
       },
 
       // פתיחת עמוד שדרוג
       openUpgradeModal(featureName) {
-        // שומר את שם הפיצ'ר שגרם לפתיחה (אופציונלי לשימוש עתידי)
         this.upgradeFeature = featureName;
+        if (this.isPro) return;
+        this.checkExistingProRequest();
         document.getElementById('upgradeModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
       },
 
-      // סגירת עמוד שדרוג
       closeUpgradeModal() {
         document.getElementById('upgradeModal').classList.add('hidden');
         document.body.style.overflow = '';
+        const form = document.getElementById('proRequestForm');
+        if (form) form.reset();
+        const proFormStep = document.getElementById('proFormStep');
+        const proSuccessStep = document.getElementById('proSuccessStep');
+        if (proFormStep) proFormStep.style.display = 'block';
+        if (proSuccessStep) proSuccessStep.style.display = 'none';
+      },
+
+      async checkExistingProRequest() {
+        if (!currentUser) return;
+        const { data } = await supabaseClient
+          .from('pro_requests')
+          .select('status')
+          .eq('user_id', currentUser.id)
+          .limit(1)
+          .single();
+        const formStep = document.getElementById('proFormStep');
+        const pendingMsg = document.getElementById('proAlreadySubmitted');
+        if (data) {
+          if (formStep) formStep.style.display = 'none';
+          if (pendingMsg) pendingMsg.style.display = 'block';
+        } else {
+          if (formStep) formStep.style.display = 'block';
+          if (pendingMsg) pendingMsg.style.display = 'none';
+        }
+      },
+
+      async submitProRequest() {
+        if (!currentUser) { alert('יש להתחבר כדי להגיש בקשה'); return; }
+
+        const fullName = document.getElementById('proFullName')?.value.trim();
+        const gender = document.getElementById('proGender')?.value;
+        const city = document.getElementById('proCity')?.value.trim();
+        const institutionName = document.getElementById('proInstitutionName')?.value.trim();
+        const institutionType = document.getElementById('proInstitutionType')?.value;
+        const expectations = document.getElementById('proExpectations')?.value.trim();
+        const confirmed = document.getElementById('proConfirmReal')?.checked;
+
+        if (!fullName || !gender || !city || !institutionName || !institutionType || !expectations) {
+          alert('יש למלא את כל השדות'); return;
+        }
+        if (!confirmed) { alert('יש לאשר שהפרטים אמיתיים'); return; }
+
+        const submitBtn = document.getElementById('proSubmitBtn');
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'שולח...'; }
+
+        try {
+          const { error } = await supabaseClient
+            .from('pro_requests')
+            .insert({
+              user_id: currentUser.id,
+              full_name: fullName,
+              gender,
+              city,
+              institution_name: institutionName,
+              institution_type: institutionType,
+              expectations,
+              confirmed_real: true,
+              status: 'approved'
+            });
+
+          if (error) throw error;
+
+          this.isPro = true;
+          this.subscriptionType = 'pro';
+          this.subscriptionStatus = 'active';
+
+          document.getElementById('proFormStep').style.display = 'none';
+          document.getElementById('proSuccessStep').style.display = 'block';
+
+          setTimeout(() => {
+            this.closeUpgradeModal();
+            this.updateSubscriptionUI();
+          }, 3000);
+
+        } catch (e) {
+          console.error('שגיאה בהגשת בקשת PRO:', e);
+          alert('שגיאה בהגשת הבקשה. נסה שוב.');
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '✨ קבל גישת PRO'; }
+        }
       },
 
       // שמירת שם תצוגה
@@ -9433,30 +9449,7 @@ this.showPage('homepage');
       },
 
       // מעבר לתשלום בסאמיט
-      goToCheckout() {
-        if (!currentUser) {
-          alert('יש להתחבר כדי לשדרג לפרימיום');
-          window.location.href = 'login.html';
-          return;
-        }
-
-        // בדיקה איזו תוכנית נבחרה
-        const yearlySelected = document.getElementById('yearlyPlan')?.checked;
-        const planType = yearlySelected ? 'yearly' : 'monthly';
-
-        // כתובות דפי התשלום בסאמיט
-        const sumitUrls = {
-          monthly: 'https://pay.sumit.co.il/nwzr5p/o8lv3a/o8lv42/payment/',
-          yearly: 'https://pay.sumit.co.il/nwzr5p/o8lv3a/o8lvam/payment/'
-        };
-
-        // הוספת מזהה המשתמש וסוג המנוי כפרמטר
-        // הפורמט: userId_planType
-        const paymentUrl = `${sumitUrls[planType]}?externalidentifier=${currentUser.id}_${planType}`;
-        
-        console.log('🔗 מעבר לתשלום:', paymentUrl);
-        window.location.href = paymentUrl;
-      },
+      goToCheckout() { this.openUpgradeModal('שדרוג ל-PRO'); },
 
       startFreeTrial() {
         if (!currentUser) {
@@ -9535,286 +9528,64 @@ this.showPage('homepage');
       // עדכון תצוגת דף ניהול מנוי
       updateSubscriptionPage() {
         const statusCard = document.getElementById('subscriptionStatusCard');
-        const trialCard = document.getElementById('subscriptionTrialCard');
         const actionsCard = document.getElementById('subscriptionActionsCard');
         const upgradeCard = document.getElementById('subscriptionUpgradeCard');
-        
-        // קבלת המייל של המשתמש
+        const trialCard = document.getElementById('subscriptionTrialCard');
+        if (trialCard) trialCard.style.display = 'none';
+
         const userEmail = currentUser ? currentUser.email : '---';
         const displayName = this.displayName || '';
 
-        // חישוב ימים שנותרו לניסיון
-        let daysLeft = 0;
-        if (this.subscriptionType === 'trial' && this.planUntilDate) {
-          const now = new Date();
-          const endDate = new Date(this.planUntilDate);
-          daysLeft = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
-          if (daysLeft < 0) daysLeft = 0;
-        }
-        
-        if (this.isPro && this.subscriptionType === 'trial') {
-          // משתמש בתקופת ניסיון
+        const profileEditBtn = `<button onclick="app.openProfileEditModal()" style="margin-top:12px;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:white;font-size:0.875rem;font-weight:600;cursor:pointer;transition:all 0.2s ease;font-family:inherit;"><svg style="width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>עריכת פרופיל</button>`;
+
+        const userInfoBlock = `
+          <div class="status-user-info">
+            <div class="status-user-name">
+              <span>👤</span>
+              <input type="text" id="userDisplayName" value="${displayName}" placeholder="הכנס את שמך" class="user-name-input">
+              <button onclick="app.saveDisplayName()" class="save-name-btn" title="שמור שם">✓</button>
+            </div>
+            <div class="status-user-email">
+              <span>📧</span>
+              <span>${userEmail}</span>
+            </div>
+          </div>
+          ${profileEditBtn}`;
+
+        if (this.isPro) {
           statusCard.className = 'subscription-card status-card pro';
           statusCard.innerHTML = `
             <div class="status-header">
-              <span class="status-icon">🎁</span>
-              <span class="status-title pro">גרסת פרימיום – נותרו עוד ${daysLeft} ימים</span>
+              <span class="status-icon">✨</span>
+              <span class="status-title pro">גרסת PRO</span>
             </div>
-            <div class="status-user-info">
-              <div class="status-user-name">
-                <span>👤</span>
-                <input type="text" id="userDisplayName" value="${displayName}" placeholder="הכנס את שמך" class="user-name-input">
-                <button onclick="app.saveDisplayName()" class="save-name-btn" title="שמור שם">✓</button>
-              </div>
-              <div class="status-user-email">
-                <span>📧</span>
-                <span>${userEmail}</span>
-              </div>
-            </div>
-            <button onclick="app.openProfileEditModal()" style="
-  margin-top:12px;
-  display:inline-flex;align-items:center;gap:6px;
-  padding:8px 16px;border:none;border-radius:8px;
-  background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));
-  color:white;font-size:0.875rem;font-weight:600;
-  cursor:pointer;transition:all 0.2s ease;font-family:inherit;">
-  <svg style="width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-  עריכת פרופיל
-</button>
-            <div class="status-details">
-              <div class="status-detail">
-                <span class="status-detail-label">סוג מנוי:</span>
-                <span class="status-detail-value">תקופת ניסיון</span>
-              </div>
-              <div class="status-detail">
-                <span class="status-detail-label">תוקף עד:</span>
-                <span class="status-detail-value">${this.planUntil || '---'}</span>
-              </div>
-              <div class="status-detail">
-                <span class="status-detail-label">המחיר:</span>
-                <span class="status-detail-value">₪0.00 (חינם)</span>
-              </div>
-            </div>
-            <p class="status-note">בסיום תקופת הניסיון תחזור אוטומטית לגרסה החינמית, אלא אם תשדרג לפרימיום.</p>
+            ${userInfoBlock}
+            <p class="status-note" style="margin-top:12px;">גישה מלאה לכל הפיצ'רים ✨</p>
           `;
-          
-          // הצג כפתור שדרוג
-          actionsCard.style.display = 'none';
-          upgradeCard.style.display = 'block';
-          
-        } else if (this.isPro) {
-          // משתמש פרימיום (לא ניסיון)
-          const isCancelled = this.isCancelled || this.subscriptionStatus === 'cancelled';
-          const statusText = isCancelled 
-            ? `גרסת פרימיום – מנוי ${this.subscriptionType === 'yearly' ? 'שנתי' : 'חודשי'} (מבוטל)`
-            : `גרסת פרימיום – מנוי ${this.subscriptionType === 'yearly' ? 'שנתי' : 'חודשי'}`;
-          const noteText = isCancelled
-            ? `המנוי בוטל ויהיה פעיל עד ${this.planUntil}. לא יתבצע חיוב נוסף.`
-            : 'המנוי מתחדש אוטומטית. ניתן לבטל בכל עת.';
-          
-          statusCard.className = 'subscription-card status-card pro';
-          statusCard.innerHTML = `
-            <div class="status-header">
-              <span class="status-icon">${isCancelled ? '⏳' : '⭐'}</span>
-              <span class="status-title pro">${statusText}</span>
-            </div>
-            <div class="status-user-info">
-              <div class="status-user-name">
-                <span>👤</span>
-                <input type="text" id="userDisplayName" value="${displayName}" placeholder="הכנס את שמך" class="user-name-input">
-                <button onclick="app.saveDisplayName()" class="save-name-btn" title="שמור שם">✓</button>
-              </div>
-              <div class="status-user-email">
-                <span>📧</span>
-                <span>${userEmail}</span>
-              </div>
-            </div>
-            <button onclick="app.openProfileEditModal()" style="
-  margin-top:12px;
-  display:inline-flex;align-items:center;gap:6px;
-  padding:8px 16px;border:none;border-radius:8px;
-  background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));
-  color:white;font-size:0.875rem;font-weight:600;
-  cursor:pointer;transition:all 0.2s ease;font-family:inherit;">
-  <svg style="width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-  עריכת פרופיל
-</button>
-            <div class="status-details">
-              <div class="status-detail">
-                <span class="status-detail-label">${isCancelled ? 'פעיל עד:' : 'תוקף עד:'}</span>
-                <span class="status-detail-value">${this.planUntil || '---'}</span>
-              </div>
-              ${!isCancelled ? `
-              <div class="status-detail">
-                <span class="status-detail-label">החיוב הבא:</span>
-                <span class="status-detail-value">${this.nextBilling || '---'}</span>
-              </div>
-              ` : ''}
-              <div class="status-detail">
-                <span class="status-detail-label">המחיר:</span>
-                <span class="status-detail-value">${this.subscriptionType === 'yearly' ? '₪119.90 לשנה' : '₪10.90 לחודש'}</span>
-              </div>
-            </div>
-            <p class="status-note">${noteText}</p>
-          `;
-          
-          // הצג כפתורי פעולה רק אם לא מבוטל
-          if (isCancelled) {
-            actionsCard.style.display = 'none';
-            upgradeCard.style.display = 'block'; // אפשר לחדש מנוי
-          } else {
-            actionsCard.style.display = 'block';
-            upgradeCard.style.display = 'none';
-            
-            // אם מנוי חודשי, הצג אפשרות שדרוג לשנתי
-            if (this.subscriptionType === 'monthly') {
-              document.getElementById('upgradeToYearlyBtn').style.display = 'block';
-            }
-          }
-          
-        } else if (this.isTrialActive) {
-          // משתמש בניסיון
-          statusCard.className = 'subscription-card status-card free';
-          statusCard.innerHTML = `
-            <div class="status-header">
-              <span class="status-icon">🆓</span>
-              <span class="status-title">גרסה חינמית</span>
-            </div>
-            <div class="status-user-info">
-              <div class="status-user-name">
-                <span>👤</span>
-                <input type="text" id="userDisplayName" value="${displayName}" placeholder="הכנס את שמך" class="user-name-input">
-                <button onclick="app.saveDisplayName()" class="save-name-btn" title="שמור שם">✓</button>
-              </div>
-              <div class="status-user-email">
-                <span>📧</span>
-                <span>${userEmail}</span>
-              </div>
-            </div>
-            <button onclick="app.openProfileEditModal()" style="margin-top:12px;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:white;font-size:0.875rem;font-weight:600;cursor:pointer;font-family:inherit;"><svg style="width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>עריכת פרופיל</button>
-            <p style="color: #6b7280; margin-top: 10px;">הגרסה החינמית מאפשרת שימוש מלא עם מגבלות.</p>
-          `;
-          
-          // הצג כרטיס ניסיון
-          trialCard.style.display = 'block';
-          trialCard.innerHTML = `
-            <div class="trial-header">
-              <span>🎁</span>
-              <span class="trial-title">ניסיון פרימיום פעיל</span>
-            </div>
-            <p class="trial-days">נותרו ${this.trialDaysLeft || 7} ימים</p>
-            <p class="trial-info">אין צורך בכרטיס אשראי</p>
-          `;
-          
-          actionsCard.style.display = 'none';
-          upgradeCard.style.display = 'block';
-          
+          if (actionsCard) actionsCard.style.display = 'none';
+          if (upgradeCard) upgradeCard.style.display = 'none';
         } else {
-          // משתמש חינמי
-          statusCard.className = 'subscription-card status-card free';
+          statusCard.className = 'subscription-card status-card';
           statusCard.innerHTML = `
             <div class="status-header">
               <span class="status-icon">🆓</span>
               <span class="status-title">גרסה חינמית</span>
             </div>
-            <div class="status-user-info">
-              <div class="status-user-name">
-                <span>👤</span>
-                <input type="text" id="userDisplayName" value="${displayName}" placeholder="הכנס את שמך" class="user-name-input">
-                <button onclick="app.saveDisplayName()" class="save-name-btn" title="שמור שם">✓</button>
-              </div>
-              <div class="status-user-email">
-                <span>📧</span>
-                <span>${userEmail}</span>
-              </div>
-            </div>
-            <button onclick="app.openProfileEditModal()" style="margin-top:12px;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:white;font-size:0.875rem;font-weight:600;cursor:pointer;font-family:inherit;"><svg style="width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>עריכת פרופיל</button>
-            <p style="color: #6b7280; margin-top: 10px;">הגרסה החינמית מאפשרת שימוש מלא עם מגבלות.</p>
+            ${userInfoBlock}
+            <p class="status-note" style="margin-top:12px;">שדרג ל-PRO בחינם כדי לפתוח את כל הפיצ'רים.</p>
           `;
-          
-          trialCard.style.display = 'none';
-          actionsCard.style.display = 'none';
-          upgradeCard.style.display = 'block';
+          if (actionsCard) actionsCard.style.display = 'none';
+          if (upgradeCard) upgradeCard.style.display = 'block';
         }
       },
 
-      // פתיחת ניהול תשלום
-      openPaymentManagement() {
-        // כאן יהיה קישור ל-סאמיט Customer Portal
-        alert('🚧 ניהול תשלומים בבנייה!\n\nבקרוב תוכל לנהל את התשלום שלך.');
+      // עדכון UI לאחר אישור PRO
+      updateSubscriptionUI() {
+        this.updateSubscriptionPage();
+        this.updatePremiumInfoDisplay();
       },
 
-      // שדרוג למנוי שנתי
-      upgradeToYearly() {
-        if (confirm('האם לשדרג למנוי שנתי?\n\nתשלם ₪119.90 לשנה במקום ₪10.90 לחודש.\nחיסכון של חודש שלם!')) {
-          if (!currentUser) {
-            alert('יש להתחבר כדי לשדרג');
-            return;
-          }
-          const paymentUrl = `https://pay.sumit.co.il/nwzr5p/o8lv3a/o8lvam/payment/?externalidentifier=${currentUser.id}_yearly`;
-          window.location.href = paymentUrl;
-        }
-      },
-
-      // פתיחת מודאל ביטול מנוי
-      openCancelSubscriptionModal() {
-        document.getElementById('cancelSubscriptionModal').classList.remove('hidden');
-      },
-
-      // סגירת מודאל ביטול מנוי
-      closeCancelSubscriptionModal() {
-        document.getElementById('cancelSubscriptionModal').classList.add('hidden');
-      },
-
-      // אישור ביטול מנוי
-      async confirmCancelSubscription() {
-        if (!currentUser) {
-          alert('יש להתחבר כדי לבטל מנוי');
-          return;
-        }
-
-        try {
-          // עדכון סטטוס ל-cancelled בטבלת subscriptions
-          const { error: subError } = await supabaseClient
-            .from('subscriptions')
-            .update({
-              status: 'cancelled',
-              updated_at: new Date().toISOString()
-            })
-            .eq('user_id', currentUser.id)
-            .eq('status', 'active');
-
-          if (subError) {
-            console.error('שגיאה בביטול מנוי:', subError);
-            alert('שגיאה בביטול המנוי. אנא נסה שוב.');
-            return;
-          }
-
-          // קבלת תאריך התפוגה
-          const { data: subData } = await supabaseClient
-            .from('subscriptions')
-            .select('expires_at')
-            .eq('user_id', currentUser.id)
-            .single();
-
-          const expiresDate = subData?.expires_at 
-            ? new Date(subData.expires_at).toLocaleDateString('he-IL')
-            : 'סוף התקופה';
-
-          this.closeCancelSubscriptionModal();
-          
-          alert(`✅ המנוי בוטל בהצלחה!\n\nהמנוי יישאר פעיל עד ${expiresDate}.\nלא יתבצע חיוב נוסף.`);
-          
-          // רענון הדף לעדכון התצוגה
-          location.reload();
-
-        } catch (err) {
-          console.error('שגיאה:', err);
-          alert('שגיאה בביטול המנוי. אנא נסה שוב.');
-        }
-      },
-
-      // פתיחת מודאל מידע פרימיום
+            // פתיחת מודאל מידע פרימיום
       openPremiumInfo() {
         document.getElementById('premiumInfoModal').classList.remove('hidden');
         this.updatePremiumInfoDisplay();
@@ -21153,8 +20924,8 @@ app.voice = (function() {
             <li>📤 ייצוא מחברות ל-PDF</li>
             <li>📋 שכפול מחברות</li>
           </ul>
-          <button class="premium-upgrade-btn" onclick="app.goToCheckout()">
-            שדרוג לפרימיום ⭐
+          <button class="premium-upgrade-btn" onclick="app.closeUpgradeModal(); app.openUpgradeModal('שדרוג ל-PRO')">
+            קבל גישת PRO בחינם ✨
           </button>
         </div>
       </div>
@@ -21168,110 +20939,83 @@ app.voice = (function() {
 <div id="upgradeModal" class="upgrade-page hidden">
   <div class="upgrade-page-content">
     <button class="upgrade-close-btn" onclick="app.closeUpgradeModal()">✕</button>
-    
+
     <div class="upgrade-header">
-      <h1>🌟 שדרוג לפרימיום</h1>
-      <p class="upgrade-subtitle">הגרסה החינמית מאפשרת ללמוד ולהתקדם.</p>
-      <p class="upgrade-subtitle">גרסת הפרימיום נותנת לך יותר חופש, סדר ונוחות.</p>
+      <h1>✨ קבל גישת PRO</h1>
+      <p class="upgrade-subtitle">גרסת PRO חינמית לחלוטין — פשוט ספר לנו קצת עליך.</p>
     </div>
 
-    <div class="upgrade-plans-container">
-      <!-- גרסה חינמית -->
-      <div class="upgrade-plan free">
-        <div class="plan-header">
-          <span class="plan-icon">🆓</span>
-          <h2>גרסה חינמית</h2>
+    <!-- הודעה אם כבר הגיש -->
+    <div id="proAlreadySubmitted" style="display:none; text-align:center; color:white; padding:40px;">
+      <div style="font-size:3rem;">✅</div>
+      <h2 style="margin:16px 0 8px;">הבקשה שלך כבר בעיבוד!</h2>
+      <p style="opacity:0.9;">מצאנו שכבר הגשת בקשת PRO. רענן את הדף כדי לראות את הסטטוס.</p>
+      <button class="upgrade-close-bottom" onclick="app.closeUpgradeModal()" style="margin-top:24px;">← חזרה לאפליקציה</button>
+    </div>
+
+    <!-- הטופס -->
+    <div id="proFormStep">
+      <div class="pro-form-card">
+        <div class="pro-form-row">
+          <div class="pro-form-field">
+            <label>שם מלא *</label>
+            <input type="text" id="proFullName" placeholder="השם שלך" />
+          </div>
+          <div class="pro-form-field">
+            <label>מגדר *</label>
+            <select id="proGender">
+              <option value="">בחר/י...</option>
+              <option value="בן">בן</option>
+              <option value="בת">בת</option>
+            </select>
+          </div>
         </div>
-        <p class="plan-desc">מתאימה להתנסות ולשימוש יומיומי:</p>
-        <ul class="plan-features">
-          <li>📚 עד 5 מחברות פעילות<br><span class="feature-sub">(2 שורה, 1 משובצת, התנסות בחלקה ובצ'קליסט)</span></li>
-          <li>📄 עד 20 דפים למחברת</li>
-          <li>📋 עד 20 משימות פעילות</li>
-          <li>📅 לוח שנה, יומן ומערכת שבועית</li>
-          <li>📝 דפי ממו</li>
-          <li>🔢 מחשבון מדעי</li>
-          <li>✏️ כתיבה חופשית ולמידה מלאה</li>
-        </ul>
-        <div class="plan-price free-price">
-          <span class="price-amount">חינם</span>
-          <span class="price-period">לתמיד</span>
+        <div class="pro-form-row">
+          <div class="pro-form-field">
+            <label>עיר מגורים *</label>
+            <input type="text" id="proCity" placeholder="עיר מגורים" />
+          </div>
+          <div class="pro-form-field">
+            <label>שם המוסד *</label>
+            <input type="text" id="proInstitutionName" placeholder="שם בית הספר / האוניברסיטה" />
+          </div>
         </div>
+        <div class="pro-form-row">
+          <div class="pro-form-field">
+            <label>סוג המוסד *</label>
+            <select id="proInstitutionType">
+              <option value="">בחר/י...</option>
+              <option value="יסודי">יסודי</option>
+              <option value="חטיבת ביניים">חטיבת ביניים</option>
+              <option value="תיכון">תיכון</option>
+              <option value="אוניברסיטה">אוניברסיטה</option>
+              <option value="אחר">אחר</option>
+            </select>
+          </div>
+        </div>
+        <div class="pro-form-field">
+          <label>מה אתה/את מצפה מהאפליקציה? *</label>
+          <textarea id="proExpectations" rows="3" placeholder="ספר/י לנו בכמה מילים..."></textarea>
+        </div>
+        <div class="pro-confirm-row">
+          <input type="checkbox" id="proConfirmReal" />
+          <label for="proConfirmReal">אני מאשר/ת שהפרטים שמילאתי אמיתיים. ידוע לי שמילוי פרטים כוזבים עלול להוביל לנעילת גישת ה-PRO.</label>
+        </div>
+        <button id="proSubmitBtn" class="pro-submit-btn" onclick="app.submitProRequest()">
+          ✨ קבל גישת PRO
+        </button>
       </div>
-
-      <!-- גרסת פרימיום -->
-      <div class="upgrade-plan premium">
-        <div class="plan-badge">מומלץ</div>
-        <div class="plan-header">
-          <span class="plan-icon">⭐</span>
-          <h2>גרסת פרימיום</h2>
-        </div>
-        <p class="plan-desc">למי שרוצה חוויית למידה מלאה ובלי מגבלות:</p>
-        <ul class="plan-features">
-          <li>📚 מחברות ללא הגבלה</li>
-          <li>📄 כל סוגי המחברות והתבניות</li>
-          <li>♾️ דפים ללא הגבלה</li>
-          <li>📤 ייצוא מחברות ל־PDF ולהדפסה</li>
-          <li>🔔 ניהול משימות מתקדם עם התראות</li>
-          <li>📅 לוח שנה, יומן ומערכת שבועית</li>
-          <li>📝 דפי ממו</li>
-          <li>🔢 מחשבון מדעי</li>
-          <li>⚙️ התאמה אישית ונגישות מתקדמת</li>
-        </ul>
-        <div class="plan-pricing">
-          <label class="price-option" for="monthlyPlan">
-            <input type="radio" name="planChoice" id="monthlyPlan" value="monthly">
-            <div class="price-option-content">
-              <span class="price-type">חודשי</span>
-              <span class="price-amount">₪10.90</span>
-              <span class="price-period">לחודש<br><span class="auto-renew">מתחדש אוטומטית</span></span>
-            </div>
-          </label>
-          <label class="price-option recommended" for="yearlyPlan">
-            <div class="save-badge">חודש חינם!</div>
-            <input type="radio" name="planChoice" id="yearlyPlan" value="yearly" checked>
-            <div class="price-option-content">
-              <span class="price-type">שנתי</span>
-              <span class="price-amount">₪119.90</span>
-              <span class="price-period">לשנה (₪10 לחודש)</span>
-            </div>
-          </label>
-        </div>
-      </div>
+      <p class="reassurance-note">אפשר להמשיך להשתמש בגרסה החינמית גם בלי לשדרג ✨</p>
+      <button class="upgrade-close-bottom" onclick="app.closeUpgradeModal()">← חזרה לאפליקציה</button>
     </div>
 
-    <!-- ניסיון חינם -->
-    <div class="trial-section">
-      <div class="trial-icon">🎁</div>
-      <div class="trial-text">
-        <p class="trial-main">אפשר לנסות את גרסת הפרימיום המלאה ל־7 ימים ללא כרטיס אשראי.</p>
-        <p class="trial-note">בסיום תקופת הניסיון חוזרים אוטומטית לגרסה החינמית – בלי התחייבות.</p>
-      </div>
-      <div class="trial-icon">🎁</div>
+    <!-- הצלחה -->
+    <div id="proSuccessStep" style="display:none; text-align:center; color:white; padding:40px;">
+      <div style="font-size:3rem;">🎉</div>
+      <h2 style="margin:16px 0 8px;">ברוך הבא לגרסת PRO!</h2>
+      <p style="opacity:0.9;">הבקשה אושרה. כל הפיצ'רים פתוחים עכשיו.</p>
     </div>
 
-    <!-- כפתורי פעולה -->
-    <div class="upgrade-actions">
-      <button class="upgrade-btn primary" onclick="app.startFreeTrial()">
-        🎁 נסו עכשיו את גרסת הפרימיום ל-7 ימים בחינם
-      </button>
-      <button class="upgrade-btn secondary" onclick="app.goToCheckout()">
-        💳 בחרו את המסלול שלכם ושדרגו לפרימיום
-      </button>
-    </div>
-
-    <!-- אבטחה -->
-    <div class="security-note">
-      <span class="security-icon">🔒</span>
-      <span>תשלום בטוח דרך סאמיט. פרטי האשראי אינם נשמרים אצלנו.</span>
-    </div>
-
-    <!-- שורת הרגעה -->
-    <p class="reassurance-note">אפשר להמשיך להשתמש בגרסה החינמית גם בלי לשדרג ✨</p>
-    
-    <!-- כפתור סגירה בתחתית -->
-    <button class="upgrade-close-bottom" onclick="app.closeUpgradeModal()">
-      ← חזרה לאפליקציה
-    </button>
   </div>
 </div>
 
@@ -21727,6 +21471,104 @@ app.voice = (function() {
 
 .upgrade-page.hidden {
   display: none !important;
+}
+
+/* טופס PRO */
+.pro-form-card {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 32px;
+  margin: 0 auto 24px;
+  max-width: 680px;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.pro-form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.pro-form-field {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pro-form-field label {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.pro-form-field input,
+.pro-form-field select,
+.pro-form-field textarea {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.2);
+  color: white;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  transition: border 0.2s;
+}
+.pro-form-field input::placeholder,
+.pro-form-field textarea::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+.pro-form-field input:focus,
+.pro-form-field select:focus,
+.pro-form-field textarea:focus {
+  border-color: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.25);
+}
+.pro-form-field select option {
+  color: #333;
+  background: white;
+}
+.pro-form-field textarea {
+  resize: vertical;
+}
+.pro-confirm-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 20px 0;
+  color: white;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.pro-confirm-row input[type="checkbox"] {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.pro-submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: white;
+  color: #764ba2;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.pro-submit-btn:hover {
+  background: #f0e6ff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+.pro-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .upgrade-modal.hidden {
