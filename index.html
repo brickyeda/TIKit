@@ -15,7 +15,6 @@
   
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-<script src="ai-assistant.js" defer></script>
   
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -4154,7 +4153,32 @@ scrollbar-gutter: stable;
     /* Responsive Design */
     @media (max-width: 768px) {
       .navbar-menu {
+        display: flex;
+        gap: 2px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        max-width: 100%;
+      }
+      .navbar-menu::-webkit-scrollbar {
         display: none;
+      }
+      .navbar-item {
+        padding: 10px;
+        flex-shrink: 0;
+      }
+      .navbar-item span {
+        display: none;
+      }
+      .navbar-item .icon,
+      .navbar-item .lucide-icon {
+        margin: 0;
+      }
+      .navbar-item:hover {
+        transform: none;
+      }
+      .navbar-content {
+        gap: 10px;
       }
 
       .welcome-content {
@@ -4311,6 +4335,34 @@ scrollbar-gutter: stable;
 
       #calendar div[style*="grid-template-columns"] {
         grid-template-columns: 1fr !important;
+      }
+    }
+
+    /* ===== Tablet landscape (769px–1024px): tighten navbar so all 10 items fit ===== */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .navbar-content {
+        gap: 8px;
+      }
+      .navbar-menu {
+        gap: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .navbar-menu::-webkit-scrollbar {
+        display: none;
+      }
+      .navbar-item {
+        padding: 10px 10px;
+        gap: 5px;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+      .navbar-item:hover {
+        transform: none;
+      }
+      .user-info {
+        display: none;
       }
     }
 
