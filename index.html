@@ -40,6 +40,9 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://brickyeda.github.io/TIKit/logo.png">
   <link rel="apple-touch-icon" href="https://brickyeda.github.io/TIKit/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Rubik:wght@400;500;600;700&family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -91,14 +94,144 @@
       --btn-padding-md: 12px 24px;
       --btn-padding-lg: 16px 32px;
       --btn-radius: 10px;
+
+      /* Design Theme */
+      --app-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --card-radius: 15px;
+    }
+
+    /* ===== ערכות עיצוב לפי גיל ===== */
+    /* 🎈 יסודי - צבעוני ושמח */
+    [data-design="young"] {
+      --primary-color: #ff6b6b;
+      --secondary-color: #ffa62b;
+      --accent-color: #4ecdc4;
+      --background-main: #fff7ec;
+      --border-color: #ffe3c4;
+      --app-font: 'Varela Round', 'Segoe UI', sans-serif;
+      --btn-radius: 22px;
+      --card-radius: 24px;
+      --margin-line: #ff8fab;
+    }
+
+    /* ⚡ חטיבה ותיכון - מודרני */
+    [data-design="teen"] {
+      --primary-color: #7c3aed;
+      --secondary-color: #06b6d4;
+      --accent-color: #f472b6;
+      --background-main: #f5f5fb;
+      --border-color: #e4e2f5;
+      --app-font: 'Rubik', 'Segoe UI', sans-serif;
+      --btn-radius: 14px;
+      --card-radius: 16px;
+    }
+
+    /* 🎓 סטודנט - נקי וממוקד */
+    [data-design="student"] {
+      --primary-color: #2563eb;
+      --secondary-color: #1e40af;
+      --accent-color: #0891b2;
+      --background-main: #f6f7f9;
+      --text-primary: #1f2937;
+      --border-color: #e5e7eb;
+      --app-font: 'Heebo', 'Segoe UI', sans-serif;
+      --btn-radius: 8px;
+      --card-radius: 10px;
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: var(--app-font);
       background: var(--background-main);
       color: var(--text-primary);
       line-height: 1.6;
       direction: rtl;
+    }
+
+    /* ===== כרטיסי בחירת עיצוב ===== */
+    .design-cards {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .design-card {
+      flex: 1;
+      min-width: 130px;
+      position: relative;
+      border: 2px solid var(--border-color);
+      border-radius: 14px;
+      padding: 14px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition-normal);
+      background: var(--background-card);
+      user-select: none;
+    }
+
+    .design-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow-light);
+    }
+
+    .design-card.active {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+    }
+
+    .design-card.active::after {
+      content: '✓';
+      position: absolute;
+      top: -8px;
+      inset-inline-start: -8px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--success-color);
+      color: #fff;
+      font-size: 0.8rem;
+      line-height: 22px;
+      font-weight: 700;
+    }
+
+    .design-card.locked {
+      opacity: 0.75;
+    }
+
+    .design-card .design-emoji {
+      font-size: 1.6rem;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .design-card .design-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .design-card .design-dots {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .design-card .design-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .design-card .design-lock {
+      position: absolute;
+      top: -8px;
+      inset-inline-end: -6px;
+      background: linear-gradient(135deg, #f6d365, #fda085);
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      font-size: 0.75rem;
+      line-height: 24px;
     }
 
     /* ===== Unified Button System ===== */
@@ -1599,7 +1732,7 @@ padding: 0px 10px 10px 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
 
-    .event-item.lesson { background: #667eea; }
+    .event-item.lesson { background: var(--primary-color); }
     .event-item.exam { background: #e74c3c; }
     .event-item.assignment { background: #f39c12; }
     .event-item.personal { background: #9b59b6; }
@@ -1651,7 +1784,7 @@ padding: 0px 10px 10px 10px;
       box-shadow: 0 5px 15px var(--shadow-light);
     }
 
-    .lesson-btn:hover { border-color: #667eea; color: #667eea; }
+    .lesson-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
     .exam-btn:hover { border-color: #e74c3c; color: #e74c3c; }
     .assignment-btn:hover { border-color: #f39c12; color: #f39c12; }
     .personal-btn:hover { border-color: #9b59b6; color: #9b59b6; }
@@ -1724,7 +1857,7 @@ padding: 0px 10px 10px 10px;
       transform: translateX(-5px);
     }
 
-    .sidebar-event-item.lesson { border-left-color: #667eea; }
+    .sidebar-event-item.lesson { border-left-color: var(--primary-color); }
     .sidebar-event-item.exam { border-left-color: #e74c3c; }
     .sidebar-event-item.assignment { border-left-color: #f39c12; }
     .sidebar-event-item.personal { border-left-color: #9b59b6; }
@@ -1891,7 +2024,7 @@ padding: 0px 10px 10px 10px;
       transform: translateX(-5px);
     }
 
-    .day-event.lesson { border-right-color: #667eea; }
+    .day-event.lesson { border-right-color: var(--primary-color); }
     .day-event.exam { border-right-color: #e74c3c; }
     .day-event.assignment { border-right-color: #f39c12; }
     .day-event.personal { border-right-color: #9b59b6; }
@@ -2084,7 +2217,7 @@ padding: 0px 10px 10px 10px;
     0 12px 40px rgba(0,0,0,0.12),
     inset 0 -2px 8px rgba(0,0,0,0.03);
   border: 1px solid rgba(0,0,0,0.06);
-  border-right: 6px solid var(--subject-color, #667eea);
+  border-right: 6px solid var(--subject-color, var(--primary-color));
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -2958,7 +3091,7 @@ padding: 0px 10px 10px 10px;
   height: 40px;
   border-radius: 50%;
   border: none;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   color: white;
   font-size: 20px;
   cursor: pointer;
@@ -3004,7 +3137,7 @@ padding: 0px 10px 10px 10px;
 
 .page-jump-input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--primary-color);
 }
 
 @media (max-width: 768px) {
@@ -3294,7 +3427,7 @@ scrollbar-gutter: stable;
 }
 
 .dropped-formula.selected {
-  border-color: #667eea;
+  border-color: var(--primary-color);
   border-width: 3px;
 }
 
@@ -3341,7 +3474,7 @@ scrollbar-gutter: stable;
   position: absolute;
   width: 12px;
   height: 12px;
-  background: #667eea;
+  background: var(--primary-color);
   border: 2px solid white;
   border-radius: 2px;
   z-index: 10;
@@ -4822,7 +4955,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 
 .timer-circle-fg {
   fill: none;
-  stroke: #667eea;
+  stroke: var(--primary-color);
   stroke-width: 8;
   stroke-linecap: round;
   stroke-dasharray: 565.48;
@@ -4973,7 +5106,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
   border: 2px solid #e2e8f0;
   border-radius: 12px;
   font-weight: 700;
-  color: #667eea;
+  color: var(--primary-color);
   background: white;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: 'Segoe UI', system-ui, sans-serif;
@@ -4982,7 +5115,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 
 .timer-input-group input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15), 0 4px 15px rgba(102, 126, 234, 0.15);
   transform: scale(1.05);
 }
@@ -5075,7 +5208,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -5086,7 +5219,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 
 .timer-preset:hover {
   background: linear-gradient(145deg, #ffffff, #f0f4ff);
-  border-color: #667eea;
+  border-color: var(--primary-color);
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
 }
@@ -6338,7 +6471,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 }
 
 .interactive-shape.selected {
-  outline: 2px dashed #667eea;
+  outline: 2px dashed var(--primary-color);
   outline-offset: 3px;
 }
 
@@ -6377,7 +6510,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 }
 
 .shape-control-btn:hover {
-  background: #667eea;
+  background: var(--primary-color);
   color: white;
   transform: scale(1.1);
 }
@@ -6400,7 +6533,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
   width: 14px;
   height: 14px;
   background: white;
-  border: 2px solid #667eea;
+  border: 2px solid var(--primary-color);
   border-radius: 50%;
   z-index: 102;
   display: none;
@@ -6420,7 +6553,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
   transform: translateX(-50%);
   width: 24px;
   height: 24px;
-  background: #667eea;
+  background: var(--primary-color);
   border-radius: 50%;
   cursor: grab;
   z-index: 1001;
@@ -6440,7 +6573,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
   left: 50%;
   width: 2px;
   height: 50px;
-  background: #667eea;
+  background: var(--primary-color);
   transform: translateX(-50%);
   display: none;
   z-index: 1001;
@@ -6941,7 +7074,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
         </div>
       </div>
     </div>
-    <button id="galleryViewBtn" class="add-page-btn" onclick="app.toggleGalleryView()" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+    <button id="galleryViewBtn" class="add-page-btn" onclick="app.toggleGalleryView()" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
       <span>📱</span>
       תצוגת גלריה
     </button>
@@ -8114,7 +8247,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
         <div class="form-group" style="display:flex;align-items:center;gap:16px;">
           <div id="profileAvatarPreview" style="
             width:72px;height:72px;border-radius:50%;
-            background:linear-gradient(135deg,#667eea,#764ba2);
+            background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));
             display:flex;align-items:center;justify-content:center;
             font-size:2rem;color:white;flex-shrink:0;
             overflow:hidden;border:3px solid #e5e7eb;">
@@ -8312,6 +8445,11 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
                 <span>🌙 כהה</span>
               </label>
             </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">סגנון עיצוב</label>
+            <div id="designCards" class="design-cards"></div>
+            <small id="designHint" style="color: var(--text-secondary); font-size: 0.85rem;"></small>
           </div>
           <div class="form-group">
             <label class="form-label">שפת ממשק</label>
@@ -8916,6 +9054,9 @@ autoSaveInterval: null,
       init: async function() {
         console.log('🔄 מאתחל אפליקציה...');
         
+        // החלת ערכת עיצוב שמורה מיד (מונע הבהוב, עובד גם במצב אורח)
+        this.applyDesign(this.getCurrentDesign());
+        
         // אתחול Supabase
         initSupabase();
         
@@ -8951,6 +9092,7 @@ autoSaveInterval: null,
         
         this.loadUserData();
         await this.loadUserPlan(currentUser.id); // טעינת סטטוס פרימיום
+        await this.loadDesignFromCloud(); // טעינת ערכת עיצוב (אחרי שידוע אם פרימיום)
         this.displayUserEmail(); // עדכון הברכה עם השם מה-DB
         this.updatePremiumInfoDisplay(); // עדכון כפתור הכוכב
         this.updateTime();
@@ -9350,7 +9492,7 @@ this.showPage('homepage');
           preview.style.background = 'transparent';
           preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
         } else {
-          preview.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+          preview.style.background = 'linear-gradient(135deg,var(--primary-color),var(--secondary-color))';
           const letter = (name || '').trim().charAt(0).toUpperCase() || '👤';
           preview.innerHTML = `<span style="font-size:2rem;color:white;">${letter}</span>`;
         }
@@ -9743,7 +9885,7 @@ this.showPage('homepage');
             galleryViewBtn.innerHTML = '<span>📱</span> תצוגת גלריה';
             galleryViewBtn.classList.remove('premium-locked-btn');
             galleryViewBtn.style.opacity = '1';
-            galleryViewBtn.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+            galleryViewBtn.style.background = 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))';
           } else {
             galleryViewBtn.innerHTML = '<span>📱</span> תצוגת גלריה <span class="premium-badge-small">⭐</span>';
             galleryViewBtn.classList.add('premium-locked-btn');
@@ -14043,7 +14185,7 @@ toolbarInsertLink() {
     if (selection.toString()) {
       document.execCommand('createLink', false, url);
     } else {
-      const link = `<a href="${url}" target="_blank" style="color: #667eea; text-decoration: underline;">${linkText}</a>`;
+      const link = `<a href="${url}" target="_blank" style="color: var(--primary-color); text-decoration: underline;">${linkText}</a>`;
       document.execCommand('insertHTML', false, link);
     }
     
@@ -14058,7 +14200,7 @@ toolbarInsertLink() {
     
     const beforeText = element.value.substring(0, start);
     const afterText = element.value.substring(end);
-    const link = `<a href="${url}" target="_blank" style="color: #667eea; text-decoration: underline;">${linkText}</a>`;
+    const link = `<a href="${url}" target="_blank" style="color: var(--primary-color); text-decoration: underline;">${linkText}</a>`;
     
     element.value = beforeText + link + afterText;
     element.setSelectionRange(start + link.length, start + link.length);
@@ -14761,7 +14903,7 @@ insertLink() {
     link.href = url;
     link.textContent = displayText;
     link.target = '_blank';
-    link.style.color = '#667eea';
+    link.style.color = 'var(--primary-color)';
     link.style.textDecoration = 'underline';
     
     const range = selection.getRangeAt(0);
@@ -16499,6 +16641,10 @@ updateSidebarEventsList() {
         document.querySelector(`input[name="theme"][value="${theme}"]`).checked = true;
         this.applyTheme(theme);
         
+        // ערכת עיצוב לפי גיל
+        this.applyDesign(this.getCurrentDesign());
+        this.renderDesignCards();
+        
         // טעינת שפה
         const language = settings.language || 'he';
         document.querySelector(`input[name="language"][value="${language}"]`).checked = true;
@@ -16509,7 +16655,9 @@ updateSidebarEventsList() {
 
       // שמירת הגדרות
       saveSettings() {
+        const existing = JSON.parse(localStorage.getItem('appSettings')) || {};
         const settings = {
+          ...existing,
           userName: document.getElementById('userName').value,
           userAge: document.getElementById('userAge').value,
           userAddress: document.getElementById('userAddress').value,
@@ -16523,6 +16671,9 @@ updateSidebarEventsList() {
         
         // החלת ערכת צבעים
         this.applyTheme(settings.theme);
+        
+        // רענון ערכת עיצוב (למקרה שהגיל השתנה וברירת המחדל התעדכנה)
+        this.applyDesign(this.getCurrentDesign());
         
         // הפעלת שמירה אוטומטית
         this.startAutoSave(settings.autoSaveInterval);
@@ -16693,6 +16844,129 @@ subtitleElement.textContent = 'מיקוד שמוביל להצלחה';
           document.documentElement.style.setProperty('--text-secondary', '#7f8c8d');
           document.documentElement.style.setProperty('--border-color', '#e9ecef');
         }
+      },
+
+      // ===== ערכות עיצוב לפי גיל =====
+      designThemes: {
+        young:   { name: 'צבעוני ושמח', emoji: '🎈', dots: ['#ff6b6b', '#ffa62b', '#4ecdc4'] },
+        teen:    { name: 'מודרני',       emoji: '⚡', dots: ['#7c3aed', '#06b6d4', '#f472b6'] },
+        student: { name: 'נקי וממוקד',   emoji: '🎓', dots: ['#2563eb', '#1e40af', '#0891b2'] }
+      },
+
+      // ברירת מחדל לפי גיל (מהפרופיל או מההגדרות)
+      getDefaultDesign() {
+        let age = null;
+        if (this.profileData && this.profileData.age) {
+          age = parseInt(this.profileData.age);
+        } else {
+          const settings = JSON.parse(localStorage.getItem('appSettings')) || {};
+          if (settings.userAge) age = parseInt(settings.userAge);
+        }
+        if (!age || isNaN(age)) return 'teen';
+        if (age <= 12) return 'young';
+        if (age <= 18) return 'teen';
+        return 'student';
+      },
+
+      // האם מותר למשתמש להשתמש בערכה (חינם: רק ברירת המחדל שלו)
+      isDesignAllowed(design) {
+        return this.isPro || design === this.getDefaultDesign();
+      },
+
+      // החלת ערכה על המסמך
+      applyDesign(design) {
+        if (design && this.designThemes[design]) {
+          document.documentElement.setAttribute('data-design', design);
+        } else {
+          document.documentElement.removeAttribute('data-design');
+        }
+        // רענון מצב בהיר/כהה כדי שצבעי הרקע יתעדכנו נכון
+        const settings = JSON.parse(localStorage.getItem('appSettings')) || {};
+        this.applyTheme(settings.theme || 'light');
+      },
+
+      // בחירת ערכה מתוך ההגדרות (כולל נעילת פרימיום)
+      selectDesign(design) {
+        if (!this.isDesignAllowed(design)) {
+          this.openUpgradeModal('ערכות עיצוב נוספות');
+          return;
+        }
+        const settings = JSON.parse(localStorage.getItem('appSettings')) || {};
+        settings.designTheme = design;
+        localStorage.setItem('appSettings', JSON.stringify(settings));
+        this.applyDesign(design);
+        this.renderDesignCards();
+        this.syncDesignToCloud(design);
+      },
+
+      // הערכה הנוכחית: מה שנשמר אם עדיין מותר, אחרת ברירת המחדל
+      getCurrentDesign() {
+        const settings = JSON.parse(localStorage.getItem('appSettings')) || {};
+        const saved = settings.designTheme;
+        if (saved && this.designThemes[saved] && this.isDesignAllowed(saved)) {
+          return saved;
+        }
+        return this.getDefaultDesign();
+      },
+
+      // ציור כרטיסי הבחירה במסך ההגדרות
+      renderDesignCards() {
+        const container = document.getElementById('designCards');
+        if (!container) return;
+        const current = this.getCurrentDesign();
+        container.innerHTML = Object.entries(this.designThemes).map(([key, t]) => {
+          const locked = !this.isDesignAllowed(key);
+          return `
+            <div class="design-card ${current === key ? 'active' : ''} ${locked ? 'locked' : ''}"
+                 onclick="app.selectDesign('${key}')" title="${locked ? 'זמין בפרימיום' : t.name}">
+              ${locked ? '<span class="design-lock">🔒</span>' : ''}
+              <span class="design-emoji">${t.emoji}</span>
+              <div class="design-name">${t.name}</div>
+              <div class="design-dots">${t.dots.map(c => `<span class="design-dot" style="background:${c}"></span>`).join('')}</div>
+            </div>`;
+        }).join('');
+        const hint = document.getElementById('designHint');
+        if (hint) {
+          hint.textContent = this.isPro
+            ? 'בחר את הסגנון שהכי מתאים לך ✨'
+            : 'הסגנון שנבחר לפי הגיל שלך פתוח בחינם. שאר הסגנונות זמינים בפרימיום ⭐';
+        }
+      },
+
+      // סנכרון הבחירה לענן (נשמר גם אם נכשל - localStorage הוא הגיבוי)
+      async syncDesignToCloud(design) {
+        try {
+          const user = supabaseClient && supabaseClient.auth ? (await supabaseClient.auth.getUser()).data.user : null;
+          if (!user) return;
+          await supabaseClient.from('user_data').upsert({
+            user_id: user.id,
+            data_type: 'design_theme',
+            data: { design: design },
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'user_id,data_type' });
+        } catch (e) {
+          console.log('⚠️ סנכרון ערכת עיצוב נכשל, נשמר מקומית');
+        }
+      },
+
+      // טעינת הבחירה מהענן בכניסה (מכשיר חדש)
+      async loadDesignFromCloud() {
+        try {
+          const user = supabaseClient && supabaseClient.auth ? (await supabaseClient.auth.getUser()).data.user : null;
+          if (!user) return;
+          const { data } = await supabaseClient
+            .from('user_data')
+            .select('data')
+            .eq('user_id', user.id)
+            .eq('data_type', 'design_theme')
+            .single();
+          if (data && data.data && data.data.design) {
+            const settings = JSON.parse(localStorage.getItem('appSettings')) || {};
+            settings.designTheme = data.data.design;
+            localStorage.setItem('appSettings', JSON.stringify(settings));
+          }
+        } catch (e) { /* אין רשומה - לא נורא */ }
+        this.applyDesign(this.getCurrentDesign());
       },
 
       // שינוי שפה
@@ -20009,7 +20283,7 @@ const TutorialSystem = {
       this.highlightedEl.setAttribute('style', this.oldStyle);
     }
     this.oldStyle = el.getAttribute('style') || '';
-    let styles = ';box-shadow:0 0 0 4px #667eea, 0 0 20px rgba(102,126,234,0.7) !important;outline:3px solid white !important;z-index:9999 !important;';
+    let styles = ';box-shadow:0 0 0 4px var(--primary-color), 0 0 20px rgba(102,126,234,0.7) !important;outline:3px solid white !important;z-index:9999 !important;';
     if (!noPosition) styles += ';position:relative !important';
     el.setAttribute('style', this.oldStyle + styles);
     this.highlightedEl = el;
@@ -20038,7 +20312,7 @@ const TutorialSystem = {
     }
     this.doHighlight(el, step.noPosition);
     const isLast = this.currentStep === steps.length - 1;
-    this.tooltip.innerHTML = '<div style="font-size:1.2rem;font-weight:700;margin-bottom:10px;color:#333;">' + step.title + '</div><div style="font-size:0.95rem;color:#666;line-height:1.6;margin-bottom:15px;">' + step.text + '</div><div style="display:flex;justify-content:space-between;align-items:center;"><span style="color:#999;font-size:0.85rem;">' + (this.currentStep + 1) + ' / ' + steps.length + '</span><button style="padding:10px 20px;border-radius:10px;border:none;cursor:pointer;font-weight:600;background:linear-gradient(135deg,#667eea,#764ba2);color:white;" onclick="TutorialSystem.nextStep()">' + (isLast ? 'סיום ✓' : 'הבא ←') + '</button></div>';
+    this.tooltip.innerHTML = '<div style="font-size:1.2rem;font-weight:700;margin-bottom:10px;color:#333;">' + step.title + '</div><div style="font-size:0.95rem;color:#666;line-height:1.6;margin-bottom:15px;">' + step.text + '</div><div style="display:flex;justify-content:space-between;align-items:center;"><span style="color:#999;font-size:0.85rem;">' + (this.currentStep + 1) + ' / ' + steps.length + '</span><button style="padding:10px 20px;border-radius:10px;border:none;cursor:pointer;font-weight:600;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:white;" onclick="TutorialSystem.nextStep()">' + (isLast ? 'סיום ✓' : 'הבא ←') + '</button></div>';
     const rect = el.getBoundingClientRect();
     let top, left;
     if (step.position === 'bottom') { top = rect.bottom + 15; left = rect.left + rect.width / 2 - 160; }
@@ -20224,12 +20498,12 @@ document.addEventListener('DOMContentLoaded', function() {
   justify-content: center;
   font-size: 1.2rem;
   transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
-  color: #667eea;
+  color: var(--primary-color);
 }
 #a11y-toggle-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 14px rgba(102,126,234,0.2);
-  border-color: #667eea;
+  border-color: var(--primary-color);
 }
 #a11y-panel {
   position: fixed;
@@ -20288,7 +20562,7 @@ document.addEventListener('DOMContentLoaded', function() {
   background: #f0f2f5; border-radius: 8px; padding: 2px 5px;
 }
 .a11y-stepper button {
-  background: none; border: none; color: #667eea; font-size: 1rem;
+  background: none; border: none; color: var(--primary-color); font-size: 1rem;
   cursor: pointer; width: 22px; height: 22px; border-radius: 6px;
   display: flex; align-items: center; justify-content: center;
   transition: background 0.15s; font-weight: bold;
@@ -20305,7 +20579,7 @@ document.addEventListener('DOMContentLoaded', function() {
   content: ''; position: absolute; width: 16px; height: 16px;
   background: white; border-radius: 50%; top: 3px; right: 3px; transition: transform 0.2s;
 }
-.a11y-switch input:checked + .a11y-switch-slider { background: #667eea; }
+.a11y-switch input:checked + .a11y-switch-slider { background: var(--primary-color); }
 .a11y-switch input:checked + .a11y-switch-slider:before { transform: translateX(-18px); }
 #a11y-tts-bar {
   background: #f0f2f5; border: 1px solid #e2e8f0;
@@ -20319,7 +20593,7 @@ document.addEventListener('DOMContentLoaded', function() {
   border-radius: 8px; padding: 5px 12px; cursor: pointer; font-size: 0.78rem; transition: background 0.15s;
 }
 .a11y-tts-btn:hover { background: #f0f2f5; }
-.a11y-tts-btn.active { background: #667eea; color: white; border-color: #667eea; }
+.a11y-tts-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
 .a11y-reset {
   background: #fff5f5; border: 1px solid #fed7d7; color: #e53e3e;
   border-radius: 8px; padding: 7px; cursor: pointer; font-size: 0.78rem;
@@ -21028,7 +21302,7 @@ app.voice = (function() {
   right: 0;
   bottom: 0;
   z-index: 10000;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, #f093fb 100%);
   overflow-y: auto;
   padding: 20px;
 }
@@ -21201,7 +21475,7 @@ app.voice = (function() {
 }
 
 .price-option:hover {
-  border-color: #667eea;
+  border-color: var(--primary-color);
   background: #f8f9ff;
 }
 
@@ -21222,11 +21496,11 @@ app.voice = (function() {
 }
 
 .price-option input[type="radio"]:checked + .price-option-content {
-  color: #667eea;
+  color: var(--primary-color);
 }
 
 .price-option:has(input:checked) {
-  border-color: #667eea;
+  border-color: var(--primary-color);
   background: #f0f4ff;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 }
@@ -21253,7 +21527,7 @@ app.voice = (function() {
 .price-option .price-amount {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #667eea;
+  color: var(--primary-color);
 }
 
 .price-option .price-period {
@@ -21379,7 +21653,7 @@ app.voice = (function() {
 
 .upgrade-btn.secondary {
   background: white;
-  color: #667eea;
+  color: var(--primary-color);
   border: 2px solid white;
 }
 
@@ -21551,7 +21825,7 @@ app.voice = (function() {
   width: 100%;
   padding: 16px;
   background: white;
-  color: #764ba2;
+  color: var(--secondary-color);
   border: none;
   border-radius: 12px;
   font-size: 1.1rem;
@@ -21650,7 +21924,7 @@ app.voice = (function() {
 
 #upgradeFeatureName {
   font-weight: 600;
-  color: #667eea;
+  color: var(--primary-color);
 }
 
 .upgrade-modal-features {
@@ -21677,7 +21951,7 @@ app.voice = (function() {
   font-size: 1.1rem;
   font-weight: 600;
   color: white;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -22330,7 +22604,7 @@ app.voice = (function() {
 }
 
 .sub-action-btn.primary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   color: white;
 }
 
