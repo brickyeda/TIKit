@@ -40,6 +40,9 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://brickyeda.github.io/TIKit/logo.png">
   <link rel="apple-touch-icon" href="https://brickyeda.github.io/TIKit/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -6529,7 +6532,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           <div class="welcome-text">
             <div style="display:flex;align-items:center;gap:16px;margin-bottom:0;"><h1 id="welcomeGreeting" style="margin-bottom:0;">שלום!</h1><div id="welcomeAvatar" onclick="app.showPage('subscription')" title="עריכת פרופיל" style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.25);border:3px solid rgba(255,255,255,0.6);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:white;overflow:hidden;flex-shrink:0;box-shadow:0 4px 15px rgba(0,0,0,0.2);transition:transform 0.2s ease;cursor:pointer;"><span id="welcomeAvatarContent">👤</span></div></div>
 <div class="subtitle" id="welcomeSubtitle">מיקוד שמוביל להצלחה</div>
-            <div class="institution" id="welcomeInstitution">הילקוד החכם שלך</div>
+            <div class="institution" id="welcomeInstitution">הילקוט החכם שלך</div>
             <button onclick="logout()" style="margin-top: 15px; padding: 10px 20px; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; border-radius: 8px; font-size: 0.95rem; cursor: pointer; transition: transform 0.2s;">
               🚪 התנתק
             </button>
@@ -6562,58 +6565,58 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
       <div class="tools-grid">
         <div class="tool-card" onclick="app.showPage('notebooks')">
           <span class="tool-icon">📚</span>
-          <div class="tool-title">מחברות לפי מקצועות</div>
-          <div class="tool-description">כל המחברות שלי מסודרות לפי מקצועות עם דפים, רישומים וכלי כתיבה מתקדמים</div>
+          <div class="tool-title">המחברות שלי</div>
+          <div class="tool-description">כל המקצועות במקום אחד. פותחים, כותבים ומציירים.</div>
           <span class="tool-status">6 מחברות פעילות</span>
         </div>
 
         <div class="tool-card" onclick="app.showPage('tasks')">
           <span class="tool-icon">✅</span>
-          <div class="tool-title">מנהל משימות חכם</div>
-          <div class="tool-description">רשימת מטלות מתקדמת עם מעקב ביצועים, תזכורות ולוחות זמנים</div>
+          <div class="tool-title">מה יש לי לעשות</div>
+          <div class="tool-description">שיעורי בית ומבחנים, מסודרים לפי מה שדחוף קודם.</div>
           <span class="tool-status" id="taskStatusHome">טוען...</span>
         </div>
 
         <div class="tool-card" onclick="app.showPage('calendar')">
           <span class="tool-icon">📅</span>
-          <div class="tool-title">יומן ולוח שנה</div>
-          <div class="tool-description">מערכת שעות, מועדי בחינות, אירועים חשובים ותכנון יומי ושבועי</div>
+          <div class="tool-title">היומן שלי</div>
+          <div class="tool-description">מה קורה השבוע — שיעורים, מבחנים ותאריכים חשובים.</div>
           <span class="tool-status" id="calendarStatusHome">טוען...</span>
         </div>
 
         <div class="tool-card" onclick="app.showPage('calculator')">
           <span class="tool-icon">🧮</span>
-          <div class="tool-title">מחשבון מדעי מתקדם</div>
-          <div class="tool-description">מחשבון מדעי מלא עם פונקציות טריגונומטריות, לוגריתמים, זיכרון והיסטוריה מלאה</div>
+          <div class="tool-title">מחשבון</div>
+          <div class="tool-description">לחשבון, לשברים ולכל תרגיל שנתקעים בו.</div>
           <span class="tool-status">מוכן לשימוש!</span>
         </div>
 
 
         <div class="tool-card" onclick="app.showPage('timer')">
           <span class="tool-icon">⏱️</span>
-          <div class="tool-title">שעון עצר וטיימר</div>
-          <div class="tool-description">שעון עצר לבחינות, טיימר ומעקב זמן למידה יעיל</div>
+          <div class="tool-title">טיימר ושעון עצר</div>
+          <div class="tool-description">מודדים 20 דקות קריאה, או כמה זמן לקח לפתור.</div>
           <span class="tool-status">מוכן לשימוש!</span>
         </div>
 
         <div class="tool-card" onclick="app.showPage('schedule')">
           <span class="tool-icon">🗓️</span>
-          <div class="tool-title">מערכת שעות שבועית</div>
-          <div class="tool-description">בנה את מערכת השיעורים שלך והיא תסתנכרן אוטומטית ליומן</div>
+          <div class="tool-title">מערכת השעות</div>
+          <div class="tool-description">בונים את השבוע פעם אחת, והיומן מתעדכן לבד.</div>
           <span class="tool-status" id="scheduleStatusHome">0 שיעורים</span>
         </div>
 
         <div class="tool-card" onclick="app.showPage('mylinks')">
           <span class="tool-icon">🔗</span>
           <div class="tool-title">הקישורים שלי</div>
-          <div class="tool-description">שמור קישורים לאתרים שימושיים וגש אליהם בקלות בכל עת</div>
+          <div class="tool-description">כל האתרים שצריך ללימודים — בלחיצה אחת.</div>
           <span class="tool-status" id="linksStatusHome">0 קישורים</span>
         </div>
 
 <div class="tool-card" onclick="app.showPage('achievements'); achEngine.renderWhenReady();">
           <span class="tool-icon">🏆</span>
           <div class="tool-title">ההישגים שלי</div>
-          <div class="tool-description">סטטיסטיקות, עיטורים ומעקב פעילות</div>
+          <div class="tool-description">מדבקות, שיאים וכל מה שכבר הספקתי.</div>
           <span class="tool-status" id="achStatusHome">פעיל ✨</span>
         </div>
       </div>
@@ -22417,4 +22420,545 @@ app.voice = (function() {
 }
 
 .cancel-modal-overlay {
-  positi
+  position: absolute;
+  inset: 0;
+  background: rgba(27, 37, 89, 0.55);
+  backdrop-filter: blur(2px);
+}
+</style>
+
+<!-- ===== TIKit · עיצוב "ילקוט" ===== -->
+<style id="tikit-kids">
+/* ============================================================
+   TIKit · עיצוב "ילקוט" — ממשק לילדי בית ספר יסודי
+   הרעיון: המחברת הפיזית שהילד מכיר, בשפה של משחק.
+   ============================================================ */
+
+:root {
+  /* דיו — העוגן הכהה. רציני, לא תינוקי, ונוח לעיניים לאורך זמן */
+  --tk-ink:        #1B2559;
+  --tk-ink-soft:   #3C4780;
+
+  /* משטחים */
+  --tk-paper:      #FFFCF5;  /* נייר מחברת */
+  --tk-desk:       #EDEFF7;  /* משטח השולחן */
+  --tk-line:       rgba(27,37,89,0.09);
+
+  /* צבעי סימון — כמו קלמר טושים */
+  --tk-grape:      #6C4CE0;
+  --tk-mint:       #17C6A3;
+  --tk-tangerine:  #FF8A3D;
+  --tk-cherry:     #FF4D6D;
+  --tk-sun:        #FFC93C;
+  --tk-sky:        #3BA5F5;
+
+  /* מדף — הצל המוצק שנותן תחושת כפתור פיזי */
+  --tk-ledge:      rgba(27,37,89,0.20);
+
+  --tk-r-sm: 12px;
+  --tk-r-md: 18px;
+  --tk-r-lg: 26px;
+
+  --tk-tap: 48px; /* מינימום שטח נגיעה לאצבע של ילד */
+}
+
+[data-theme="dark"] {
+  --tk-paper: #232A47;
+  --tk-desk:  #161B33;
+  --tk-line:  rgba(255,255,255,0.10);
+  --tk-ledge: rgba(0,0,0,0.45);
+}
+
+/* ---------- בסיס ---------- */
+
+body {
+  font-family: 'Rubik', 'Segoe UI', sans-serif;
+  font-size: 17px;              /* גדול יותר — קריא לילד */
+  background-color: var(--tk-desk);
+  /* נייר משבצות עדין מאוד ברקע */
+  background-image:
+    linear-gradient(var(--tk-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--tk-line) 1px, transparent 1px);
+  background-size: 32px 32px, 32px 32px;
+}
+
+h1, h2, h3, .page-title, .tool-title, .subject-title, .stat-number, .modal-title {
+  font-family: 'Suez One', 'Rubik', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* מיקוד מקלדת ברור — חשוב, ילדים מנווטים גם בטאב */
+:focus-visible {
+  outline: 3px solid var(--tk-grape);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   1. ה-HUD — פס הפתיחה
+   לוח מחוונים כהה כמו תפריט של משחק, לא באנר סגול
+   ============================================================ */
+
+.welcome-section {
+  background: var(--tk-ink);
+  background-image:
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 28px 28px, 28px 28px;
+  border-radius: var(--tk-r-lg);
+  padding: 28px 32px;
+  margin-bottom: 28px;
+  box-shadow: 0 8px 0 rgba(27,37,89,0.35), 0 18px 40px rgba(27,37,89,0.22);
+  border: none;
+}
+
+/* כיבוי הבועה המסתובבת — רעש מיותר */
+.welcome-section::before { display: none; }
+
+.welcome-content {
+  gap: 24px;
+}
+
+.welcome-text h1 {
+  font-size: 2.3rem;
+  line-height: 1.15;
+  color: #fff;
+}
+
+.welcome-text .subtitle {
+  font-size: 1.05rem;
+  opacity: 0.85;
+  font-weight: 500;
+}
+
+.welcome-text .institution {
+  font-size: 0.95rem;
+  opacity: 0.65;
+}
+
+/* תג השחקן */
+#welcomeAvatar {
+  border: 3px solid var(--tk-sun) !important;
+  box-shadow: 0 0 0 4px rgba(255,201,60,0.22) !important;
+  background: rgba(255,255,255,0.12) !important;
+}
+#welcomeAvatar:hover { transform: scale(1.06) rotate(-3deg); }
+
+/* כפתור התנתקות — לא צריך להיות אדום וצועק בראש המסך */
+.welcome-text button[onclick*="logout"] {
+  background: rgba(255,255,255,0.12) !important;
+  border: 2px solid rgba(255,255,255,0.25) !important;
+  color: rgba(255,255,255,0.9) !important;
+  font-family: 'Rubik', sans-serif !important;
+  font-weight: 500 !important;
+  min-height: 44px;
+  border-radius: 12px !important;
+}
+.welcome-text button[onclick*="logout"]:hover {
+  background: rgba(255,255,255,0.2) !important;
+}
+
+/* שבבי המחוונים */
+.welcome-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 340px;
+}
+
+.stat-item {
+  background: rgba(255,255,255,0.09);
+  border: 2px solid rgba(255,255,255,0.14);
+  border-radius: var(--tk-r-md);
+  padding: 14px 10px;
+  min-height: var(--tk-tap);
+  backdrop-filter: none;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.stat-item:hover {
+  background: rgba(255,255,255,0.18);
+  transform: translateY(-3px);
+}
+.stat-item:active { transform: translateY(0); }
+
+.stat-number {
+  font-size: 1.7rem;
+  line-height: 1.1;
+  margin-bottom: 2px;
+  color: var(--tk-sun);
+}
+
+.stat-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+/* ============================================================
+   2. אריחי הכלים — "מדבקות" עם מדף מוצק
+   ============================================================ */
+
+.tools-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.tool-card {
+  --tile: var(--tk-grape);
+  background: var(--tk-paper);
+  border: 3px solid var(--tk-ink);
+  border-radius: var(--tk-r-lg);
+  padding: 24px 22px 22px;
+  box-shadow: 0 7px 0 var(--tile);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  overflow: visible;
+}
+
+/* כיבוי פס הגרדיאנט העליון */
+.tool-card::before { display: none; }
+
+/* לחיצה פיזית — הכרטיס נדחף לתוך המדף */
+.tool-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 11px 0 var(--tile);
+}
+.tool-card:active {
+  transform: translateY(5px);
+  box-shadow: 0 2px 0 var(--tile);
+}
+
+/* כל כלי מקבל צבע משלו — האוסף צבעוני, אבל מבוקר */
+.tool-card:nth-child(1) { --tile: var(--tk-grape); }
+.tool-card:nth-child(2) { --tile: var(--tk-mint); }
+.tool-card:nth-child(3) { --tile: var(--tk-sky); }
+.tool-card:nth-child(4) { --tile: var(--tk-tangerine); }
+.tool-card:nth-child(5) { --tile: var(--tk-cherry); }
+.tool-card:nth-child(6) { --tile: var(--tk-grape); }
+.tool-card:nth-child(7) { --tile: var(--tk-mint); }
+.tool-card:nth-child(8) { --tile: var(--tk-sun); }
+
+.tool-icon {
+  font-size: 2rem;
+  width: 62px;
+  height: 62px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--tile);
+  border: 3px solid var(--tk-ink);
+  border-radius: 18px;
+  box-shadow: 3px 3px 0 rgba(27,37,89,0.18);
+}
+
+.tool-title {
+  font-size: 1.25rem;
+  color: var(--tk-ink);
+  margin-bottom: 6px;
+}
+
+.tool-description {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  margin-bottom: 14px;
+}
+
+.tool-status {
+  background: var(--tk-ink);
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.82rem;
+  padding: 7px 14px;
+  border-radius: 999px;
+}
+
+/* ============================================================
+   3. חתימת העיצוב — כרטיס המחברת
+   כריכת מחברת אמיתית: ספירלה, מדבקת שם, קו שוליים, שורות
+   ============================================================ */
+
+.subjects-grid {
+  grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
+  gap: 26px;
+}
+
+.subject-card {
+  background: var(--tk-paper);
+  /* שורות המחברת */
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 30px,
+      var(--tk-line) 30px 31px
+    );
+  background-position: 0 64px;
+  border: 3px solid var(--tk-ink);
+  border-right: 3px solid var(--tk-ink);
+  border-radius: 8px var(--tk-r-md) var(--tk-r-md) 8px;
+  padding: 26px 62px 22px 24px;   /* מקום לספירלה בצד ימין */
+  box-shadow: 0 7px 0 var(--subject-color, var(--tk-grape)),
+              0 16px 30px rgba(27,37,89,0.14);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+  overflow: hidden;
+  min-height: 220px;
+}
+
+/* הספירלה — עמוד השדרה של המחברת (ימין = הכריכה בעברית) */
+.subject-card::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  right: 0;
+  width: 40px;
+  background-color: var(--subject-color, var(--tk-grape));
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 12px,
+    rgba(255,255,255,0.92) 12px 19px,
+    transparent 19px 34px
+  );
+  border-left: 3px solid var(--tk-ink);
+  opacity: 1;
+  height: auto;
+  left: auto;
+}
+
+/* קו השוליים האדום */
+.subject-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 52px;
+  width: 2px;
+  background: var(--tk-cherry);
+  opacity: 0.55;
+}
+
+.subject-card:hover {
+  transform: translateY(-8px) rotate(-0.6deg);
+  box-shadow: 0 13px 0 var(--subject-color, var(--tk-grape)),
+              0 26px 46px rgba(27,37,89,0.2);
+  border-right-width: 3px;
+}
+.subject-card:active {
+  transform: translateY(2px) rotate(0deg);
+  box-shadow: 0 3px 0 var(--subject-color, var(--tk-grape)),
+              0 8px 16px rgba(27,37,89,0.16);
+}
+
+.subject-icon {
+  font-size: 2.6rem;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+
+/* מדבקת השם — הפריט שהופך את זה למחברת אמיתית */
+.subject-title {
+  display: inline-block;
+  background: #fff;
+  border: 2.5px solid var(--tk-ink);
+  border-radius: 7px;
+  padding: 5px 14px;
+  font-size: 1.15rem;
+  color: var(--tk-ink);
+  transform: rotate(-1.4deg);
+  box-shadow: 3px 3px 0 rgba(27,37,89,0.14);
+  margin-bottom: 12px;
+  max-width: 100%;
+}
+
+.subject-info {
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.subject-stats {
+  border-top: 2px dashed var(--tk-line);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.pages-count {
+  background: var(--tk-ink);
+  color: #fff;
+  padding: 4px 11px;
+  border-radius: 999px;
+}
+
+/* כפתורי הפעולה על המחברת — גדולים מספיק לאצבע */
+.notebook-duplicate-btn,
+.notebook-delete-btn {
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 12px;
+  font-size: 1.05rem;
+}
+
+/* ============================================================
+   4. כותרות עמוד
+   ============================================================ */
+
+.page-header {
+  border-bottom: 4px solid var(--tk-ink);
+  padding-bottom: 14px;
+  margin-bottom: 26px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  font-size: 2rem;
+  color: var(--tk-ink);
+  gap: 12px;
+}
+
+/* ============================================================
+   5. כפתורים — כפתור פיזי שנלחץ
+   ============================================================ */
+
+.btn,
+.back-btn,
+.add-page-btn {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 600;
+  min-height: var(--tk-tap);
+  border-radius: 14px;
+  border: 3px solid var(--tk-ink);
+  box-shadow: 0 4px 0 var(--tk-ledge);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.btn:hover,
+.back-btn:hover,
+.add-page-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--tk-ledge);
+}
+
+.btn:active,
+.back-btn:active,
+.add-page-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--tk-ledge);
+}
+
+.btn--primary, .btn-primary { background: var(--tk-grape); color: #fff; }
+.btn--secondary { background: #fff; color: var(--tk-ink); }
+.add-page-btn { background: var(--tk-mint); color: #fff; }
+.back-btn { background: #fff; color: var(--tk-ink); }
+
+/* ============================================================
+   6. טפסים — שדות גדולים וברורים
+   ============================================================ */
+
+.form-label {
+  font-weight: 600;
+  color: var(--tk-ink);
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  font-family: 'Rubik', sans-serif;
+  font-size: 1rem;
+  min-height: var(--tk-tap);
+  border: 2.5px solid var(--tk-line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: var(--tk-paper);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--tk-grape);
+  box-shadow: 0 0 0 4px rgba(108,76,224,0.16);
+  outline: none;
+}
+
+/* ============================================================
+   7. חלונות
+   ============================================================ */
+
+.modal-content {
+  border-radius: var(--tk-r-lg);
+  border: 3px solid var(--tk-ink);
+  box-shadow: 0 10px 0 rgba(27,37,89,0.22), 0 30px 60px rgba(27,37,89,0.3);
+}
+
+.modal-header {
+  border-bottom: 3px solid var(--tk-line);
+}
+
+.modal-title {
+  font-size: 1.35rem;
+  color: var(--tk-ink);
+}
+
+.close-btn {
+  min-width: 42px;
+  min-height: 42px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+}
+
+/* ============================================================
+   8. נייד — הכי חשוב, שם ילדים באמת משתמשים
+   ============================================================ */
+
+@media (max-width: 768px) {
+  body { font-size: 16px; }
+
+  .welcome-section {
+    padding: 22px 20px;
+    border-radius: var(--tk-r-md);
+  }
+
+  .welcome-text h1 { font-size: 1.75rem; }
+
+  .welcome-stats {
+    grid-template-columns: repeat(2, 1fr);
+    min-width: 0;
+    gap: 10px;
+  }
+
+  .stat-number { font-size: 1.4rem; }
+
+  .tools-grid { grid-template-columns: 1fr; gap: 16px; }
+
+  .tool-card { padding: 20px 18px; }
+
+  .subjects-grid { grid-template-columns: 1fr; gap: 20px; }
+
+  .subject-card {
+    padding: 22px 56px 20px 20px;
+    min-height: 190px;
+  }
+
+  .page-title { font-size: 1.55rem; }
+
+  .page-header { padding-bottom: 12px; margin-bottom: 20px; }
+}
+
+@media (max-width: 420px) {
+  .welcome-stats { grid-template-columns: 1fr 1fr; }
+  .welcome-text h1 { font-size: 1.5rem; }
+}
+
+</style>
+
+</body>
+</html>
