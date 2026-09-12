@@ -10367,6 +10367,7 @@ if (this.currentNotebook && pageId !== 'notebookView') {
 createNotebookCard(subjectKey, subject, isOverLimit = false) {
   const cardDiv = document.createElement('div');
   cardDiv.className = `subject-card ${subjectKey}${isOverLimit ? ' notebook-limited' : ''}`;
+  cardDiv.dataset.notebookKey = subjectKey;
   cardDiv.onclick = () => this.openNotebook(subjectKey);
   cardDiv.tabIndex = 0;
   cardDiv.setAttribute('role', 'button');
@@ -12467,16 +12468,26 @@ savePageFormatting(index) {
       
       // יצירת מחברת
       createNotebook() {
-        const name = document.getElementById('notebookName').value.trim();
+        const nameInput = document.getElementById('notebookName');
+        const createBtn = document.getElementById('createBtn');
+        const name = nameInput ? nameInput.value.trim() : '';
         
         if (!name) {
           alert('אנא הכנס שם למחברת');
           return;
         }
+
+        // מניעת יצירה כפולה במקרה של שתי לחיצות מהירות
+        if (createBtn?.dataset.creating === 'true') return;
         
         // בדיקת מגבלות גרסה חינמית
         if (!this.canCreateNotebook(this.selectedPageType)) {
           return;
+        }
+
+        if (createBtn) {
+          createBtn.dataset.creating = 'true';
+          createBtn.disabled = true;
         }
         
         const notebookKey = 'custom_' + Date.now();
@@ -12497,13 +12508,52 @@ savePageFormatting(index) {
         };
         
         this.subjects[notebookKey] = newNotebook;
-        this.saveN
-        try { achEngine.logActivity('📓', 'נוצרה מחברת: ' + name); } catch(e) {}otebookData();
-        this.renderNotebooks();
-        this.loadWelcomeData();
-        
-        alert(`מחברת "${name}" נוצרה בהצלחה! 🎉`);
+
+        // localStorage מתעדכן מיד; השמירה לענן ממשיכה ללא חסימת הממשק
+        void this.saveNotebookData();
+        try { achEngine.logActivity('📓', 'נוצרה מחברת: ' + name); } catch(e) {}
+
+        // סגור מיד, עבור למחברות ורנדר מחדש דרך showPage
         this.closeNotebookCreator();
+        const notebookSearch = document.getElementById('notebooksSearchInput');
+        if (notebookSearch) notebookSearch.value = '';
+        this.showPage('notebooks');
+        this.loadWelcomeData();
+
+        // הדגשה קצרה של המחברת החדשה במקום חלון alert שחוסם את המעבר
+        requestAnimationFrame(() => {
+          const newCard = [...document.querySelectorAll('#subjectsGrid .subject-card')]
+            .find(card => card.dataset.notebookKey === notebookKey);
+          if (newCard) {
+            newCard.classList.add('notebook-just-created');
+            newCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            newCard.focus({ preventScroll: true });
+            setTimeout(() => newCard.classList.remove('notebook-just-created'), 1800);
+          }
+        });
+
+        this.showNotebookCreatedToast(name);
+
+        if (createBtn) {
+          delete createBtn.dataset.creating;
+        }
+      },
+
+      showNotebookCreatedToast(name) {
+        document.querySelector('.notebook-created-toast')?.remove();
+
+        const toast = document.createElement('div');
+        toast.className = 'notebook-created-toast';
+        toast.setAttribute('role', 'status');
+        toast.setAttribute('aria-live', 'polite');
+        toast.innerHTML = `<span class="notebook-created-toast-icon">✓</span><span>המחברת <strong>${this.escapeHtml(name)}</strong> נוצרה בהצלחה</span>`;
+        document.body.appendChild(toast);
+
+        requestAnimationFrame(() => toast.classList.add('show'));
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => toast.remove(), 220);
+        }, 2600);
       },
       
       // קבלת אייקון לפי סוג דף
@@ -25188,6 +25238,52 @@ body.a11y-dark #notebookView .export-menu { background:#1c233b !important; borde
 .link-modal h3 { margin: -30px -30px 20px; padding: 18px 22px; border-bottom: 1px solid var(--ui-border); background: linear-gradient(110deg,#eaf4ff,#fff); color: var(--ui-navy); font: 700 1.35rem 'Rubik',sans-serif; }
 .schedule-btn-delete { border-color: #f0d3da !important; background: var(--ui-red-soft) !important; color: #bc3e57 !important; }
 
+/* משוב מיידי לאחר יצירת מחברת */
+.notebooks-grid .subject-card.notebook-just-created {
+  border-color: #7ab4ff;
+  box-shadow: 0 0 0 4px rgba(18,98,216,.11), 0 14px 32px rgba(23,56,111,.13);
+  animation: notebookCreatedPulse .6s ease both;
+}
+@keyframes notebookCreatedPulse {
+  0% { opacity: .55; transform: translateY(8px) scale(.985); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.notebook-created-toast {
+  position: fixed;
+  z-index: 2600;
+  left: 24px;
+  bottom: 24px;
+  max-width: min(420px,calc(100vw - 28px));
+  min-height: 52px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #bfe8d9;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ui-navy);
+  box-shadow: 0 15px 38px rgba(16,43,105,.17);
+  font-size: .96rem;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
+  transition: opacity .2s ease,transform .2s ease;
+}
+.notebook-created-toast.show { opacity: 1; transform: none; }
+.notebook-created-toast-icon {
+  width: 31px;
+  height: 31px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 9px;
+  background: var(--ui-green-soft);
+  color: #087c5a;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
 /* ---------- התאמות מסכים ---------- */
 @media (max-width: 1050px) and (min-width:769px) {
   #tasks .tasks-grid { grid-template-columns: 1fr 340px; }
@@ -25324,6 +25420,7 @@ body.a11y-dark #notebookView .export-menu { background:#1c233b !important; borde
   #profileEditModal .modal-body,
   #taskEditModal .modal-body { padding: 15px; }
   #settingsModal .form-section { padding: 13px; }
+  .notebook-created-toast { left: 14px; bottom: calc(82px + env(safe-area-inset-bottom)); font-size: .88rem; }
 }
 
 /* מצב כהה ונגישות נשארים קריאים */
