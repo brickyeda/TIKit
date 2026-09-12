@@ -6454,172 +6454,152 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
   </style>
 </head>
 <body>
-  <!-- Navigation Bar -->
-  <nav class="navbar">
+  <!-- Phase A: desktop sidebar -->
+  <aside class="navbar app-sidebar" aria-label="ניווט ראשי">
     <div class="navbar-content">
-      <div class="navbar-brand" onclick="app.showPage('homepage')">
-        <img src="https://brickyeda.github.io/TIKit/logo.png" alt="Logo" class="logo">
-        <span>TIKit</span>
-      </div>
-      
-      <ul class="navbar-menu">
-        <li class="navbar-item active" onclick="app.showPage('homepage')" data-page="homepage">
-          <i data-lucide="home" class="lucide-icon"></i>
-          <span>בית</span>
-        </li>
-        <li class="navbar-item" onclick="app.showPage('notebooks')" data-page="notebooks">
-          <i data-lucide="book-open" class="lucide-icon"></i>
-          <span>מחברות</span>
-        </li>
-        <li class="navbar-item" onclick="app.showPage('tasks')" data-page="tasks">
-          <i data-lucide="check-square" class="lucide-icon"></i>
-          <span>משימות</span>
-        </li>
-        <li class="navbar-item" onclick="app.showPage('calendar')" data-page="calendar">
-          <i data-lucide="calendar" class="lucide-icon"></i>
-          <span>יומן</span>
-        </li>
-        <li class="navbar-item" onclick="app.showPage('calculator')" data-page="calculator">
-          <i data-lucide="calculator" class="lucide-icon"></i>
-          <span>מחשבון</span>
-        </li>
-        <li class="navbar-item" onclick="app.showPage('timer')" data-page="timer">
-          <i data-lucide="timer" class="lucide-icon"></i>
-          <span>שעון עצר</span>
-        </li>
-        <li class="navbar-item" onclick="app.showPage('schedule')" data-page="schedule">
-          <i data-lucide="layout-grid" class="lucide-icon"></i>
-          <span>מערכת</span>
-        </li>
-        <li class="navbar-item" onclick="app.showPage('mylinks')" data-page="mylinks">
-          <i data-lucide="link" class="lucide-icon"></i>
-          <span>קישורים</span>
-        </li>
-        <li class="navbar-item" onclick="app.showPage('achievements'); achEngine.renderWhenReady();" data-page="achievements">
-          <i data-lucide="trophy" class="lucide-icon"></i>
-          <span>הישגים</span>
-        </li>
-        <li class="navbar-item" onclick="app.showPage('subscription')" data-page="subscription">
-          <i data-lucide="crown" class="lucide-icon"></i>
-          <span>מנוי</span>
-        </li>
-      </ul>
+      <button class="navbar-brand" type="button" onclick="app.showPage('homepage')" aria-label="מעבר לדף הבית">
+        <span class="brand-logo-wrap"><img src="https://brickyeda.github.io/TIKit/logo.png" alt="" class="logo"></span>
+        <span class="brand-copy"><strong>TIKit</strong><small>הילקוט החכם שלך</small></span>
+      </button>
 
-      <div class="navbar-user">
-        <div class="user-info">
-          <div class="user-name" id="navUserName" style="display: none;">לא מחובר</div>
-          <div class="datetime-display">
-            <div class="user-time" id="navTime">12:34</div>
-            <div class="user-date" id="navDate">01.01.2025</div>
+      <div class="sidebar-scroll">
+        <span class="sidebar-section-label">ראשי</span>
+        <ul class="navbar-menu sidebar-primary">
+          <li><button class="navbar-item active" type="button" onclick="app.showPage('homepage')" data-page="homepage"><i data-lucide="home" class="lucide-icon"></i><span>בית</span></button></li>
+          <li><button class="navbar-item" type="button" onclick="app.showPage('notebooks')" data-page="notebooks"><i data-lucide="book-open" class="lucide-icon"></i><span>מחברות</span></button></li>
+          <li><button class="navbar-item" type="button" onclick="app.showPage('tasks')" data-page="tasks"><i data-lucide="circle-check-big" class="lucide-icon"></i><span>משימות</span></button></li>
+          <li><button class="navbar-item" type="button" onclick="app.showPage('calendar')" data-page="calendar"><i data-lucide="calendar-days" class="lucide-icon"></i><span>יומן</span></button></li>
+        </ul>
+
+        <span class="sidebar-section-label">כלים</span>
+        <ul class="navbar-menu sidebar-tools">
+          <li><button class="navbar-item" type="button" onclick="app.showPage('schedule')" data-page="schedule"><i data-lucide="calendar-range" class="lucide-icon"></i><span>מערכת שעות</span></button></li>
+          <li><button class="navbar-item" type="button" onclick="app.showPage('calculator')" data-page="calculator"><i data-lucide="calculator" class="lucide-icon"></i><span>מחשבון</span></button></li>
+          <li><button class="navbar-item" type="button" onclick="app.showPage('timer')" data-page="timer"><i data-lucide="timer" class="lucide-icon"></i><span>טיימר</span></button></li>
+          <li><button class="navbar-item" type="button" onclick="app.showPage('mylinks')" data-page="mylinks"><i data-lucide="link-2" class="lucide-icon"></i><span>הקישורים שלי</span></button></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-bottom">
+        <button class="navbar-item" type="button" onclick="app.showPage('achievements'); achEngine.renderWhenReady();" data-page="achievements"><i data-lucide="trophy" class="lucide-icon"></i><span>הישגים</span></button>
+        <button class="navbar-item" type="button" onclick="app.showPage('subscription')" data-page="subscription"><i data-lucide="crown" class="lucide-icon"></i><span>מנוי ופרופיל</span></button>
+        <div class="navbar-user">
+          <button class="sidebar-profile" type="button" onclick="app.showPage('subscription')" aria-label="פתיחת פרופיל">
+            <span class="sidebar-avatar" id="sidebarAvatarContent">👤</span>
+            <span class="sidebar-profile-copy"><strong id="navUserName">הפרופיל שלי</strong><small>ניהול חשבון</small></span>
+          </button>
+          <div class="sidebar-user-actions">
+            <button id="premiumInfoBtn" onclick="app.openUpgradeModal('שדרוג לפרימיום')" title="שדרוג לפרימיום" class="premium-star-btn" type="button">⭐</button>
+            <button class="icon-action fullscreen-icon" id="fullscreenBtn" onclick="app.toggleFullscreen()" title="מסך מלא" type="button">⛶</button>
+            <button class="icon-action settings-icon" onclick="app.openSettings()" title="הגדרות" type="button">⚙️</button>
+            <button class="icon-action logout-btn" id="logoutBtn" onclick="logout()" title="התנתקות" type="button"><i data-lucide="log-out" class="lucide-icon lucide-icon--sm"></i></button>
+          </div>
+          <div class="datetime-display" aria-label="תאריך ושעה">
+            <span class="user-time" id="navTime">12:34</span><span aria-hidden="true">·</span><span class="user-date" id="navDate">01.01.2025</span>
           </div>
         </div>
-        <button id="premiumInfoBtn" onclick="app.openUpgradeModal('שדרוג לפרימיום')" title="שדרוג לפרימיום" class="premium-star-btn">⭐</button>
-        <button class="logout-btn" id="logoutBtn" onclick="app.logout()" style="display: none;">התנתק</button>
-        <div class="fullscreen-icon" id="fullscreenBtn" onclick="app.toggleFullscreen()" title="מסך מלא">⛶</div>
-
-<div class="settings-icon" style="display: none;" onclick="app.openSettings()">⚙️</div>
       </div>
     </div>
+  </aside>
+
+  <!-- Phase A: clean top bar -->
+  <header class="app-topbar">
+    <div class="mobile-brand"><img src="https://brickyeda.github.io/TIKit/logo.png" alt=""><strong>TIKit</strong></div>
+    <div class="topbar-page-copy"><span class="topbar-eyebrow">הילקוט החכם שלך</span><strong id="topbarPageTitle">דף הבית</strong></div>
+    <div class="topbar-actions">
+      <button class="topbar-icon-btn" type="button" onclick="app.toggleNotificationsPanel(event)" aria-label="התראות"><i data-lucide="bell" class="lucide-icon"></i><span class="topbar-notification-dot" aria-hidden="true"></span></button>
+      <button class="topbar-avatar" type="button" onclick="app.showPage('subscription')" aria-label="פתיחת פרופיל"><span id="topbarAvatarContent">👤</span></button>
+    </div>
+  </header>
+
+  <!-- Phase A: mobile bottom navigation -->
+  <nav class="mobile-bottom-nav" aria-label="ניווט בנייד">
+    <button class="navbar-item active" type="button" onclick="app.showPage('homepage')" data-page="homepage"><i data-lucide="home" class="lucide-icon"></i><span>בית</span></button>
+    <button class="navbar-item" type="button" onclick="app.showPage('notebooks')" data-page="notebooks"><i data-lucide="book-open" class="lucide-icon"></i><span>מחברות</span></button>
+    <button class="navbar-item" type="button" onclick="app.showPage('tasks')" data-page="tasks"><i data-lucide="circle-check-big" class="lucide-icon"></i><span>משימות</span></button>
+    <button class="navbar-item" type="button" onclick="app.showPage('calendar')" data-page="calendar"><i data-lucide="calendar-days" class="lucide-icon"></i><span>יומן</span></button>
+    <button class="mobile-more-trigger" type="button" onclick="toggleMobileMore()" aria-expanded="false" aria-controls="mobileMoreMenu"><i data-lucide="menu" class="lucide-icon"></i><span>עוד</span></button>
   </nav>
+
+  <div class="mobile-more-backdrop" id="mobileMoreBackdrop" onclick="toggleMobileMore(false)"></div>
+  <section class="mobile-more-menu" id="mobileMoreMenu" aria-label="כלים נוספים" aria-hidden="true">
+    <div class="mobile-more-handle" aria-hidden="true"></div>
+    <div class="mobile-more-heading"><div><span>TIKit</span><h2>כלים נוספים</h2></div><button type="button" onclick="toggleMobileMore(false)" aria-label="סגירה"><i data-lucide="x" class="lucide-icon"></i></button></div>
+    <div class="mobile-more-grid">
+      <button type="button" onclick="app.showPage('schedule'); toggleMobileMore(false)"><i data-lucide="calendar-range"></i><span>מערכת שעות</span></button>
+      <button type="button" onclick="app.showPage('calculator'); toggleMobileMore(false)"><i data-lucide="calculator"></i><span>מחשבון</span></button>
+      <button type="button" onclick="app.showPage('timer'); toggleMobileMore(false)"><i data-lucide="timer"></i><span>טיימר</span></button>
+      <button type="button" onclick="app.showPage('mylinks'); toggleMobileMore(false)"><i data-lucide="link-2"></i><span>קישורים</span></button>
+      <button type="button" onclick="app.showPage('achievements'); achEngine.renderWhenReady(); toggleMobileMore(false)"><i data-lucide="trophy"></i><span>הישגים</span></button>
+      <button type="button" onclick="app.showPage('subscription'); toggleMobileMore(false)"><i data-lucide="crown"></i><span>מנוי ופרופיל</span></button>
+    </div>
+    <button class="mobile-logout" type="button" onclick="toggleMobileMore(false); logout()"><i data-lucide="log-out" class="lucide-icon"></i><span>התנתקות</span></button>
+  </section>
 
   <!-- Page Container -->
   <div class="page-container" id="pageContainer">
     
     <!-- Homepage -->
-    <div id="homepage" class="page active">
-      <div class="welcome-section">
+    <div id="homepage" class="page active phase-a-home">
+      <section class="welcome-section" aria-labelledby="welcomeGreeting">
         <div class="welcome-content">
           <div class="welcome-text">
-            <div style="display:flex;align-items:center;gap:16px;margin-bottom:0;"><h1 id="welcomeGreeting" style="margin-bottom:0;">שלום!</h1><div id="welcomeAvatar" onclick="app.showPage('subscription')" title="עריכת פרופיל" style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.25);border:3px solid rgba(255,255,255,0.6);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:white;overflow:hidden;flex-shrink:0;box-shadow:0 4px 15px rgba(0,0,0,0.2);transition:transform 0.2s ease;cursor:pointer;"><span id="welcomeAvatarContent">👤</span></div></div>
-<div class="subtitle" id="welcomeSubtitle">מיקוד שמוביל להצלחה</div>
+            <span class="welcome-kicker">היום שלי ב־TIKit</span>
+            <h1 id="welcomeGreeting">שלום!</h1>
+            <div class="subtitle" id="welcomeSubtitle">מיקוד שמוביל להצלחה</div>
             <div class="institution" id="welcomeInstitution">הילקוט החכם שלך</div>
-            <button onclick="logout()" style="margin-top: 15px; padding: 10px 20px; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; border-radius: 8px; font-size: 0.95rem; cursor: pointer; transition: transform 0.2s;">
-              🚪 התנתק
+          </div>
+          <button id="welcomeAvatar" class="welcome-avatar" type="button" onclick="app.showPage('subscription')" title="עריכת פרופיל" aria-label="עריכת פרופיל"><span id="welcomeAvatarContent">👤</span></button>
+        </div>
+      </section>
+
+      <div class="home-dashboard-grid">
+        <section class="today-panel home-panel">
+          <div class="home-panel-heading">
+            <div><span class="section-kicker">מבט מהיר</span><h2>מה מחכה לי היום?</h2></div>
+            <button class="text-link-btn" type="button" onclick="app.showPage('calendar')">לכל היומן <i data-lucide="arrow-left" class="lucide-icon lucide-icon--sm"></i></button>
+          </div>
+          <div class="today-overview">
+            <button class="today-item today-item--tasks" type="button" onclick="app.showPage('tasks')">
+              <span class="today-icon"><i data-lucide="circle-check-big"></i></span>
+              <span class="today-copy"><small>משימות להיום</small><strong id="todayTasks">0</strong><span>לצפייה במשימות</span></span>
+            </button>
+            <button class="today-item today-item--class" type="button" onclick="app.showPage('calendar')">
+              <span class="today-icon"><i data-lucide="clock-3"></i></span>
+              <span class="today-copy"><small>השיעור הבא</small><strong id="nextClassTime">--:--</strong><span>לצפייה ביומן</span></span>
+            </button>
+            <button class="today-item today-item--alerts" type="button" onclick="app.toggleNotificationsPanel(event)">
+              <span class="today-icon"><i data-lucide="bell-ring"></i></span>
+              <span class="today-copy"><small>התראות קרובות</small><strong id="notificationsCount">🔔 0</strong><span>לפתיחת ההתראות</span></span>
             </button>
           </div>
-          <div class="welcome-stats">
-            <div class="stat-item" onclick="app.showPage('tasks')">
-              <div class="stat-number" id="todayTasks">0</div>
-              <div class="stat-label">משימות היום</div>
-            </div>
-            <div class="stat-item" style="position: relative;" onclick="app.toggleNotificationsPanel(event)">
-              <div class="stat-number" id="notificationsCount">🔔 0</div>
-              <div class="stat-label">התראות</div>
-            </div>
-            <div class="stat-item" onclick="app.showPage('notebooks')">
-              <div class="stat-number" id="activeNotebooks">6</div>
-              <div class="stat-label">מחברות פעילות</div>
-            </div>
-            <div class="stat-item" onclick="app.showPage('calendar')">
-              <div class="stat-number" id="nextClassTime">14:30</div>
-              <div class="stat-label">השיעור הבא</div>
-            </div>
-            <div class="stat-item" onclick="app.showPage('tasks')">
-              <div class="stat-number" id="openTasksCount">0</div>
-              <div class="stat-label">משימות פתוחות</div>
-            </div>
+          <button class="open-tasks-strip" type="button" onclick="app.showPage('tasks')"><span><i data-lucide="list-todo" class="lucide-icon"></i> משימות פתוחות</span><strong id="openTasksCount">0</strong></button>
+        </section>
+
+        <section class="quick-actions-panel home-panel">
+          <div class="home-panel-heading"><div><span class="section-kicker">קיצורי דרך</span><h2>פעולות מהירות</h2></div></div>
+          <div class="quick-actions-grid">
+            <button type="button" onclick="app.showPage('notebooks')"><span class="quick-action-icon quick-action-icon--purple"><i data-lucide="book-open"></i></span><span><strong>פתח מחברת</strong><small>המשך מאיפה שעצרת</small></span><i data-lucide="chevron-left" class="quick-chevron"></i></button>
+            <button type="button" onclick="app.showPage('tasks'); setTimeout(() => document.getElementById('taskTitle')?.focus(), 150)"><span class="quick-action-icon quick-action-icon--green"><i data-lucide="list-plus"></i></span><span><strong>הוסף משימה</strong><small>שלא נשכח שום דבר</small></span><i data-lucide="chevron-left" class="quick-chevron"></i></button>
+            <button type="button" onclick="app.openEventCreator()"><span class="quick-action-icon quick-action-icon--blue"><i data-lucide="calendar-plus"></i></span><span><strong>הוסף אירוע</strong><small>שיעור, מבחן או תזכורת</small></span><i data-lucide="chevron-left" class="quick-chevron"></i></button>
+            <button type="button" onclick="app.showPage('timer')"><span class="quick-action-icon quick-action-icon--orange"><i data-lucide="timer-reset"></i></span><span><strong>הפעל טיימר</strong><small>זמן ממוקד ללמידה</small></span><i data-lucide="chevron-left" class="quick-chevron"></i></button>
           </div>
-        </div>
+        </section>
       </div>
 
-      <div class="tools-grid">
-        <div class="tool-card" onclick="app.showPage('notebooks')">
-          <span class="tool-icon">📚</span>
-          <div class="tool-title">המחברות שלי</div>
-          <div class="tool-description">כל המקצועות במקום אחד. פותחים, כותבים ומציירים.</div>
-          <span class="tool-status">6 מחברות פעילות</span>
+      <section class="my-tools-section" aria-labelledby="myToolsTitle">
+        <div class="my-tools-heading"><div><span class="section-kicker">המרחב שלי</span><h2 id="myToolsTitle">הכלים שלי</h2></div><span class="my-tools-hint">כל מה שצריך ללמידה, במקום אחד</span></div>
+        <div class="tools-grid compact-tools-grid">
+          <button class="tool-card" type="button" onclick="app.showPage('notebooks')"><span class="tool-icon"><i data-lucide="notebook-tabs"></i></span><span class="tool-copy"><strong class="tool-title">המחברות שלי</strong><small><b id="activeNotebooks">6</b> מחברות פעילות</small></span><i data-lucide="chevron-left" class="tool-chevron"></i></button>
+          <button class="tool-card" type="button" onclick="app.showPage('tasks')"><span class="tool-icon"><i data-lucide="list-checks"></i></span><span class="tool-copy"><strong class="tool-title">משימות</strong><small id="taskStatusHome">טוען...</small></span><i data-lucide="chevron-left" class="tool-chevron"></i></button>
+          <button class="tool-card" type="button" onclick="app.showPage('calendar')"><span class="tool-icon"><i data-lucide="calendar-days"></i></span><span class="tool-copy"><strong class="tool-title">יומן</strong><small id="calendarStatusHome">טוען...</small></span><i data-lucide="chevron-left" class="tool-chevron"></i></button>
+          <button class="tool-card" type="button" onclick="app.showPage('schedule')"><span class="tool-icon"><i data-lucide="calendar-range"></i></span><span class="tool-copy"><strong class="tool-title">מערכת שעות</strong><small id="scheduleStatusHome">0 שיעורים</small></span><i data-lucide="chevron-left" class="tool-chevron"></i></button>
+          <button class="tool-card" type="button" onclick="app.showPage('calculator')"><span class="tool-icon"><i data-lucide="calculator"></i></span><span class="tool-copy"><strong class="tool-title">מחשבון</strong><small>מוכן לשימוש</small></span><i data-lucide="chevron-left" class="tool-chevron"></i></button>
+          <button class="tool-card" type="button" onclick="app.showPage('timer')"><span class="tool-icon"><i data-lucide="timer"></i></span><span class="tool-copy"><strong class="tool-title">טיימר</strong><small>ללמידה ממוקדת</small></span><i data-lucide="chevron-left" class="tool-chevron"></i></button>
+          <button class="tool-card" type="button" onclick="app.showPage('mylinks')"><span class="tool-icon"><i data-lucide="link-2"></i></span><span class="tool-copy"><strong class="tool-title">הקישורים שלי</strong><small id="linksStatusHome">0 קישורים</small></span><i data-lucide="chevron-left" class="tool-chevron"></i></button>
+          <button class="tool-card" type="button" onclick="app.showPage('achievements'); achEngine.renderWhenReady();"><span class="tool-icon"><i data-lucide="trophy"></i></span><span class="tool-copy"><strong class="tool-title">הישגים</strong><small id="achStatusHome">פעיל ✨</small></span><i data-lucide="chevron-left" class="tool-chevron"></i></button>
         </div>
-
-        <div class="tool-card" onclick="app.showPage('tasks')">
-          <span class="tool-icon">✅</span>
-          <div class="tool-title">מה יש לי לעשות</div>
-          <div class="tool-description">שיעורי בית ומבחנים, מסודרים לפי מה שדחוף קודם.</div>
-          <span class="tool-status" id="taskStatusHome">טוען...</span>
-        </div>
-
-        <div class="tool-card" onclick="app.showPage('calendar')">
-          <span class="tool-icon">📅</span>
-          <div class="tool-title">היומן שלי</div>
-          <div class="tool-description">מה קורה השבוע — שיעורים, מבחנים ותאריכים חשובים.</div>
-          <span class="tool-status" id="calendarStatusHome">טוען...</span>
-        </div>
-
-        <div class="tool-card" onclick="app.showPage('calculator')">
-          <span class="tool-icon">🧮</span>
-          <div class="tool-title">מחשבון</div>
-          <div class="tool-description">לחשבון, לשברים ולכל תרגיל שנתקעים בו.</div>
-          <span class="tool-status">מוכן לשימוש!</span>
-        </div>
-
-
-        <div class="tool-card" onclick="app.showPage('timer')">
-          <span class="tool-icon">⏱️</span>
-          <div class="tool-title">טיימר ושעון עצר</div>
-          <div class="tool-description">מודדים 20 דקות קריאה, או כמה זמן לקח לפתור.</div>
-          <span class="tool-status">מוכן לשימוש!</span>
-        </div>
-
-        <div class="tool-card" onclick="app.showPage('schedule')">
-          <span class="tool-icon">🗓️</span>
-          <div class="tool-title">מערכת השעות</div>
-          <div class="tool-description">בונים את השבוע פעם אחת, והיומן מתעדכן לבד.</div>
-          <span class="tool-status" id="scheduleStatusHome">0 שיעורים</span>
-        </div>
-
-        <div class="tool-card" onclick="app.showPage('mylinks')">
-          <span class="tool-icon">🔗</span>
-          <div class="tool-title">הקישורים שלי</div>
-          <div class="tool-description">כל האתרים שצריך ללימודים — בלחיצה אחת.</div>
-          <span class="tool-status" id="linksStatusHome">0 קישורים</span>
-        </div>
-
-<div class="tool-card" onclick="app.showPage('achievements'); achEngine.renderWhenReady();">
-          <span class="tool-icon">🏆</span>
-          <div class="tool-title">ההישגים שלי</div>
-          <div class="tool-description">מדבקות, שיאים וכל מה שכבר הספקתי.</div>
-          <span class="tool-status" id="achStatusHome">פעיל ✨</span>
-        </div>
-      </div>
+      </section>
 
       <!-- Footer -->
       <footer class="app-footer">
@@ -9022,18 +9002,25 @@ this.showPage('homepage');
       // עדכון אווטר בדף הבית
       updateWelcomeAvatar() {
         const avatarEl = document.getElementById('welcomeAvatar');
-        const contentEl = document.getElementById('welcomeAvatarContent');
-        if (!avatarEl || !contentEl) return;
+        const avatarTargets = [
+          document.getElementById('welcomeAvatarContent'),
+          document.getElementById('topbarAvatarContent'),
+          document.getElementById('sidebarAvatarContent')
+        ].filter(Boolean);
+        if (!avatarEl || avatarTargets.length === 0) return;
         const p = this.profileData || {};
         if (p.avatar_url) {
           avatarEl.style.background = 'transparent';
-          contentEl.outerHTML = `<img id="welcomeAvatarContent" src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+          avatarTargets.forEach(target => {
+            target.innerHTML = `<img src="${p.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
+          });
         } else {
           avatarEl.style.background = 'rgba(255,255,255,0.25)';
           const name = p.display_name || this.displayName || '';
           const letter = name.trim().charAt(0).toUpperCase();
-          const el = document.getElementById('welcomeAvatarContent');
-          if (el) el.textContent = letter || '👤';
+          avatarTargets.forEach(target => {
+            target.textContent = letter || '👤';
+          });
         }
       },
 
@@ -10230,12 +10217,27 @@ if (this.currentNotebook && pageId !== 'notebookView') {
 
       // עדכון ניווט פעיל
       updateNavigation(activePageId) {
-        document.querySelectorAll('.navbar-item').forEach(item => {
+        const navigationPage = activePageId === 'notebookView' ? 'notebooks' : activePageId;
+        document.querySelectorAll('.navbar-item[data-page]').forEach(item => {
           item.classList.remove('active');
-          if (item.dataset.page === activePageId) {
+          if (item.dataset.page === navigationPage) {
             item.classList.add('active');
           }
         });
+
+        const pageTitles = {
+          homepage: 'דף הבית', notebooks: 'המחברות שלי', notebookView: 'מחברת',
+          tasks: 'משימות', calendar: 'יומן', calculator: 'מחשבון', timer: 'טיימר ושעון עצר',
+          schedule: 'מערכת שעות', mylinks: 'הקישורים שלי', achievements: 'הישגים',
+          subscription: 'מנוי ופרופיל'
+        };
+        const titleElement = document.getElementById('topbarPageTitle');
+        if (titleElement) titleElement.textContent = pageTitles[activePageId] || 'TIKit';
+
+        const mainMobilePages = ['homepage', 'notebooks', 'tasks', 'calendar'];
+        const moreTrigger = document.querySelector('.mobile-more-trigger');
+        if (moreTrigger) moreTrigger.classList.toggle('active', !mainMobilePages.includes(navigationPage));
+        if (typeof toggleMobileMore === 'function') toggleMobileMore(false);
       },
 
       // רינדור מחברות
@@ -22959,6 +22961,700 @@ h1, h2, h3, .page-title, .tool-title, .subject-title, .stat-number, .modal-title
 }
 
 </style>
+
+<!-- ===== TIKit · Phase A · מעטפת ו-Dashboard ===== -->
+<style id="tikit-phase-a">
+/* המעטפת החדשה נשענת על כל הפונקציות והעמודים הקיימים. */
+:root {
+  --pa-sidebar: 264px;
+  --pa-topbar: 76px;
+  --pa-bg: #f4f6fb;
+  --pa-card: #ffffff;
+  --pa-border: #e5e9f2;
+  --pa-muted: #6f7894;
+  --pa-shadow: 0 10px 35px rgba(31, 42, 86, 0.08);
+}
+
+body {
+  background: var(--pa-bg);
+  background-image: none;
+  color: var(--text-primary);
+}
+
+button { font-family: inherit; }
+
+/* ---------- Sidebar ---------- */
+.app-sidebar.navbar {
+  position: fixed;
+  z-index: 500;
+  inset: 0 0 0 auto;
+  width: var(--pa-sidebar);
+  height: 100vh;
+  padding: 0;
+  color: #fff;
+  background: #182456;
+  background-image: radial-gradient(circle at 10% 0%, rgba(108, 76, 224, 0.24), transparent 34%);
+  box-shadow: -8px 0 30px rgba(21, 31, 74, 0.14);
+}
+
+.app-sidebar .navbar-content {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+  padding: 22px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 16px;
+}
+
+.app-sidebar .navbar-brand {
+  width: 100%;
+  min-height: 62px;
+  padding: 8px 9px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  border-radius: 0;
+  background: transparent;
+  color: #fff;
+  text-align: right;
+  cursor: pointer;
+}
+
+.brand-logo-wrap {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0,0,0,.16);
+}
+
+.app-sidebar .navbar-brand .logo {
+  width: 36px;
+  height: 36px;
+  animation: none;
+}
+
+.brand-copy { display: flex; flex-direction: column; gap: 2px; }
+.brand-copy strong { font: 400 1.6rem/1 'Suez One', 'Rubik', sans-serif; }
+.brand-copy small { color: rgba(255,255,255,.62); font-size: .72rem; font-weight: 500; }
+
+.sidebar-scroll {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.2) transparent;
+}
+
+.sidebar-section-label {
+  display: block;
+  padding: 9px 13px 6px;
+  color: rgba(255,255,255,.48);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+}
+
+.app-sidebar .navbar-menu {
+  width: 100%;
+  display: grid;
+  gap: 4px;
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.app-sidebar .navbar-menu li { width: 100%; }
+
+.app-sidebar .navbar-item,
+.sidebar-bottom > .navbar-item {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 13px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: rgba(255,255,255,.74);
+  font-size: .92rem;
+  font-weight: 500;
+  text-align: right;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background .18s ease, color .18s ease, transform .18s ease;
+}
+
+.app-sidebar .navbar-item:hover,
+.sidebar-bottom > .navbar-item:hover {
+  color: #fff;
+  background: rgba(255,255,255,.09);
+  transform: none;
+}
+
+.app-sidebar .navbar-item.active,
+.sidebar-bottom > .navbar-item.active {
+  color: #fff;
+  background: linear-gradient(135deg, #7558eb, #6143d6);
+  box-shadow: 0 7px 18px rgba(75, 48, 176, .32);
+}
+
+.app-sidebar .navbar-item .lucide-icon,
+.sidebar-bottom > .navbar-item .lucide-icon { width: 20px; height: 20px; }
+
+.sidebar-bottom {
+  display: grid;
+  gap: 4px;
+  flex: 0 0 auto;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,.12);
+}
+
+.app-sidebar .navbar-user {
+  margin-top: 7px;
+  padding: 10px;
+  display: grid;
+  gap: 9px;
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 16px;
+  background: rgba(255,255,255,.06);
+}
+
+.sidebar-profile {
+  width: 100%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  text-align: right;
+  cursor: pointer;
+}
+
+.sidebar-avatar {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 2px solid rgba(255,255,255,.35);
+  border-radius: 12px;
+  background: rgba(255,255,255,.11);
+}
+.sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.sidebar-profile-copy { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.sidebar-profile-copy strong { overflow: hidden; font-size: .83rem; white-space: nowrap; text-overflow: ellipsis; }
+.sidebar-profile-copy small { color: rgba(255,255,255,.52); font-size: .7rem; }
+
+.sidebar-user-actions { display: flex; align-items: center; gap: 7px; }
+.app-sidebar .premium-star-btn,
+.app-sidebar .icon-action {
+  width: 35px;
+  height: 35px;
+  min-width: 35px;
+  padding: 0;
+  display: grid !important;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 10px;
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  box-shadow: none;
+  cursor: pointer;
+}
+.app-sidebar .icon-action:hover,
+.app-sidebar .premium-star-btn:hover { background: rgba(255,255,255,.16); transform: none; }
+.app-sidebar .logout-btn { margin-inline-start: auto; }
+.app-sidebar .settings-icon { font-size: 1rem; }
+
+.app-sidebar .datetime-display {
+  padding-top: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.5);
+  font-size: .7rem;
+}
+.app-sidebar .user-time,
+.app-sidebar .user-date { color: inherit; font-size: inherit; font-weight: 500; opacity: 1; }
+
+/* ---------- Topbar + layout ---------- */
+.app-topbar {
+  position: fixed;
+  z-index: 450;
+  top: 0;
+  right: var(--pa-sidebar);
+  left: 0;
+  height: var(--pa-topbar);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--pa-border);
+  background: rgba(255,255,255,.94);
+  backdrop-filter: blur(14px);
+}
+
+.topbar-page-copy { display: flex; flex-direction: column; gap: 1px; }
+.topbar-page-copy strong { color: var(--tk-ink); font-size: 1.15rem; }
+.topbar-eyebrow { color: var(--pa-muted); font-size: .72rem; font-weight: 500; }
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
+.topbar-icon-btn,
+.topbar-avatar {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--pa-border);
+  border-radius: 13px;
+  background: #fff;
+  color: var(--tk-ink);
+  cursor: pointer;
+}
+.topbar-icon-btn:hover,
+.topbar-avatar:hover { border-color: #cbd2e2; background: #f8f9fc; }
+.topbar-avatar { overflow: hidden; border-color: rgba(108,76,224,.3); background: #f0edff; font-weight: 700; }
+.topbar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.topbar-notification-dot { position: absolute; top: 8px; left: 8px; width: 7px; height: 7px; border: 2px solid #fff; border-radius: 50%; background: var(--tk-cherry); }
+.mobile-brand { display: none; }
+
+.page-container {
+  min-height: 100vh;
+  margin-top: 0;
+  margin-right: var(--pa-sidebar);
+  padding-top: var(--pa-topbar);
+}
+
+.page {
+  max-width: 1320px;
+  min-height: calc(100vh - var(--pa-topbar));
+  padding: 32px 30px 40px;
+  animation: phaseAFade .22s ease both;
+}
+
+@keyframes phaseAFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* ---------- Home dashboard ---------- */
+.phase-a-home { color: var(--tk-ink); }
+
+.phase-a-home .welcome-section {
+  min-height: 178px;
+  margin: 0 0 24px;
+  padding: 30px 34px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border: 0;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 12% 15%, rgba(108,76,224,.8), transparent 30%),
+    linear-gradient(125deg, #1a275b 0%, #202e69 64%, #293a7c 100%);
+  box-shadow: 0 16px 40px rgba(31,45,100,.18);
+}
+
+.phase-a-home .welcome-section::after {
+  content: '';
+  position: absolute;
+  width: 230px;
+  height: 230px;
+  left: -55px;
+  bottom: -125px;
+  border: 34px solid rgba(255,255,255,.06);
+  border-radius: 50%;
+}
+
+.phase-a-home .welcome-content { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.phase-a-home .welcome-text { min-width: 0; }
+.welcome-kicker,
+.section-kicker { display: block; margin-bottom: 5px; color: var(--tk-grape); font-size: .72rem; font-weight: 700; letter-spacing: .04em; }
+.phase-a-home .welcome-kicker { color: #c8beff; }
+.phase-a-home .welcome-text h1 { margin: 0 0 5px; color: #fff; font-size: clamp(1.8rem, 3vw, 2.45rem); }
+.phase-a-home .welcome-text .subtitle { margin: 0 0 4px; color: rgba(255,255,255,.86); font-size: 1rem; }
+.phase-a-home .welcome-text .institution { color: rgba(255,255,255,.56); font-size: .82rem; }
+
+.welcome-avatar {
+  position: relative;
+  z-index: 1;
+  width: 78px !important;
+  height: 78px !important;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 3px solid rgba(255,255,255,.72) !important;
+  border-radius: 24px !important;
+  background: rgba(255,255,255,.12) !important;
+  color: #fff;
+  font-size: 1.75rem;
+  box-shadow: 0 0 0 6px rgba(255,255,255,.08) !important;
+  cursor: pointer;
+}
+.welcome-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.welcome-avatar:hover { transform: translateY(-2px) !important; }
+
+.home-dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, .8fr); gap: 22px; align-items: stretch; }
+.home-panel {
+  padding: 24px;
+  border: 1px solid var(--pa-border);
+  border-radius: 22px;
+  background: var(--pa-card);
+  box-shadow: var(--pa-shadow);
+}
+.home-panel-heading,
+.my-tools-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 19px; }
+.home-panel-heading h2,
+.my-tools-heading h2 { margin: 0; color: var(--tk-ink); font: 400 1.45rem/1.25 'Suez One', 'Rubik', sans-serif; }
+.text-link-btn {
+  min-height: 38px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 10px;
+  background: #f3f1ff;
+  color: var(--tk-grape);
+  font-size: .78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.today-overview { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.today-item {
+  min-width: 0;
+  min-height: 136px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1px solid #edf0f6;
+  border-radius: 17px;
+  background: #fafbfe;
+  color: var(--tk-ink);
+  text-align: right;
+  cursor: pointer;
+  transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+.today-item:hover { transform: translateY(-2px); border-color: #d9deeb; box-shadow: 0 8px 20px rgba(31,42,86,.07); }
+.today-icon { width: 35px; height: 35px; display: grid; place-items: center; border-radius: 11px; }
+.today-icon svg { width: 18px; height: 18px; }
+.today-item--tasks .today-icon { color: #6043d5; background: #eeeaff; }
+.today-item--class .today-icon { color: #168a75; background: #e5faf5; }
+.today-item--alerts .today-icon { color: #d26b26; background: #fff0e4; }
+.today-copy { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.today-copy small { color: var(--pa-muted); font-size: .72rem; }
+.today-copy strong { color: var(--tk-ink); font: 400 1.5rem/1.25 'Suez One', 'Rubik', sans-serif; }
+.today-copy span { color: #9aa1b5; font-size: .66rem; white-space: nowrap; }
+.open-tasks-strip {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 12px;
+  padding: 9px 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  border-radius: 12px;
+  background: #f1effd;
+  color: var(--tk-ink);
+  font-size: .8rem;
+  cursor: pointer;
+}
+.open-tasks-strip span { display: flex; align-items: center; gap: 8px; }
+.open-tasks-strip strong { min-width: 28px; padding: 3px 8px; border-radius: 999px; background: var(--tk-grape); color: #fff; text-align: center; }
+
+.quick-actions-panel { padding-bottom: 18px; }
+.quick-actions-grid { display: grid; gap: 8px; }
+.quick-actions-grid > button {
+  width: 100%;
+  min-height: 57px;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--tk-ink);
+  text-align: right;
+  cursor: pointer;
+}
+.quick-actions-grid > button:hover { background: #f7f8fc; }
+.quick-action-icon { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 13px; }
+.quick-action-icon svg { width: 20px; height: 20px; }
+.quick-action-icon--purple { color: #6043d5; background: #eeeaff; }
+.quick-action-icon--green { color: #158571; background: #e4f9f3; }
+.quick-action-icon--blue { color: #237dbd; background: #e5f4ff; }
+.quick-action-icon--orange { color: #cf6926; background: #fff0e4; }
+.quick-actions-grid button > span:nth-child(2) { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.quick-actions-grid strong { font-size: .86rem; }
+.quick-actions-grid small { overflow: hidden; color: var(--pa-muted); font-size: .68rem; white-space: nowrap; text-overflow: ellipsis; }
+.quick-chevron { width: 17px; color: #b0b6c6; }
+
+.my-tools-section { margin-top: 26px; }
+.my-tools-heading { align-items: flex-end; margin-bottom: 14px; }
+.my-tools-hint { color: var(--pa-muted); font-size: .75rem; }
+.compact-tools-grid.tools-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.compact-tools-grid .tool-card {
+  --tile: var(--tk-grape);
+  min-width: 0;
+  min-height: 90px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 43px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 11px;
+  overflow: hidden;
+  border: 1px solid var(--pa-border);
+  border-radius: 17px;
+  background: var(--pa-card);
+  color: var(--tk-ink);
+  text-align: right;
+  box-shadow: 0 5px 18px rgba(31,42,86,.055);
+  cursor: pointer;
+  transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+.compact-tools-grid .tool-card:hover { transform: translateY(-2px); border-color: #d6dbea; box-shadow: 0 9px 24px rgba(31,42,86,.085); }
+.compact-tools-grid .tool-card:active { transform: translateY(0); box-shadow: 0 4px 13px rgba(31,42,86,.06); }
+.compact-tools-grid .tool-card::before { display: none; }
+.compact-tools-grid .tool-icon {
+  width: 43px;
+  height: 43px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--tile) 13%, white);
+  color: var(--tile);
+  box-shadow: none;
+}
+.compact-tools-grid .tool-icon svg { width: 20px; height: 20px; }
+.compact-tools-grid .tool-copy { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.compact-tools-grid .tool-title { margin: 0; color: var(--tk-ink); font: 600 .85rem/1.2 'Rubik', sans-serif; }
+.compact-tools-grid .tool-copy small { overflow: hidden; color: var(--pa-muted); font-size: .68rem; white-space: nowrap; text-overflow: ellipsis; }
+.compact-tools-grid .tool-copy small b { color: inherit; font-weight: 600; }
+.tool-chevron { width: 17px; color: #b0b6c6; }
+.compact-tools-grid .tool-card:nth-child(1) { --tile: #6c4ce0; }
+.compact-tools-grid .tool-card:nth-child(2) { --tile: #17a98d; }
+.compact-tools-grid .tool-card:nth-child(3) { --tile: #318dd0; }
+.compact-tools-grid .tool-card:nth-child(4) { --tile: #f08a3f; }
+.compact-tools-grid .tool-card:nth-child(5) { --tile: #dd5370; }
+.compact-tools-grid .tool-card:nth-child(6) { --tile: #7864c5; }
+.compact-tools-grid .tool-card:nth-child(7) { --tile: #269a83; }
+.compact-tools-grid .tool-card:nth-child(8) { --tile: #d29a16; }
+
+.phase-a-home .app-footer { margin-top: 28px; }
+
+/* ---------- Mobile navigation ---------- */
+.mobile-bottom-nav,
+.mobile-more-menu,
+.mobile-more-backdrop { display: none; }
+
+@media (max-width: 1100px) and (min-width: 769px) {
+  :root { --pa-sidebar: 238px; }
+  .home-dashboard-grid { grid-template-columns: 1fr; }
+  .quick-actions-grid { grid-template-columns: 1fr 1fr; }
+  .compact-tools-grid.tools-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 768px) {
+  :root { --pa-topbar: 64px; }
+  body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+  .app-sidebar.navbar { display: none; }
+  .app-topbar { right: 0; height: var(--pa-topbar); padding: 0 15px; }
+  .topbar-page-copy { display: none; }
+  .mobile-brand { display: flex; align-items: center; gap: 8px; color: var(--tk-ink); }
+  .mobile-brand img { width: 35px; height: 35px; object-fit: contain; }
+  .mobile-brand strong { font: 400 1.25rem 'Suez One', 'Rubik', sans-serif; }
+  .topbar-icon-btn,
+  .topbar-avatar { width: 38px; height: 38px; border-radius: 12px; }
+
+  .page-container { margin-right: 0; padding-top: var(--pa-topbar); }
+  .page { min-height: calc(100vh - 140px); padding: 18px 14px 26px; }
+
+  .mobile-bottom-nav {
+    position: fixed;
+    z-index: 700;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: calc(68px + env(safe-area-inset-bottom));
+    padding: 7px 6px env(safe-area-inset-bottom);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-top: 1px solid var(--pa-border);
+    background: rgba(255,255,255,.97);
+    box-shadow: 0 -8px 28px rgba(31,42,86,.1);
+    backdrop-filter: blur(16px);
+  }
+  .mobile-bottom-nav .navbar-item,
+  .mobile-more-trigger {
+    min-width: 0;
+    min-height: 54px;
+    padding: 5px 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: #838ba2;
+    font-size: .64rem;
+    font-weight: 600;
+    box-shadow: none;
+    cursor: pointer;
+  }
+  .mobile-bottom-nav .navbar-item .lucide-icon,
+  .mobile-more-trigger .lucide-icon { width: 21px; height: 21px; }
+  .mobile-bottom-nav .navbar-item.active { color: var(--tk-grape); background: #f1efff; box-shadow: none; transform: none; }
+  .mobile-bottom-nav .navbar-item:hover,
+  .mobile-more-trigger:hover { transform: none; }
+  body.mobile-more-open .mobile-more-trigger { color: var(--tk-grape); background: #f1efff; }
+
+  .mobile-more-backdrop {
+    position: fixed;
+    z-index: 735;
+    inset: 0;
+    background: rgba(15,24,59,.46);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+  }
+  .mobile-more-menu {
+    position: fixed;
+    z-index: 740;
+    right: 10px;
+    bottom: calc(76px + env(safe-area-inset-bottom));
+    left: 10px;
+    max-height: calc(100vh - 110px);
+    padding: 10px 16px 16px;
+    display: block;
+    overflow-y: auto;
+    border: 1px solid var(--pa-border);
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 24px 60px rgba(20,30,72,.24);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(18px) scale(.98);
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  body.mobile-more-open .mobile-more-backdrop { display: block; opacity: 1; pointer-events: auto; }
+  body.mobile-more-open .mobile-more-menu { opacity: 1; pointer-events: auto; transform: none; }
+  .mobile-more-handle { width: 38px; height: 4px; margin: 0 auto 10px; border-radius: 99px; background: #dfe3ed; }
+  .mobile-more-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 13px; }
+  .mobile-more-heading span { color: var(--tk-grape); font-size: .68rem; font-weight: 700; }
+  .mobile-more-heading h2 { margin: 1px 0 0; color: var(--tk-ink); font: 400 1.35rem 'Suez One', sans-serif; }
+  .mobile-more-heading > button { width: 38px; height: 38px; display: grid; place-items: center; border: 0; border-radius: 11px; background: #f2f4f8; color: var(--tk-ink); }
+  .mobile-more-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  .mobile-more-grid button {
+    min-height: 78px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border: 1px solid var(--pa-border);
+    border-radius: 15px;
+    background: #fafbfe;
+    color: var(--tk-ink);
+    font-size: .78rem;
+    font-weight: 600;
+    text-align: right;
+  }
+  .mobile-more-grid button svg { width: 21px; color: var(--tk-grape); }
+  .mobile-logout { width: 100%; min-height: 44px; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 13px; background: #fff0f3; color: #c83d5b; font-weight: 600; }
+
+  .phase-a-home .welcome-section { min-height: 146px; margin-bottom: 16px; padding: 23px 21px; border-radius: 20px; }
+  .phase-a-home .welcome-content { flex-direction: row; text-align: right; }
+  .phase-a-home .welcome-text h1 { font-size: 1.7rem; }
+  .phase-a-home .welcome-text .subtitle { font-size: .86rem; }
+  .welcome-avatar { width: 60px !important; height: 60px !important; border-radius: 19px !important; }
+  .home-dashboard-grid { grid-template-columns: 1fr; gap: 14px; }
+  .home-panel { padding: 18px 15px; border-radius: 18px; }
+  .home-panel-heading h2,
+  .my-tools-heading h2 { font-size: 1.25rem; }
+  .today-overview { grid-template-columns: 1fr; gap: 8px; }
+  .today-item { min-height: 72px; padding: 10px 11px; display: grid; grid-template-columns: 38px minmax(0,1fr); align-items: center; gap: 10px; }
+  .today-copy { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 2px 10px; }
+  .today-copy small { grid-column: 1; }
+  .today-copy strong { grid-column: 2; grid-row: 1 / span 2; font-size: 1.25rem; }
+  .today-copy span { grid-column: 1; }
+  .quick-actions-grid { grid-template-columns: 1fr; }
+  .my-tools-section { margin-top: 21px; }
+  .my-tools-hint { display: none; }
+  .compact-tools-grid.tools-grid { grid-template-columns: 1fr 1fr; gap: 9px; }
+  .compact-tools-grid .tool-card { min-height: 82px; padding: 11px; grid-template-columns: 38px minmax(0,1fr); gap: 9px; border-radius: 15px; }
+  .compact-tools-grid .tool-icon { width: 38px; height: 38px; border-radius: 12px; }
+  .compact-tools-grid .tool-chevron { display: none; }
+  .phase-a-home .app-footer { margin-bottom: 10px; }
+}
+
+@media (max-width: 390px) {
+  .compact-tools-grid.tools-grid { grid-template-columns: 1fr; }
+  .mobile-more-grid { grid-template-columns: 1fr; }
+}
+
+/* התאמה למצבי נגישות/כהה הקיימים */
+body.a11y-dark .app-topbar,
+body.a11y-dark .home-panel,
+body.a11y-dark .compact-tools-grid .tool-card,
+body.a11y-dark .mobile-bottom-nav,
+body.a11y-dark .mobile-more-menu { background: #151a2e !important; border-color: #303955 !important; }
+body.a11y-dark .topbar-page-copy strong,
+body.a11y-dark .home-panel-heading h2,
+body.a11y-dark .my-tools-heading h2,
+body.a11y-dark .compact-tools-grid .tool-title,
+body.a11y-dark .quick-actions-grid > button,
+body.a11y-dark .today-item { color: #eef2ff !important; }
+body.a11y-dark .today-item,
+body.a11y-dark .quick-actions-grid > button:hover { background: #1c233b !important; border-color: #303955 !important; }
+</style>
+
+<script id="tikit-phase-a-behavior">
+function toggleMobileMore(forceState) {
+  const menu = document.getElementById('mobileMoreMenu');
+  const trigger = document.querySelector('.mobile-more-trigger');
+  if (!menu || !trigger) return;
+
+  const shouldOpen = typeof forceState === 'boolean'
+    ? forceState
+    : !document.body.classList.contains('mobile-more-open');
+
+  document.body.classList.toggle('mobile-more-open', shouldOpen);
+  menu.setAttribute('aria-hidden', String(!shouldOpen));
+  trigger.setAttribute('aria-expanded', String(shouldOpen));
+}
+
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') toggleMobileMore(false);
+});
+</script>
 
 </body>
 </html>
