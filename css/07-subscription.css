@@ -1,0 +1,470 @@
+/* מודאל סטטוס פרימיום */
+.pro-status-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pro-status-modal.hidden {
+  display: none;
+}
+
+.pro-status-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+}
+
+.pro-status-content {
+  position: relative;
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(34, 197, 94, 0.3);
+  border: 3px solid #22c55e;
+  animation: proModalPop 0.3s ease-out;
+}
+
+@keyframes proModalPop {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.pro-status-close {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: #f3f4f6;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.pro-status-close:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.pro-status-icon {
+  font-size: 4rem;
+  margin-bottom: 15px;
+}
+
+.pro-status-content h2 {
+  color: #166534;
+  font-size: 1.6rem;
+  margin-bottom: 10px;
+}
+
+.pro-status-subtitle {
+  color: #4ade80;
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+}
+
+.pro-status-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 25px;
+  text-align: right;
+}
+
+.pro-feature-item {
+  background: white;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #166534;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.pro-status-thanks {
+  color: #6b7280;
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.pro-status-btn {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pro-status-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+}
+
+/* עיצוב כפתור V ירוק */
+.premium-star-btn.pro-active {
+  background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+}
+
+.premium-star-btn.pro-active:hover {
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
+}
+
+/* ===== דף ניהול מנוי ===== */
+.subscription-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.subscription-card {
+  background: white;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+/* Status Card - Pro */
+.subscription-card.status-card.pro {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border: 2px solid #86efac;
+}
+
+.subscription-card.status-card.free {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border: 2px solid #e2e8f0;
+}
+
+.status-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.status-icon {
+  font-size: 2rem;
+}
+
+.status-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.status-title.pro {
+  color: #166534;
+}
+
+.status-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.status-detail {
+  display: flex;
+  justify-content: space-between;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.status-detail-label {
+  color: #6b7280;
+}
+
+.status-detail-value {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.status-user-email {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 8px;
+  margin: 10px 0 15px 0;
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+.status-user-email span:first-child {
+  font-size: 1.1rem;
+}
+
+/* User Info Section */
+.status-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0 15px 0;
+}
+
+.status-user-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.status-user-name span:first-child {
+  font-size: 1.1rem;
+}
+
+.user-name-input {
+  flex: 1;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: white;
+  color: #1f2937;
+  transition: all 0.2s ease;
+}
+
+.user-name-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.user-name-input::placeholder {
+  color: #9ca3af;
+}
+
+.save-name-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary-color);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.save-name-btn:hover {
+  background: var(--secondary-color);
+  transform: scale(1.05);
+}
+
+.status-user-info .status-user-email {
+  margin: 0;
+  padding: 8px 15px;
+}
+
+.status-note {
+  font-size: 0.85rem;
+  color: #6b7280;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Trial Card */
+.subscription-card.trial-card {
+  background: linear-gradient(135deg, #fefce8, #fef9c3);
+  border: 2px dashed #fbbf24;
+}
+
+.trial-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.trial-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #92400e;
+}
+
+.trial-days {
+  font-size: 1rem;
+  color: #a16207;
+  margin-bottom: 5px;
+}
+
+.trial-info {
+  font-size: 0.85rem;
+  color: #a16207;
+}
+
+/* Features Card */
+.subscription-card.features-card h3 {
+  font-size: 1.1rem;
+  color: #374151;
+  margin-bottom: 15px;
+}
+
+.subscription-features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.sub-feature-item {
+  padding: 10px 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+/* Actions Card */
+.subscription-card.actions-card h3 {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 15px;
+}
+
+.subscription-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sub-action-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.sub-action-btn.primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.sub-action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.sub-action-btn.secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+}
+
+.sub-action-btn.secondary:hover {
+  background: #e5e7eb;
+}
+
+.subscription-cancel {
+  padding-top: 15px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.sub-cancel-btn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 10px;
+  transition: color 0.2s ease;
+}
+
+.sub-cancel-btn:hover {
+  color: #ef4444;
+}
+
+/* Upgrade CTA */
+.sub-upgrade-btn {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sub-upgrade-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+}
+
+/* Trust Note */
+.subscription-trust-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #9ca3af;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 10px;
+}
+
+/* Cancel Modal */
+.cancel-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cancel-modal.hidden {
+  display: none;
+}
+
+.cancel-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(27, 37, 89, 0.55);
+  backdrop-filter: blur(2px);
+}
