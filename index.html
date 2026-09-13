@@ -10498,7 +10498,7 @@ openGalleryView() {
   galleryNotebookName.textContent = `תצוגת גלריה - ${notebook.title}`;
   
   // Hide content, show gallery
-document.getElementById('notebookView').style.display = 'none';
+  document.getElementById('notebookView').classList.remove('active');
   galleryView.classList.add('active');
   
   // Generate gallery items
@@ -10511,7 +10511,7 @@ closeGalleryView() {
   const notebookContent = document.getElementById('notebookContent');
   
   galleryView.classList.remove('active');
-document.getElementById('notebookView').style.display = 'block';
+  document.getElementById('notebookView').classList.add('active');
 },
 
 // Generate Gallery Items
@@ -10529,7 +10529,7 @@ generateGalleryItems(notebook) {
   }
   
   galleryGrid.innerHTML = notebook.pages.map((page, index) => {
-    const isCurrent = index === this.currentPage;
+    const isCurrent = index === this.currentPageIndex;
     const textPreview = this.getPageTextPreview(page);
     const pageTitle = page.title && page.title.trim() ? page.title.trim() : `דף ${index + 1}`;
     
@@ -10627,14 +10627,15 @@ renderPagePreview(page, pageType) {
 
 // Go to page from gallery
 goToPageFromGallery(pageIndex) {
-  this.currentPage = pageIndex;
   this.closeGalleryView();
+  // משתמש באותו מנגנון דפדוף כמו כפתורי הבא/הקודם
+  this.goToPage(pageIndex);
   
   // Scroll to the selected page
   setTimeout(() => {
-    const container = document.getElementById('notebookContent');
-    if (container && container.children[pageIndex]) {
-      container.children[pageIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const activePage = document.querySelector('#notebookContent .notebook-page.active-page');
+    if (activePage) {
+      activePage.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, 100);
 },
