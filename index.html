@@ -21003,33 +21003,58 @@ app.voice = (function() {
     return m + ':' + String(sec).padStart(2, '0');
   }
 
-  function insertTranscript(text) {
-    const editor = document.querySelector('.page-content[contenteditable="true"]');
-    if (!editor) return;
+  // מאתר את הדף הפעיל במחברת: textarea רגיל או div עם contentEditable
+  function getActiveEditor() {
+    let idx = app.activeTextareaIndex;
+    if (idx === undefined || idx === null) idx = app.currentPageIndex;
+    let el = document.getElementById('textarea-' + idx);
+    if (!el) {
+      const activePage = document.querySelector('#notebookContent .notebook-page.active-page');
+      el = activePage ? activePage.querySelector('textarea, [contenteditable="true"]') : null;
+    }
+    return el;
+  }
 
+  function insertTranscript(text) {
+    const editor = getActiveEditor();
+    if (!editor) {
+      alert('נא לבחור דף במחברת לפני ההקלטה');
+      return;
+    }
+    const index = parseInt((editor.id || '').replace('textarea-', ''), 10);
+
+    if (editor.tagName === 'TEXTAREA') {
+      const start = editor.selectionStart ?? editor.value.length;
+      const end = editor.selectionEnd ?? editor.value.length;
+      const before = editor.value.substring(0, start);
+      const after = editor.value.substring(end);
+      const needsSpace = before.length > 0 && !/\s$/.test(before);
+      const inserted = (needsSpace ? ' ' : '') + text + ' ';
+      editor.value = before + inserted + after;
+      const pos = start + inserted.length;
+      editor.selectionStart = editor.selectionEnd = pos;
+      if (!isNaN(index)) app.savePage(index, editor.value);
+      return;
+    }
+
+    // contentEditable
     const span = document.createElement('span');
     span.className = 'voice-transcript-text';
     span.textContent = text + ' ';
 
     const sel = window.getSelection();
-    if (sel && sel.rangeCount > 0) {
+    if (sel && sel.rangeCount > 0 && editor.contains(sel.getRangeAt(0).commonAncestorContainer)) {
       const range = sel.getRangeAt(0);
-      // Make sure we're inserting inside the editor
-      if (editor.contains(range.commonAncestorContainer)) {
-        range.deleteContents();
-        range.insertNode(span);
-        range.setStartAfter(span);
-        range.setEndAfter(span);
-        sel.removeAllRanges();
-        sel.addRange(range);
-      } else {
-        editor.appendChild(span);
-      }
+      range.deleteContents();
+      range.insertNode(span);
+      range.setStartAfter(span);
+      range.setEndAfter(span);
+      sel.removeAllRanges();
+      sel.addRange(range);
     } else {
       editor.appendChild(span);
     }
-
-    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    if (!isNaN(index)) app.savePage(index, editor.innerHTML);
   }
 
   function startTimer() {
