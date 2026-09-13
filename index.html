@@ -24188,7 +24188,7 @@ body { background: var(--pa-bg); }
 }
 .phase-a-home .welcome-section::after { display: none; }
 .phase-a-home .welcome-content { position: static; display: block; text-align: right; }
-.phase-a-home .welcome-text { position: relative; z-index: 3; width: 62%; margin-right: auto; }
+.phase-a-home .welcome-text { position: relative; z-index: 3; width: 56%; margin-right: 0; margin-left: auto; text-align: right; }
 .phase-a-home .welcome-text h1 {
   margin: 0 0 4px;
   color: var(--pa-navy);
@@ -25425,6 +25425,10 @@ body.a11y-dark #notebookView .export-menu { background:#1c233b !important; borde
 #profileEditModal .modal-body,
 #taskEditModal .modal-body { padding: 21px 22px; }
 #settingsModal .form-section { margin-bottom: 17px; padding: 17px; border: 1px solid #e5ecf5; border-radius: 14px; background: #f9fbfe; }
+/* גלילה בתוך חלון ההגדרות כשהמסך נמוך */
+#settingsModal .modal-content { display: flex; flex-direction: column; max-height: 88vh; }
+#settingsModal .modal-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+#settingsModal .modal-header, #settingsModal .modal-footer { flex: 0 0 auto; }
 #settingsModal .section-title { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e3eaf4; color: var(--ui-navy); font-size: 1.12rem; }
 #settingsModal .form-label,
 #profileEditModal .form-label,
