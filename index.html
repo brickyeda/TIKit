@@ -6493,6 +6493,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
             <button id="premiumInfoBtn" onclick="app.openUpgradeModal('שדרוג לפרימיום')" title="שדרוג לפרימיום" class="premium-star-btn" type="button">⭐</button>
             <button class="icon-action fullscreen-icon" id="fullscreenBtn" onclick="app.toggleFullscreen()" title="מסך מלא" type="button">⛶</button>
             <button class="icon-action settings-icon" onclick="app.openSettings()" title="הגדרות" type="button">⚙️</button>
+            <button class="icon-action a11y-icon" id="a11y-toggle-btn" title="נגישות" aria-label="פתח תפריט נגישות" type="button">♿</button>
             <button class="icon-action logout-btn" id="logoutBtn" onclick="logout()" title="התנתקות" type="button"><i data-lucide="log-out" class="lucide-icon lucide-icon--sm"></i></button>
           </div>
           <div class="datetime-display" aria-label="תאריך ושעה">
@@ -20593,7 +20594,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- ===== ACCESSIBILITY WIDGET ===== -->
 <style>
-#a11y-toggle-btn {
+#a11y-toggle-btn-mobile {
+  display: none;
   position: fixed;
   top: 80px;
   right: 16px;
@@ -20612,14 +20614,17 @@ document.addEventListener('DOMContentLoaded', function() {
   transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
   color: #667eea;
 }
-#a11y-toggle-btn:hover {
+#a11y-toggle-btn-mobile:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 14px rgba(102,126,234,0.2);
   border-color: #667eea;
 }
+@media (max-width: 768px) {
+  #a11y-toggle-btn-mobile { display: flex; }
+}
 #a11y-panel {
   position: fixed;
-  top: 130px;
+  bottom: 110px;
   right: 16px;
   z-index: 99998;
   width: 270px;
@@ -20640,6 +20645,9 @@ document.addEventListener('DOMContentLoaded', function() {
   transform: translateY(0) scale(1);
   opacity: 1;
   pointer-events: all;
+}
+@media (max-width: 768px) {
+  #a11y-panel { top: 130px; bottom: auto; }
 }
 .a11y-header {
   background: #f8f9fa;
@@ -20732,7 +20740,7 @@ body.a11y-spacing-3 * { line-height: 2.5 !important; }
 body.a11y-ruler-on #a11y-ruler { display: block; }
 </style>
 
-<button id="a11y-toggle-btn" title="נגישות" aria-label="פתח תפריט נגישות">♿</button>
+<button id="a11y-toggle-btn-mobile" title="נגישות" aria-label="פתח תפריט נגישות">♿</button>
 <div id="a11y-ruler"></div>
 
 <div id="a11y-panel" role="dialog" aria-label="תפריט נגישות">
@@ -20864,9 +20872,12 @@ const a11y = (function() {
 
   document.addEventListener('DOMContentLoaded', function() {
     load(); applyAll();
-    document.getElementById('a11y-toggle-btn').addEventListener('click', function() { state.open ? close() : open(); });
+    ['a11y-toggle-btn', 'a11y-toggle-btn-mobile'].forEach(function(id) {
+      var b = document.getElementById(id);
+      if (b) b.addEventListener('click', function() { state.open ? close() : open(); });
+    });
     document.addEventListener('click', function(e) {
-      if (state.open && !document.getElementById('a11y-panel').contains(e.target) && e.target !== document.getElementById('a11y-toggle-btn')) close();
+      if (state.open && !document.getElementById('a11y-panel').contains(e.target) && !e.target.closest('#a11y-toggle-btn, #a11y-toggle-btn-mobile')) close();
     });
   });
 
