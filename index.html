@@ -8346,6 +8346,22 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
             <input type="number" id="autoSaveInterval" class="form-input" placeholder="30" min="10" max="300" value="30">
             <small style="color: var(--text-secondary); font-size: 0.85rem;">מומלץ: 30-60 שניות</small>
           </div>
+          <div class="form-group">
+            <label class="form-label">איפה לשמור את התוכן שלי?</label>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <label class="radio-option" style="align-items: flex-start;">
+                <input type="radio" name="storageMode" value="cloud" checked>
+                <span><strong>☁️ ברשת (מומלץ)</strong><br>
+                  <small style="color: var(--text-secondary);">המחברות, המשימות והיומן נשמרים בחשבון שלך וזמינים מכל מכשיר.</small></span>
+              </label>
+              <label class="radio-option" style="align-items: flex-start;">
+                <input type="radio" name="storageMode" value="local">
+                <span><strong>💻 מקומית במחשב הזה</strong><br>
+                  <small style="color: var(--text-secondary);">התוכן נשאר רק בדפדפן במכשיר הזה ולא עולה לרשת. ניקוי נתוני הדפדפן או מעבר למכשיר אחר – והתוכן לא יהיה זמין.</small></span>
+              </label>
+            </div>
+            <small id="storageModeStatus" style="display: block; margin-top: 6px; color: var(--text-secondary); font-size: 0.85rem;"></small>
+          </div>
         </div>
       </div>
       
@@ -8636,12 +8652,13 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           const tutorialKeys = [];
           for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
-            if (key && key.startsWith('tutorialState_')) {
+            if (key && (key.startsWith('tutorialState_') || key.startsWith('tikitLocal_'))) {
               tutorialKeys.push({ key: key, value: localStorage.getItem(key) });
             }
           }
 
           // התנתק
+          snapshotLocalDataForUser(currentUser && currentUser.id);
           await supabaseClient.auth.signOut();
           localStorage.clear();
           sessionStorage.clear();
@@ -8705,6 +8722,9 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     async function logout() {
       if (confirm('האם אתה בטוח שברצונך להתנתק?')) {
         try {
+          // במצב אחסון מקומי - שומרים עותק של הנתונים לפני הניקוי
+          snapshotLocalDataForUser(currentUser && currentUser.id);
+          
           // התנתק מ-Supabase קודם
           await supabaseClient.auth.signOut();
           
@@ -8712,7 +8732,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
           const tutorialKeys = [];
           for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
-            if (key && key.startsWith('tutorialState_')) {
+            if (key && (key.startsWith('tutorialState_') || key.startsWith('tikitLocal_'))) {
               tutorialKeys.push({ key: key, value: localStorage.getItem(key) });
             }
           }
@@ -8738,7 +8758,45 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     }
     
     // שמירת נתונים ל-Supabase
+    // מצב אחסון: 'cloud' (ברירת מחדל) או 'local'
+    function getStorageMode() {
+      try {
+        const settings = JSON.parse(localStorage.getItem('appSettings')) || {};
+        return settings.storageMode === 'local' ? 'local' : 'cloud';
+      } catch (e) { return 'cloud'; }
+    }
+    function isLocalStorageMode() { return getStorageMode() === 'local'; }
+
+    // מפתחות הנתונים שנשמרים מקומית (לשימוש בגיבוי/שחזור במצב מקומי)
+    const LOCAL_DATA_KEYS = ['notebookData', 'taskData', 'calendarData', 'weeklySchedule', 'myLinks', 'stickyNotes', 'stickyNotesNextId', 'appSettings'];
+
+    // במצב מקומי: לפני התנתקות שומרים עותק של הנתונים תחת מזהה המשתמש
+    function snapshotLocalDataForUser(userId) {
+      if (!userId || !isLocalStorageMode()) return;
+      const snap = {};
+      LOCAL_DATA_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v !== null) snap[k] = v; });
+      try { localStorage.setItem('tikitLocal_' + userId, JSON.stringify(snap)); } catch (e) { console.error('שגיאה בשמירת עותק מקומי', e); }
+    }
+
+    // אחרי התחברות: אם יש עותק מקומי למשתמש הזה - משחזרים אותו
+    function restoreLocalDataForUser(userId) {
+      if (!userId) return false;
+      const raw = localStorage.getItem('tikitLocal_' + userId);
+      if (!raw) return false;
+      try {
+        const snap = JSON.parse(raw);
+        Object.keys(snap).forEach(k => localStorage.setItem(k, snap[k]));
+        // העותק נוצל - יווצר מחדש בהתנתקות הבאה
+        localStorage.removeItem('tikitLocal_' + userId);
+        console.log('💾 שוחזרו נתונים מקומיים של המשתמש');
+        return true;
+      } catch (e) { return false; }
+    }
+
     async function saveToSupabase(table, data) {
+      if (isLocalStorageMode()) {
+        return { success: false, local: true };
+      }
       if (!supabaseClient || !currentUser) {
         console.log('⚠️ Supabase לא זמין, שומר רק ב-localStorage');
         return { success: false };
@@ -8765,6 +8823,10 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
     // טעינת נתונים מ-Supabase עם הבחנה בין "אין רשומה" לבין "שגיאה"
     // מחזיר { ok, found, data } - ok=false פירושו שגיאת רשת/הרשאות ואסור לדרוס נתונים בענן
     async function loadFromSupabaseStatus(table) {
+      if (isLocalStorageMode()) {
+        // מצב מקומי: מתנהגים כאילו אין רשומה בענן, כך שהטוענים ייקחו את הגיבוי המקומי
+        return { ok: true, found: false, data: null, local: true };
+      }
       if (!supabaseClient || !currentUser) {
         console.log('⚠️ Supabase לא זמין, טוען מ-localStorage');
         return { ok: false, found: false, data: null };
@@ -8797,6 +8859,7 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
 
     // טעינת נתונים מ-Supabase
     async function loadFromSupabase(table) {
+      if (isLocalStorageMode()) return null;
       if (!supabaseClient || !currentUser) {
         console.log('⚠️ Supabase לא זמין, טוען מ-localStorage');
         return null;
@@ -8981,6 +9044,9 @@ autoSaveInterval: null,
             console.log(`  ✅ נמחק: ${key}`);
           });
         }
+        
+        // שחזור נתונים מקומיים של המשתמש הזה (אם נשמרו במצב אחסון מקומי)
+        restoreLocalDataForUser(currentUser.id);
         
         // שמור את ה-ID של המשתמש הנוכחי
         localStorage.setItem('lastUserId', currentUser.id);
@@ -16747,10 +16813,77 @@ updateSidebarEventsList() {
         
         // טעינת הגדרות שמירה אוטומטית
         document.getElementById('autoSaveInterval').value = settings.autoSaveInterval || 30;
+        
+        // טעינת מצב אחסון
+        const storageMode = settings.storageMode === 'local' ? 'local' : 'cloud';
+        const storageRadio = document.querySelector(`input[name="storageMode"][value="${storageMode}"]`);
+        if (storageRadio) storageRadio.checked = true;
+        this.updateStorageModeStatus(storageMode);
+      },
+
+      updateStorageModeStatus(mode) {
+        const el = document.getElementById('storageModeStatus');
+        if (!el) return;
+        el.textContent = mode === 'local'
+          ? 'מצב נוכחי: התוכן נשמר רק במכשיר הזה.'
+          : 'מצב נוכחי: התוכן מסונכרן לחשבון שלך ברשת.';
+      },
+
+      getSelectedStorageMode() {
+        const checked = document.querySelector('input[name="storageMode"]:checked');
+        return checked && checked.value === 'local' ? 'local' : 'cloud';
+      },
+
+      // טיפול במעבר בין מצבי אחסון. מחזיר false אם המשתמש ביטל.
+      async applyStorageModeChange(oldMode, newMode) {
+        if (oldMode === newMode) return true;
+        
+        if (newMode === 'local') {
+          const ok = confirm('לעבור לאחסון מקומי?\n\nמעכשיו התוכן יישמר רק בדפדפן במכשיר הזה ולא יעלה לרשת.\nעותק של מה שכבר נשמר ברשת יישאר שם כמו שהוא, אבל לא יתעדכן.\n\nשים לב: ניקוי נתוני הדפדפן ימחק את התוכן.');
+          if (!ok) return false;
+          // מוודאים שיש עותק מקומי עדכני של הכל
+          if (this.subjects) localStorage.setItem('notebookData', JSON.stringify(this.subjects));
+          if (this.tasks) localStorage.setItem('taskData', JSON.stringify(this.tasks));
+          if (this.events) localStorage.setItem('calendarData', JSON.stringify(this.events));
+          return true;
+        }
+        
+        // local -> cloud: מעלים את התוכן המקומי לרשת
+        const ok = confirm('לעבור לאחסון ברשת?\n\nהתוכן שנמצא במכשיר הזה יועלה לחשבון שלך ויחליף את מה שנשמר ברשת קודם.');
+        if (!ok) return false;
+        
+        // כותבים קודם את ההגדרה כדי ש-saveToSupabase יעבוד
+        const settings = JSON.parse(localStorage.getItem('appSettings')) || {};
+        settings.storageMode = 'cloud';
+        localStorage.setItem('appSettings', JSON.stringify(settings));
+        if (typeof currentUser !== 'undefined' && currentUser) localStorage.removeItem('tikitLocal_' + currentUser.id);
+        
+        try {
+          if (this.subjects) await saveToSupabase('notebook_data', this.subjects);
+          if (this.tasks) await saveToSupabase('task_data', this.tasks);
+          if (this.events) await saveToSupabase('calendar_data', this.events);
+          if (typeof scheduleApp !== 'undefined' && scheduleApp.schedule) await saveToSupabase('weekly_schedule', scheduleApp.schedule);
+          if (typeof linksApp !== 'undefined' && linksApp.links) await saveToSupabase('user_links', linksApp.links);
+          console.log('☁️ התוכן המקומי הועלה לרשת');
+        } catch (e) {
+          console.error('שגיאה בהעלאת התוכן לרשת:', e);
+          alert('חלק מהתוכן לא הועלה לרשת. נסה לשמור שוב מאוחר יותר.');
+        }
+        return true;
       },
 
       // שמירת הגדרות
-      saveSettings() {
+      async saveSettings() {
+        const prevSettings = JSON.parse(localStorage.getItem('appSettings')) || {};
+        const oldMode = prevSettings.storageMode === 'local' ? 'local' : 'cloud';
+        const newMode = this.getSelectedStorageMode();
+        const modeOk = await this.applyStorageModeChange(oldMode, newMode);
+        if (!modeOk) {
+          const r = document.querySelector(`input[name="storageMode"][value="${oldMode}"]`);
+          if (r) r.checked = true;
+          return;
+        }
+        
         const settings = {
           userName: document.getElementById('userName').value,
           userAge: document.getElementById('userAge').value,
@@ -16758,10 +16891,12 @@ updateSidebarEventsList() {
           userSchool: document.getElementById('userSchool').value,
           theme: document.querySelector('input[name="theme"]:checked').value,
           language: document.querySelector('input[name="language"]:checked').value,
-          autoSaveInterval: parseInt(document.getElementById('autoSaveInterval').value) || 30
+          autoSaveInterval: parseInt(document.getElementById('autoSaveInterval').value) || 30,
+          storageMode: newMode
         };
         
         localStorage.setItem('appSettings', JSON.stringify(settings));
+        this.updateStorageModeStatus(newMode);
         
         // החלת ערכת צבעים
         this.applyTheme(settings.theme);
@@ -16825,11 +16960,21 @@ updateSidebarEventsList() {
       },
 
       // שמירת הגדרות והתחברות
-      saveSettingsAndLogin() {
+      async saveSettingsAndLogin() {
         const userName = document.getElementById('userName').value.trim();
         
         if (!userName) {
           alert('⚠️ אנא הזן שם משתמש כדי להתחבר');
+          return;
+        }
+        
+        const prevSettings = JSON.parse(localStorage.getItem('appSettings')) || {};
+        const oldMode = prevSettings.storageMode === 'local' ? 'local' : 'cloud';
+        const newMode = this.getSelectedStorageMode();
+        const modeOk = await this.applyStorageModeChange(oldMode, newMode);
+        if (!modeOk) {
+          const r = document.querySelector(`input[name="storageMode"][value="${oldMode}"]`);
+          if (r) r.checked = true;
           return;
         }
         
@@ -16840,11 +16985,13 @@ updateSidebarEventsList() {
           userSchool: document.getElementById('userSchool').value,
           theme: document.querySelector('input[name="theme"]:checked').value,
           language: document.querySelector('input[name="language"]:checked').value,
-          autoSaveInterval: parseInt(document.getElementById('autoSaveInterval').value) || 30
+          autoSaveInterval: parseInt(document.getElementById('autoSaveInterval').value) || 30,
+          storageMode: newMode
         };
         
         localStorage.setItem('appSettings', JSON.stringify(settings));
         localStorage.setItem('isLoggedIn', 'true');
+        this.updateStorageModeStatus(newMode);
         
         // החלת ערכת צבעים
         this.applyTheme(settings.theme);
