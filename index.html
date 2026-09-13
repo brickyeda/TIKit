@@ -23581,7 +23581,9 @@ button { font-family: inherit; }
 .sidebar-profile-copy strong { overflow: hidden; font-size: .83rem; white-space: nowrap; text-overflow: ellipsis; }
 .sidebar-profile-copy small { color: rgba(255,255,255,.52); font-size: .7rem; }
 
-.sidebar-user-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 6px; min-width: 0; }
+.sidebar-user-actions { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center; gap: 6px; min-width: 0; width: 100%; }
+.app-sidebar .sidebar-user-actions > .premium-star-btn,
+.app-sidebar .sidebar-user-actions > .icon-action { width: 100%; min-width: 0; }
 .app-sidebar .navbar-user > * { min-width: 0; }
 .app-sidebar .premium-star-btn,
 .app-sidebar .icon-action {
