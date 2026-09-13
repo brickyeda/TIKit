@@ -169,7 +169,11 @@ openGalleryView() {
   galleryNotebookName.textContent = `תצוגת גלריה - ${notebook.title}`;
   
   // Hide content, show gallery
-document.getElementById('notebookView').style.display = 'none';
+  const notebookView = document.getElementById('notebookView');
+  if (notebookView) {
+    notebookView.classList.remove('active');
+    notebookView.setAttribute('aria-hidden', 'true');
+  }
   galleryView.classList.add('active');
   
   // Generate gallery items
@@ -183,8 +187,8 @@ closeGalleryView() {
 
   if (galleryView) galleryView.classList.remove('active');
   if (notebookView) {
-    notebookView.style.removeProperty('display');
     notebookView.classList.add('active');
+    notebookView.setAttribute('aria-hidden', 'false');
   }
 },
 
@@ -311,19 +315,8 @@ goToPageFromGallery(pageIndex) {
   // reader on whichever page had last been rendered (usually the final page).
   this.currentPageIndex = selectedPageIndex;
   notebook.currentPage = selectedPageIndex;
+  this.updatePageView();
   this.closeGalleryView();
-
-  this.renderNotebookContent();
-
-  // Scroll to the selected page after the fresh render.
-  setTimeout(() => {
-    const container = document.getElementById('notebookContent');
-    const selectedPage = container?.querySelector(`[data-page-index="${selectedPageIndex}"]`)
-      || container?.querySelector('.notebook-page.active-page');
-    if (selectedPage) {
-      selectedPage.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, 100);
 },
 
 // Escape HTML for security

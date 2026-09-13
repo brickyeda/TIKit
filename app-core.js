@@ -1430,13 +1430,13 @@ closeNotificationsPanel() {
       showPage(pageId) {
         console.log('עובר לדף:', pageId);
 
-        // Gallery view temporarily changes notebookView's inline display value.
-        // Always clear it before regular page navigation so the notebook cannot
-        // remain visible on top of every other tab.
-        const notebookViewPage = document.getElementById('notebookView');
-        if (notebookViewPage) {
-          notebookViewPage.style.removeProperty('display');
+        const targetPage = document.getElementById(pageId);
+        if (!targetPage || !targetPage.classList.contains('page')) {
+          console.error('דף לא נמצא:', pageId);
+          return;
         }
+
+        this.activePageId = pageId;
        
         // Close gallery if leaving notebookView
         if (pageId !== 'notebookView') {
@@ -1450,7 +1450,7 @@ closeNotificationsPanel() {
           }
           const notebookContent = document.getElementById('notebookContent');
           if (notebookContent) {
-            notebookContent.style.display = 'block';
+            notebookContent.style.removeProperty('display');
           }
           const zoomControls = document.getElementById('zoomControls');
           if (zoomControls) {
@@ -1473,13 +1473,12 @@ if (this.currentNotebook && pageId !== 'notebookView') {
         document.querySelectorAll('.page').forEach(page => {
           page.classList.remove('active');
           page.style.removeProperty('display');
+          page.setAttribute('aria-hidden', 'true');
         });
         
         // הצג את הדף הנדרש
-        const targetPage = document.getElementById(pageId);
-        if (targetPage) {
-          targetPage.classList.add('active');
-        }
+        targetPage.classList.add('active');
+        targetPage.setAttribute('aria-hidden', 'false');
         
         // עדכן ניווט
         this.updateNavigation(pageId);
