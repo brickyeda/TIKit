@@ -8762,6 +8762,39 @@ body:has(.mode-btn[data-mode="programmer"].active) .programmer-displays {
       }
     }
     
+    // טעינת נתונים מ-Supabase עם הבחנה בין "אין רשומה" לבין "שגיאה"
+    // מחזיר { ok, found, data } - ok=false פירושו שגיאת רשת/הרשאות ואסור לדרוס נתונים בענן
+    async function loadFromSupabaseStatus(table) {
+      if (!supabaseClient || !currentUser) {
+        console.log('⚠️ Supabase לא זמין, טוען מ-localStorage');
+        return { ok: false, found: false, data: null };
+      }
+      try {
+        const { data, error } = await supabaseClient
+          .from(table)
+          .select('data')
+          .eq('user_id', currentUser.id)
+          .single();
+        if (error && error.code === 'PGRST116') return { ok: true, found: false, data: null };
+        if (error) throw error;
+        console.log(`✅ נטען מ-Supabase: ${table}`);
+        return { ok: true, found: true, data: data ? data.data : null };
+      } catch (error) {
+        console.error(`שגיאה בטעינה מ-${table}:`, error);
+        return { ok: false, found: false, data: null };
+      }
+    }
+
+    // קריאת גיבוי מקומי בבטחה
+    function readLocalBackup(key) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
     // טעינת נתונים מ-Supabase
     async function loadFromSupabase(table) {
       if (!supabaseClient || !currentUser) {
@@ -15121,7 +15154,9 @@ insertImage() {
           console.log('📚 טוען נתוני מחברות...');
           
           // ניסיון לטעון מ-Supabase קודם
-          const cloudData = await loadFromSupabase('notebook_data');
+          const result = await loadFromSupabaseStatus('notebook_data');
+          const cloudData = result.data;
+          const localData = readLocalBackup('notebookData');
           
           if (cloudData && Object.keys(cloudData).length > 0) {
             // יש נתונים בענן - החלף את ברירות המחדל לגמרי
@@ -15129,11 +15164,21 @@ insertImage() {
             this.subjects = cloudData;
             // שמור גם ב-localStorage כגיבוי
             localStorage.setItem('notebookData', JSON.stringify(cloudData));
-          } else {
-            // אין נתונים בענן - השתמש בברירות המחדל (כבר מוגדרות ב-subjects)
+          } else if (localData && Object.keys(localData).length > 0) {
+            // הענן לא ענה / ריק אבל יש גיבוי מקומי - משתמשים בו
+            console.log('💾 נטען מגיבוי מקומי - מחברות');
+            this.subjects = localData;
+            if (result.ok && !result.found) {
+              // באמת אין רשומה בענן - נעלה את הגיבוי המקומי
+              await this.saveNotebookData();
+            }
+          } else if (result.ok && !result.found) {
+            // משתמש חדש באמת - אין רשומה בענן ואין גיבוי מקומי
             console.log('📓 משתמש חדש - טוען מחברות ברירת מחדל');
-            // שמור את ברירות המחדל בענן
             await this.saveNotebookData();
+          } else {
+            // שגיאה בטעינה מהענן - נשארים על ברירות המחדל בזיכרון בלבד, בלי לדרוס את הענן
+            console.warn('⚠️ לא ניתן לטעון מחברות מהענן - לא שומרים ברירות מחדל כדי לא לדרוס נתונים');
           }
         } catch (error) {
           console.error('שגיאה בטעינת נתונים:', error);
@@ -15148,13 +15193,22 @@ insertImage() {
           console.log('📋 טוען נתוני משימות...');
           
           // ניסיון לטעון מ-Supabase קודם
-          const cloudData = await loadFromSupabase('task_data');
+          const result = await loadFromSupabaseStatus('task_data');
+          const cloudData = result.data;
+          const localData = readLocalBackup('taskData');
           
           if (cloudData && cloudData.length > 0) {
             // יש נתונים בענן
             console.log('✅ נטען מהענן - משימות');
             this.tasks = cloudData;
             localStorage.setItem('taskData', JSON.stringify(cloudData));
+          } else if (Array.isArray(localData) && localData.length > 0) {
+            console.log('💾 נטען מגיבוי מקומי - משימות');
+            this.tasks = localData;
+            if (result.ok && !result.found) await this.saveTaskData();
+          } else if (!result.ok) {
+            console.warn('⚠️ לא ניתן לטעון משימות מהענן - לא דורסים נתונים');
+            this.tasks = [];
           } else {
             // אין נתונים בענן - התחל ריק
             console.log('⚠️ אין נתונים בענן - התחל ריק');
@@ -15602,13 +15656,22 @@ insertImage() {
           console.log('📅 טוען נתוני לוח שנה...');
           
           // ניסיון לטעון מ-Supabase קודם
-          const cloudData = await loadFromSupabase('calendar_data');
+          const result = await loadFromSupabaseStatus('calendar_data');
+          const cloudData = result.data;
+          const localData = readLocalBackup('calendarData');
           
           if (cloudData && cloudData.length > 0) {
             // יש נתונים בענן
             console.log('✅ נטען מהענן - לוח שנה');
             this.events = cloudData;
             localStorage.setItem('calendarData', JSON.stringify(cloudData));
+          } else if (Array.isArray(localData) && localData.length > 0) {
+            console.log('💾 נטען מגיבוי מקומי - לוח שנה');
+            this.events = localData;
+            if (result.ok && !result.found) await this.saveCalendarData();
+          } else if (!result.ok) {
+            console.warn('⚠️ לא ניתן לטעון אירועים מהענן - לא דורסים נתונים');
+            this.events = [];
           } else {
             // אין נתונים בענן - התחל ריק
             console.log('⚠️ אין נתונים בענן - התחל ריק');
