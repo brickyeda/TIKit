@@ -10529,7 +10529,7 @@ generateGalleryItems(notebook) {
   }
   
   galleryGrid.innerHTML = notebook.pages.map((page, index) => {
-    const isCurrent = index === this.currentPageIndex;
+    const isCurrent = index === this.currentPage;
     const textPreview = this.getPageTextPreview(page);
     const pageTitle = page.title && page.title.trim() ? page.title.trim() : `דף ${index + 1}`;
     
@@ -10627,9 +10627,8 @@ renderPagePreview(page, pageType) {
 
 // Go to page from gallery
 goToPageFromGallery(pageIndex) {
+  this.currentPage = pageIndex;
   this.closeGalleryView();
-  // משתמש באותו מנגנון דפדוף כמו כפתורי הבא/הקודם
-  this.goToPage(pageIndex);
   
   // Scroll to the selected page
   setTimeout(() => {
